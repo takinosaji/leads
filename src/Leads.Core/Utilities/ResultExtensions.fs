@@ -1,4 +1,4 @@
-﻿module Result
+﻿module Leads.Core.Utilities.Result
 
 open System
        

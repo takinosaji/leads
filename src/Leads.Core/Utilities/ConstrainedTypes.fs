@@ -1,4 +1,4 @@
-﻿module Leads.Core.ConstrainedTypes
+﻿module Leads.Core.Utilities.ConstrainedTypes
 
 open System
 

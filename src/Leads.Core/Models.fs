@@ -1,7 +1,6 @@
 ﻿namespace Leads.Core
 
 open System
-open FSharp.FGL
 //open ConstrainedTypes
 
 // module Tag =
@@ -14,27 +13,43 @@ open FSharp.FGL
 
 type Tag = Tag of string
 
-type Lead =
-    {
+type Link = {
+        TargetLeadHash: String
+        TargetTrailHash: String
+        ConnectionDateTime: DateTime
+    }
+
+type Lead = {
         Text: string
         Hash: string
         Tags: Tag list
-        DateTime: DateTime
-        Links: TO DO ... think of simple links
+        CreationDateTime: DateTime
+        Links: Link list
     }
     
+type CompletionStatus =
+    | Finished
+    | Archived
    
 type Theme = Theme of string
-    
+        
+type TrailData = {
+        Leads: Lead list
+        Theme: Theme
+        Hash: string
+        CreationDateTime: DateTime
+    }
+type Trail =
+    | ActiveTrail of TrailData
+    | CompletedTrail of TrailData
+    | ArchivedTrail of TrailData
 
-    
-type Trail = {
-    Leads: Lead list
-    Theme: Theme
-    Hash: string
-}
-
-type Stream = {
-    Name: String
-    Trails = 
-}
+type StreamData = {
+        Name: String  
+        CreationDateTime: DateTime
+        Trails: Trail list
+    }
+type Stream =
+    | ActiveStream of StreamData
+    | CompletedStream of StreamData
+    | ArchivedStream of StreamData
