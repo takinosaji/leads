@@ -14,4 +14,8 @@
       <PackageReference Include="Legivel" Version="0.4.6" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Leads.Core\Leads.Core.fsproj" />
+    </ItemGroup>
+
 </Project>
