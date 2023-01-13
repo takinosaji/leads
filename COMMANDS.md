@@ -7,7 +7,7 @@ leags config get config-name
 
 leads add stream [name]
 leads add trail [theme-text] --stream [stream-hash exact match or stream-name LIKE]
-leads add lead --trail [trail-hash exact match or trail-theme LIKE] --tags [tags] [text]
+leads add lead [text] --trail [trail-hash exact match or trail-theme LIKE] --tags [tags] --new
 
 
 leads use [stream-hash exact match or stream-name LIKE]

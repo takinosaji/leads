@@ -1,4 +1,4 @@
-﻿module Leads.Core.LeadsConfigurations
+﻿module Leads.Core.Config
 
 type Configuration = {
     DefaultStream: Stream

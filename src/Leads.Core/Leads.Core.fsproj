@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <Compile Include="Models.fs" />
-        <Compile Include="LeadsConfigurations.fs" />
+        <Compile Include="Config.fs" />
         <Compile Include="Streams.fs" />
         <Compile Include="Trails.fs" />
         <Compile Include="Leads.fs" />
