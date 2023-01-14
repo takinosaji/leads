@@ -1,16 +1,29 @@
 ﻿module Leads.DrivenAdapters.ConfigAdapters
 
-// open Leads.Core.LeadsConfigurations
-// open Legivel.Serialization
-// open System.Reflection
-//
+open System
+open System.IO
+open Leads.Core.Config.Models
+open Leads.Core.Config.Workflows
+open Leads.Core.Utilities.Result
+open YamlDotNet.Serialization
+
+
 // let yamlFileConfigurationFactory: ConfigurationFactory =
 //     fun _ ->
-//         let filePath = $"{Assembly.GetEntryAssembly().Location}/config.yaml"
-//
-//         let c = Deserialize<Configuration> filePath
+//         result {
+//             let filePath = $"{Environment.SpecialFolder.UserProfile}/config.yaml"
+//             match File.Exists(filePath) with
+//             | false ->
+//                 return None                
+//             | true ->
+//                 try
+//                     let yamlContent = File.ReadAllText filePath            
+//                     let deserializer = DeserializerBuilder().Build()          
+//                     return Some(deserializer.Deserialize<Configuration>(yamlContent))
+//                 with
+//                     | excp ->
+//                         let c = Error(excp.Message)
+//                         return c
+//         }
+//                   
 //         
-//         
-//         match Deserialize<Configuration> filePath with
-//         | Success config.Data
-//         | 

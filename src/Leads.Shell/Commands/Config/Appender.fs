@@ -6,7 +6,7 @@ open Leads.Shell
 open Leads.Shell.Commands.Config.Get
 open Leads.Shell.Commands.Config.Set
 
-let appendConfigCommands: RootCommandBinder =
+let appendConfigCommands: RootCommandAppender =
     fun cmd ->
         
         let configCommand = Command("config", "The config command allows you to manipulate with utility configuration")

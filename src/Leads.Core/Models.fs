@@ -1,6 +1,8 @@
-﻿namespace Leads.Core
+﻿module Leads.Core.Models
 
 open System
+
+type Error = Error of string
 //open ConstrainedTypes
 
 // module Tag =

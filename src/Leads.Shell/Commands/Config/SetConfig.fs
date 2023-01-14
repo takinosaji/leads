@@ -2,15 +2,16 @@
 
 open System
 open System.CommandLine
+open System.Threading.Tasks
 open Leads.Shell
 open Leads.Shell.Utilities
 
 let private handler = fun k v ->
     Console.WriteLine "set"
-    ()
+    Task.CompletedTask
 
 
-let appendSetConfigSubCommand: SubCommandBinder =
+let appendSetConfigSubCommand: SubCommandAppender =
     fun cmd ->    
         let getConfigSubCommand = Command("set", "The set command updates the specific configuration key with the value")   
 

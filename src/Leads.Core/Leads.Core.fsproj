@@ -6,13 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Utilities\ResultExtensions.fs" />
+        <Compile Include="Utilities\ConstrainedTypes.fs" />
         <Compile Include="Models.fs" />
-        <Compile Include="Config.fs" />
+        <Compile Include="Config\Models.fs" />
+        <Compile Include="Config\Config.fs" />
         <Compile Include="Streams.fs" />
         <Compile Include="Trails.fs" />
         <Compile Include="Leads.fs" />
-        <Compile Include="Utilities\ResultExtensions.fs" />
-        <Compile Include="Utilities\ConstrainedTypes.fs" />
     </ItemGroup>
 
 </Project>

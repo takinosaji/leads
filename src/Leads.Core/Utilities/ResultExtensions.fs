@@ -1,6 +1,7 @@
 ﻿module Leads.Core.Utilities.Result
 
 open System
+open System.Threading.Tasks
        
 type Result<'a, 'b> with
     static member zip x1 x2 =
@@ -25,6 +26,8 @@ let toOption result =
     | Error error -> Error error
 
 type AsyncResult<'a, 'e> = Async<Result<'a, 'e>>
+
+type TaskResult<'a, 'e> = Task<Result<'a, 'e>>
 
 type ResultBuilder() as self =
     member _.Return(x) = Ok x
@@ -52,4 +55,5 @@ type ResultBuilder() as self =
     member _.For(sequence:seq<_>, body) =
         self.Using(sequence.GetEnumerator(), fun enum -> self.While(enum.MoveNext, self.Delay(fun () -> body enum.Current)))        
     member _.MergeSources(t1: Result<'T,'U>, t2: Result<'T1,'U>) = Result.zip t1 t2
-    member _.BindReturn(x: Result<'T,'U>, f) = Result.map f x     
+    member _.BindReturn(x: Result<'T,'U>, f) = Result.map f x
+let result = ResultBuilder()    

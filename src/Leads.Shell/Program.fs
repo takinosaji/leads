@@ -8,6 +8,7 @@ let main args =
     let rootCommand = RootCommand("Ultimate productivity and task management app.")
     
     rootCommand
-        |> appendConfigCommands   
+        |> appendConfigCommands
+        |> ignore
     
     rootCommand.Invoke(args)

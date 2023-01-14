@@ -2,5 +2,5 @@
 
 open System.CommandLine
 
-type RootCommandBinder = RootCommand -> RootCommand
-type SubCommandBinder = Command -> Command
+type RootCommandAppender = RootCommand -> RootCommand
+type SubCommandAppender = Command -> Command

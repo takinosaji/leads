@@ -6,14 +6,14 @@ open System.CommandLine
 let createOption<'a> (name:string) description isRequired =
     let option = Option<'a>($"--{name}", description)
     option.AddAlias($"-{name[0]}")        
-    option.IsRequired = isRequired
+    option.IsRequired <- isRequired
     
     option
  
 let addOption<'a> (name:string) description isRequired (cmd:Command) =
     let option = Option<'a>($"--{name}", description)
     option.AddAlias($"-{name[0]}")        
-    option.IsRequired = isRequired
+    option.IsRequired <- isRequired
     
     cmd.AddOption option
     
