@@ -2,31 +2,38 @@
 
 open System
 
+type ErrorText = ErrorText of string
+
 let createNotEmptyString fieldName ctor str = 
     if String.IsNullOrEmpty(str) then
         let msg = $"%s{fieldName} must not be null or empty" 
-        Error msg
+        Error(ErrorText msg)
     else
-        Ok (ctor str)
-            
+        Ok (ctor str)            
 
 let createLimitedString fieldName ctor maxLen str = 
     if String.IsNullOrEmpty(str) then
         let msg = $"%s{fieldName} must not be null or empty" 
-        Error msg
+        Error(ErrorText msg)
     elif str.Length > maxLen then
         let msg = $"%s{fieldName} must not be more than %i{maxLen} chars" 
-        Error msg 
+        Error(ErrorText msg)
     else
         Ok (ctor str)
 
+let createPredefinedString ctor str (allowedValues:string list) = 
+    if not (List.contains str allowedValues) then
+        let msg = $"%s{nameof(ctor)}'s value must be in range of allowed values" 
+        Error(ErrorText msg)
+    else
+        Ok (ctor str)
 
 let createStringOption fieldName ctor maxLen str = 
     if String.IsNullOrEmpty(str) then
         Ok None
     elif str.Length > maxLen then
         let msg = $"%s{fieldName} must not be more than %i{maxLen} chars" 
-        Error msg 
+        Error(ErrorText msg) 
     else
         Ok (ctor str |> Some)
 
@@ -34,39 +41,39 @@ let createStringOption fieldName ctor maxLen str =
 let createInt fieldName ctor minVal maxVal i = 
     if i < minVal then
         let msg = $"%s{fieldName}: Must not be less than %i{minVal}"
-        Error msg
+        Error(ErrorText msg)
     elif i > maxVal then
         let msg = $"%s{fieldName}: Must not be greater than %i{maxVal}"
-        Error msg
+        Error(ErrorText msg)
     else
         Ok (ctor i)
 
 let createFloat fieldName ctor minVal maxVal i = 
     if i < minVal then
         let msg = $"%s{fieldName}: Must not be less than %f{minVal}"
-        Error msg
+        Error(ErrorText msg)
     elif i > maxVal then
         let msg = $"%s{fieldName}: Must not be greater than %f{maxVal}"
-        Error msg
+        Error(ErrorText msg)
     else
         Ok (ctor i)
 
 let createDecimal fieldName ctor minVal maxVal i = 
     if i < minVal then
         let msg = $"%s{fieldName}: Must not be less than %M{minVal}"
-        Error msg
+        Error(ErrorText msg)
     elif i > maxVal then
         let msg = $"%s{fieldName}: Must not be greater than %M{maxVal}"
-        Error msg
+        Error(ErrorText msg)
     else
         Ok (ctor i)
 
 let createLike fieldName ctor pattern str = 
     if String.IsNullOrEmpty(str) then
         let msg = $"%s{fieldName}: Must not be null or empty" 
-        Error msg
+        Error(ErrorText msg)
     elif System.Text.RegularExpressions.Regex.IsMatch(str,pattern) then
         Ok (ctor str)
     else
         let msg = $"%s{fieldName}: '%s{str}' must match the pattern '%s{pattern}'"
-        Error msg 
+        Error(ErrorText msg)
