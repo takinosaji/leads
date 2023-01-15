@@ -2,13 +2,11 @@
 
 open System
 open System.CommandLine
-open System.Threading.Tasks
 open Leads.Shell
 open Leads.Shell.Utilities
 
 let private handler = fun k v ->
     Console.WriteLine "set"
-    Task.CompletedTask
 
 
 let appendSetConfigSubCommand: SubCommandAppender =

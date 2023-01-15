@@ -3,14 +3,22 @@
 open System
 open System.CommandLine
 open System.Threading.Tasks
+
+open Leads.Core.Config.Workflows
+open Leads.Core.Utilities.Dependencies
+
+open Leads.DrivenAdapters.ConfigAdapters
+
 open Leads.Shell
 open Leads.Shell.Utilities
 
 let private handler = fun k ->
-    Console.WriteLine "get"
-    Task.CompletedTask
-
-
+    reader {        
+        Console.WriteLine "test"
+    } |> Reader.run {
+        configProvider = yamlFileConfigurationProvider
+    }
+    
 let appendGetConfigSubCommand: SubCommandAppender =
     fun cmd ->    
         let getConfigSubCommand = Command("get", "The get command retrieves the specific configuration value by key")   

@@ -2,7 +2,7 @@
 
 open System
 
-type Error = Error of string
+type ErrorText = ErrorText of string
 //open ConstrainedTypes
 
 // module Tag =

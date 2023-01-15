@@ -1,7 +1,6 @@
 ﻿module Leads.Core.Utilities.Result
 
 open System
-open System.Threading.Tasks
        
 type Result<'a, 'b> with
     static member zip x1 x2 =
@@ -24,10 +23,6 @@ let toOption result =
     match result with
     | Ok value -> Ok (Some value)
     | Error error -> Error error
-
-type AsyncResult<'a, 'e> = Async<Result<'a, 'e>>
-
-type TaskResult<'a, 'e> = Task<Result<'a, 'e>>
 
 type ResultBuilder() as self =
     member _.Return(x) = Ok x
