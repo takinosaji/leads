@@ -1,6 +1,7 @@
 ﻿module Leads.Core.Config.Models
 
 open Leads.Core.Utilities.ConstrainedTypes
+open System
 
 type StringMap = Map<string, string>
 
@@ -8,22 +9,26 @@ module ConfigKey =
     type ConfigKey = private ConfigKey of key:string
     
     let private allowedConfigKeys = [
-        "DefaultStream";
-        "WorkingDir"
+        "default.stream";
+        "working.dir"
     ]
     
-    let create keyString =
-        createPredefinedString ConfigKey keyString allowedConfigKeys           
+    let create (keyString:string) =
+        createPredefinedString (nameof(ConfigKey)) ConfigKey (keyString.ToLower()) allowedConfigKeys           
     let value (ConfigKey key) = key    
 
+module ConfigValue =
+    type ConfigValue = private ConfigValue of value:string
+    
+    let create (valueString:string) =
+        createLimitedString (nameof(ConfigValue)) ConfigValue 50 valueString           
+    let value (ConfigValue value) = value   
 
-type ConfigValue = ConfigValue of value:string
-let configValueFactory value: Result<ConfigValue, ErrorText> = Ok(ConfigValue value) // TODO: replace with smart constructor
 
 module Configuration =
     type ValidEntry = {
         Key: ConfigKey.ConfigKey
-        Value: ConfigValue
+        Value: ConfigValue.ConfigValue
     }
 
     type InvalidKey = {
@@ -53,7 +58,7 @@ module Configuration =
             | _ -> false) configuration
         
         match entry with
-            | Some(ValidEntry validEntry) -> Ok(Some validEntry.Value)
+            | Some(ValidEntry validEntry) -> Ok(Some (validEntry.Value |> ConfigValue.value))
             | Some(InvalidValueEntry invalidEntry) -> Error invalidEntry.Error
             | Some _
             | None -> Ok None
@@ -65,7 +70,7 @@ module Configuration =
             |> Map.toList
             |> List.map (fun textEntry ->
                 let configKey = ConfigKey.create(fst textEntry)
-                let configValue = configValueFactory(snd textEntry)
+                let configValue = ConfigValue.create(snd textEntry)
                 
                 match configKey, configValue with
                 | Ok key, Ok value ->

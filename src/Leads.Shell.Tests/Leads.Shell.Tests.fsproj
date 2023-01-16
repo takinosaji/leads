@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Config\WorkflowTests.fs" />
+        <Compile Include="GetConfig.fs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Leads.Core\Leads.Core.fsproj" />
+      <ProjectReference Include="..\Leads.Shell\Leads.Shell.fsproj" />
     </ItemGroup>
 
 </Project>

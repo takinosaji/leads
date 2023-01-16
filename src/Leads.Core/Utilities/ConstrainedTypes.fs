@@ -16,14 +16,14 @@ let createLimitedString fieldName ctor maxLen str =
         let msg = $"%s{fieldName} must not be null or empty" 
         Error(ErrorText msg)
     elif str.Length > maxLen then
-        let msg = $"%s{fieldName} must not be more than %i{maxLen} chars" 
+        let msg = $"%s{nameof(ctor)} must not be more than %i{maxLen} chars" 
         Error(ErrorText msg)
     else
         Ok (ctor str)
 
-let createPredefinedString ctor str (allowedValues:string list) = 
+let createPredefinedString fieldName ctor str (allowedValues:string list) = 
     if not (List.contains str allowedValues) then
-        let msg = $"%s{nameof(ctor)}'s value must be in range of allowed values" 
+        let msg = $"%s{fieldName}'s value must be in range of allowed values" 
         Error(ErrorText msg)
     else
         Ok (ctor str)

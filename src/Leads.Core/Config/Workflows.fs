@@ -14,7 +14,7 @@ type ConfigEnvironment = {
 type SetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<unit, ErrorText>>
 
 
-type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<Option<ConfigValue>, ErrorText>>
+type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<Option<string>, ErrorText>>
 let getConfigWorkflow: GetConfigWorkflow =
     fun requestedKey -> reader {
         let! services = Reader.ask
@@ -22,7 +22,7 @@ let getConfigWorkflow: GetConfigWorkflow =
         return result {
             let! key = ConfigKey.create requestedKey            
             let! configurationText = services.configProvider()
-            
+                        
             match configurationText with
             | Some stringMap ->
                 let parsedConfiguration = Configuration.create stringMap

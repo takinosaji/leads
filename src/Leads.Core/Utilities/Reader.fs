@@ -26,7 +26,8 @@
       Reader (fun superEnv -> (run (f superEnv) reader))
         
   type ReaderBuilder() =
-    member __.Return(x) = Reader (fun _ -> x)
+    member __.Return(x) = Reader (fun _ -> x)   
+    member __.ReturnFrom(x) = Reader.bind (fun _ -> x) x
     member __.Bind(x,f) = Reader.bind f x
     member __.Zero() = Reader (fun _ -> ())
   

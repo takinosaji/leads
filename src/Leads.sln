@@ -15,6 +15,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.Core.Tests", "Leads.C
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.DrivenAdapters", "Leads.DrivenAdapters\Leads.DrivenAdapters.fsproj", "{231F0DB9-DAEC-43C7-A0C0-23376F2BFDC8}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.Shell.Tests", "Leads.Shell.Tests\Leads.Shell.Tests.fsproj", "{3DD542AF-1D13-43C0-805C-065002737628}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DAC98C5A-336D-4B2D-B5E0-FA4E62DE79F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,5 +41,13 @@ Global
 		{231F0DB9-DAEC-43C7-A0C0-23376F2BFDC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{231F0DB9-DAEC-43C7-A0C0-23376F2BFDC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{231F0DB9-DAEC-43C7-A0C0-23376F2BFDC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DD542AF-1D13-43C0-805C-065002737628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DD542AF-1D13-43C0-805C-065002737628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DD542AF-1D13-43C0-805C-065002737628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DD542AF-1D13-43C0-805C-065002737628}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3DD542AF-1D13-43C0-805C-065002737628} = {DAC98C5A-336D-4B2D-B5E0-FA4E62DE79F3}
+		{9ED5C129-7300-4D76-9E59-70C616832754} = {DAC98C5A-336D-4B2D-B5E0-FA4E62DE79F3}
 	EndGlobalSection
 EndGlobal
