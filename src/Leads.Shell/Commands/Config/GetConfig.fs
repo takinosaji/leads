@@ -2,20 +2,25 @@
 
 open System
 open System.CommandLine
-open System.Threading.Tasks
 
 open Leads.Core.Config.Workflows
 open Leads.Core.Utilities.Dependencies
-open Leads.Core.Config.Workflows
 
 open Leads.DrivenAdapters.ConfigAdapters
 
 open Leads.Shell
 open Leads.Shell.Utilities
 
+let private printValue configValue = function
+    | Some value ->
+        Console.WriteLine("byska")
+    | None ->
+        Console.WriteLine("byska")
+
 let private handler = fun requestedKey ->
     reader {        
-        getConfigWorkflow requestedKey
+        let! configValue = getConfigWorkflow requestedKey
+        configValue |> printValue        
     } |> Reader.run {
         configProvider = yamlFileConfigurationProvider
     }

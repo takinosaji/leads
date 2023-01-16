@@ -5,14 +5,12 @@ open Leads.Core.Utilities.Result
 open Leads.Core.Utilities.Dependencies
 open Leads.Core.Config.Models
 
-type ConfigurationProvider = unit -> Result<Option<StringMap>, ErrorText>  
+type ConfigurationProvider = unit -> Result<ConfigurationSource, ErrorText>  
 type ConfigEnvironment = {
     configProvider: ConfigurationProvider
 }
 
-
 type SetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<unit, ErrorText>>
-
 
 type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<Option<string>, ErrorText>>
 let getConfigWorkflow: GetConfigWorkflow =
@@ -22,14 +20,11 @@ let getConfigWorkflow: GetConfigWorkflow =
         return result {
             let! key = ConfigKey.create requestedKey            
             let! configurationText = services.configProvider()
-                        
-            match configurationText with
-            | Some stringMap ->
-                let parsedConfiguration = Configuration.create stringMap
-                let! value = Configuration.getValue key parsedConfiguration
-                return value // TODO: why cant use return! - dig into extension code
-            | None ->
-                return None  
+            
+            let! value = configurationText
+                         |> Configuration.create
+                         |> Configuration.getValue key    
+            return value // TODO: why cant use return! - dig into extension code
         }     
     }
         

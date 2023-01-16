@@ -1,9 +1,8 @@
 ﻿module Leads.Core.Config.Models
 
 open Leads.Core.Utilities.ConstrainedTypes
-open System
 
-type StringMap = Map<string, string>
+type ConfigurationSource = Map<string, string> Option
 
 module ConfigKey =
     type ConfigKey = private ConfigKey of key:string
@@ -42,30 +41,16 @@ module Configuration =
         Error: ErrorText
     }
 
-
     type ConfigEntry =
         | ValidEntry of ValidEntry
         | InvalidKey of InvalidKey
         | InvalidValueEntry of InvalidValue
         
-    type Configuration = ConfigEntry list // TODO: hide constructor
-
-    let getValue key configuration =
-        let entry = List.tryFind (fun i ->
-            match i with
-            | ValidEntry entry -> entry.Key = key
-            | InvalidValueEntry entry -> entry.Key = key
-            | _ -> false) configuration
-        
-        match entry with
-            | Some(ValidEntry validEntry) -> Ok(Some (validEntry.Value |> ConfigValue.value))
-            | Some(InvalidValueEntry invalidEntry) -> Error invalidEntry.Error
-            | Some _
-            | None -> Ok None
-
-    type ConfigurationFactory = StringMap -> Configuration
-    let create: ConfigurationFactory =
-        fun (stringMap:StringMap) ->
+    type Configuration = private Configuration of ConfigEntry list Option
+    
+    type ConfigurationFactory = ConfigurationSource -> Configuration
+    let create: ConfigurationFactory = function
+        | Some stringMap ->
             stringMap
             |> Map.toList
             |> List.map (fun textEntry ->
@@ -78,5 +63,26 @@ module Configuration =
                 | Error keyError, _ ->
                     InvalidKey { KeyString = fst textEntry; Error = keyError }
                 | Ok key, Error valueError ->
-                    InvalidValueEntry { Key = key; ValueString = snd textEntry; Error = valueError }
-        )
+                    InvalidValueEntry { Key = key; ValueString = snd textEntry; Error = valueError })
+            |> Some
+            |> Configuration
+        | None -> None
+                  |> Configuration
+    
+    let value (Configuration configuration) = configuration
+    
+    let getValue key (configuration: Configuration) =
+        match (value configuration) with
+        | Some configEntries ->
+            let entry = List.tryFind (fun i ->
+                match i with
+                | ValidEntry entry -> entry.Key = key
+                | InvalidValueEntry entry -> entry.Key = key
+                | _ -> false) configEntries
+            
+            match entry with
+                | Some(ValidEntry validEntry) -> Ok(Some (validEntry.Value |> ConfigValue.value))
+                | Some(InvalidValueEntry invalidEntry) -> Error invalidEntry.Error
+                | Some _
+                | None -> Ok None
+        | None -> Ok None
