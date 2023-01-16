@@ -19,17 +19,17 @@ let getConfigWorkflow: GetConfigWorkflow =
     fun requestedKey -> reader {
         let! services = Reader.ask
        
-        return result {            
+        return result {
+            let! key = ConfigKey.create requestedKey            
             let! configurationText = services.configProvider()
             
             match configurationText with
             | Some stringMap ->
                 let parsedConfiguration = Configuration.create stringMap
-                let! value = Configuration.getValue requestedKey parsedConfiguration
+                let! value = Configuration.getValue key parsedConfiguration
                 return value // TODO: why cant use return! - dig into extension code
             | None ->
-                return None
-                
+                return None  
         }     
     }
         

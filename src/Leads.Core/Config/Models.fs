@@ -48,8 +48,8 @@ module Configuration =
     let getValue key configuration =
         let entry = List.tryFind (fun i ->
             match i with
-            | ValidEntry entry -> ConfigKey.value entry.Key = key
-            | InvalidValueEntry entry -> ConfigKey.value entry.Key = key
+            | ValidEntry entry -> entry.Key = key
+            | InvalidValueEntry entry -> entry.Key = key
             | _ -> false) configuration
         
         match entry with
