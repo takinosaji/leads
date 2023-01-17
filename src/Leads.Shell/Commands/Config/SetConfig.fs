@@ -2,12 +2,29 @@
 
 open System
 open System.CommandLine
+
+open Leads.Core.Config.Workflows
+open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Core.Utilities.Dependencies
+
+open Leads.DrivenAdapters.ConfigAdapters
+
 open Leads.Shell
 open Leads.Shell.Utilities
 
-let private handler = fun k v ->
-    Console.WriteLine "set"
-
+let private printSetResult = function
+    | Ok _ -> ()
+    | Error (ErrorText error) ->
+        Console.WriteLine error
+        
+let private handler = fun keyString newValueString ->
+    reader {        
+        let! setResult = setConfigWorkflow keyString newValueString
+        setResult |> printSetResult        
+    } |> Reader.run {
+        configProvider = yamlFileConfigurationProvider
+        configApplier = yamlFileConfigurationApplier
+    }
 
 let appendSetConfigSubCommand: SubCommandAppender =
     fun cmd ->    

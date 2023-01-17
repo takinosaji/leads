@@ -3,6 +3,7 @@
 open System
 open System.CommandLine
 
+open Leads.Core.Config
 open Leads.Core.Config.Workflows
 open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Dependencies
@@ -26,6 +27,7 @@ let private handler = fun requestedKey ->
         configValue |> printValue        
     } |> Reader.run {
         configProvider = yamlFileConfigurationProvider
+        configApplier = yamlFileConfigurationApplier
     }
     
 let appendGetConfigSubCommand: SubCommandAppender =
@@ -33,6 +35,7 @@ let appendGetConfigSubCommand: SubCommandAppender =
         let getConfigSubCommand = Command("get", "The get command retrieves the specific configuration value by key")   
 
         let keyArg = createArgument<string> "key" "Config Key"
+        keyArg.AddCompletions(fun _ -> ConfigKey.AllowedConfigKeys |> Seq.ofList) |> ignore
         
         getConfigSubCommand.AddArgument keyArg
                   

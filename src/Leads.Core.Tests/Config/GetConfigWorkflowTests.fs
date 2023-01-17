@@ -1,4 +1,4 @@
-﻿module Leads.Core.Tests.Config.WorkflowTests
+﻿module Leads.Core.Tests.Config.GetConfigWorkflowTests
 
 open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Dependencies
@@ -11,6 +11,8 @@ let private fullConfiguration =
                 Map.empty
                     .Add("working.dir", "path")
                     .Add("default.stream", "defaultStream")
+                    
+let stubConfigApplier _ _: Result<unit, ErrorText> = Ok () 
   
 let private emptyConfiguration = Map.empty
                         
@@ -25,6 +27,7 @@ let ``When requesting the existing key expect return value`` requestedKey expect
         return! getConfigWorkflow requestedKey
     } |> Reader.run {
         configProvider = stubConfigProvider
+        configApplier = stubConfigApplier
     })
     
     let (Ok(Some text)) = configValueOutput
@@ -41,6 +44,7 @@ let ``When requesting the unknown key expect error message`` () =
         return! getConfigWorkflow unknownKey
     } |> Reader.run {
         configProvider = stubConfigProvider
+        configApplier = stubConfigApplier
     })
     
     let (Error(ErrorText text)) = configValueOutput
@@ -48,16 +52,52 @@ let ``When requesting the unknown key expect error message`` () =
     
 [<Fact>]
 let ``When requesting the missing entry expect None`` () =
-    let unknownKey = "working.dir"
+    let knownKey = "working.dir"
     let stubConfigProvider: ConfigurationProvider =
         fun _ ->
             Ok(Some emptyConfiguration)
             
     let configValueOutput = (reader {        
-        return! getConfigWorkflow unknownKey
+        return! getConfigWorkflow knownKey
     } |> Reader.run {
         configProvider = stubConfigProvider
+        configApplier = stubConfigApplier
     })
     
     let (Ok value) = configValueOutput
     value |> should equal None
+    
+[<Fact>]
+let ``When requesting the known key and configuration file is missing expect None`` () =
+    let knownKey = "working.dir"
+    let stubConfigProvider: ConfigurationProvider =
+        fun _ ->
+            Ok(None)
+            
+    let configValueOutput = (reader {        
+        return! getConfigWorkflow knownKey
+    } |> Reader.run {
+        configProvider = stubConfigProvider
+        configApplier = stubConfigApplier
+    })
+    
+    let (Ok value) = configValueOutput
+    value |> should equal None
+    
+[<Fact>]
+let ``When requesting the known key and configuration provider throws expect error message`` () =
+    let knownKey = "working.dir"
+    let errorMessage = "Any error message"
+    let stubConfigProvider: ConfigurationProvider =
+        fun _ ->
+            Error(ErrorText errorMessage)
+            
+    let configValueOutput = (reader {        
+        return! getConfigWorkflow knownKey
+    } |> Reader.run {
+        configProvider = stubConfigProvider
+        configApplier = stubConfigApplier
+    })
+    
+    let (Error(ErrorText text)) = configValueOutput
+    text |> should equal errorMessage

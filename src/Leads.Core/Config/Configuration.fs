@@ -1,53 +1,32 @@
-﻿module Leads.Core.Config.Models
+﻿namespace Leads.Core.Config
 
 open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Core.Config
 
 type ConfigurationSource = Map<string, string> Option
 
-module ConfigKey =
-    type ConfigKey = private ConfigKey of key:string
-    
-    let private allowedConfigKeys = [
-        "default.stream";
-        "working.dir"
-    ]
-    
-    let create (keyString:string) =
-        createPredefinedString (nameof(ConfigKey)) ConfigKey (keyString.ToLower()) allowedConfigKeys           
-    let value (ConfigKey key) = key    
+type ValidEntry = {
+    Key: ConfigKey
+    Value: ConfigValue
+}
 
-module ConfigValue =
-    type ConfigValue = private ConfigValue of value:string
-    
-    let create (valueString:string) =
-        createLimitedString (nameof(ConfigValue)) ConfigValue 50 valueString           
-    let value (ConfigValue value) = value   
+type InvalidKey = {
+    KeyString: string
+    Error: ErrorText
+}
 
+type InvalidValue = {
+    Key: ConfigKey
+    ValueString: string
+    Error: ErrorText
+}
 
-module Configuration =
-    type ValidEntry = {
-        Key: ConfigKey.ConfigKey
-        Value: ConfigValue.ConfigValue
-    }
-
-    type InvalidKey = {
-        KeyString: string
-        Error: ErrorText
-    }
-
-    type InvalidValue = {
-        Key: ConfigKey.ConfigKey
-        ValueString: string
-        Error: ErrorText
-    }
-
-    type ConfigEntry =
-        | ValidEntry of ValidEntry
-        | InvalidKey of InvalidKey
-        | InvalidValueEntry of InvalidValue
-        
-    type Configuration = private Configuration of ConfigEntry list Option
-    
+type ConfigEntry =
+    | ValidEntry of ValidEntry
+    | InvalidKey of InvalidKey
+    | InvalidValueEntry of InvalidValue
+type Configuration = private Configuration of ConfigEntry list Option
+module Configuration =           
     type ConfigurationFactory = ConfigurationSource -> Configuration
     let create: ConfigurationFactory = function
         | Some stringMap ->

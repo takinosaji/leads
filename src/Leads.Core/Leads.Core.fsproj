@@ -10,7 +10,9 @@
         <Compile Include="Utilities\ConstrainedTypes.fs" />
         <Compile Include="Utilities\Reader.fs" />
         <Compile Include="Models.fs" />
-        <Compile Include="Config\Models.fs" />
+        <Compile Include="Config\ConfigKey.fs" />
+        <Compile Include="Config\ConfigValue.fs" />
+        <Compile Include="Config\Configuration.fs" />
         <Compile Include="Config\Workflows.fs" />
         <Compile Include="Streams.fs" />
         <Compile Include="Trails.fs" />
