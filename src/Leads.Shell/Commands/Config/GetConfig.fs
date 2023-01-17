@@ -4,6 +4,7 @@ open System
 open System.CommandLine
 
 open Leads.Core.Config.Workflows
+open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Dependencies
 
 open Leads.DrivenAdapters.ConfigAdapters
@@ -11,12 +12,14 @@ open Leads.DrivenAdapters.ConfigAdapters
 open Leads.Shell
 open Leads.Shell.Utilities
 
-let private printValue configValue = function
-    | Some value ->
-        Console.WriteLine("byska")
-    | None ->
-        Console.WriteLine("byska")
-
+let private printValue = function
+    | Ok (Some (value:string)) ->
+        Console.WriteLine(value)
+    | Ok None ->
+        Console.WriteLine("The config value is not set")
+    | Error (ErrorText error) ->
+        Console.WriteLine error
+        
 let private handler = fun requestedKey ->
     reader {        
         let! configValue = getConfigWorkflow requestedKey

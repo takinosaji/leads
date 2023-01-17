@@ -12,8 +12,9 @@ type ConfigEnvironment = {
 
 type SetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<unit, ErrorText>>
 
-type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<Option<string>, ErrorText>>
-let getConfigWorkflow: GetConfigWorkflow =
+type ConfigValueOutput = Result<Option<string>, ErrorText>
+type GetConfigWorkflow = string -> Reader<ConfigEnvironment, ConfigValueOutput>
+let getConfigWorkflow: GetConfigWorkflow = 
     fun requestedKey -> reader {
         let! services = Reader.ask
        
