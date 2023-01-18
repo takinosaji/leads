@@ -26,8 +26,8 @@ let ``When requesting the existing key expect return value`` requestedKey expect
     let configValueOutput = (reader {        
         return! getConfigWorkflow requestedKey
     } |> Reader.run {
-        configProvider = stubConfigProvider
-        configApplier = stubConfigApplier
+        provideConfig = stubConfigProvider
+        applyConfigValue = stubConfigApplier
     })
     
     let (Ok(Some text)) = configValueOutput
@@ -43,8 +43,8 @@ let ``When requesting the unknown key expect error message`` () =
     let configValueOutput = (reader {        
         return! getConfigWorkflow unknownKey
     } |> Reader.run {
-        configProvider = stubConfigProvider
-        configApplier = stubConfigApplier
+        provideConfig = stubConfigProvider
+        applyConfigValue = stubConfigApplier
     })
     
     let (Error(ErrorText text)) = configValueOutput
@@ -60,8 +60,8 @@ let ``When requesting the missing entry expect None`` () =
     let configValueOutput = (reader {        
         return! getConfigWorkflow knownKey
     } |> Reader.run {
-        configProvider = stubConfigProvider
-        configApplier = stubConfigApplier
+        provideConfig = stubConfigProvider
+        applyConfigValue = stubConfigApplier
     })
     
     let (Ok value) = configValueOutput
@@ -77,8 +77,8 @@ let ``When requesting the known key and configuration file is missing expect Non
     let configValueOutput = (reader {        
         return! getConfigWorkflow knownKey
     } |> Reader.run {
-        configProvider = stubConfigProvider
-        configApplier = stubConfigApplier
+        provideConfig = stubConfigProvider
+        applyConfigValue = stubConfigApplier
     })
     
     let (Ok value) = configValueOutput
@@ -95,8 +95,8 @@ let ``When requesting the known key and configuration provider throws expect err
     let configValueOutput = (reader {        
         return! getConfigWorkflow knownKey
     } |> Reader.run {
-        configProvider = stubConfigProvider
-        configApplier = stubConfigApplier
+        provideConfig = stubConfigProvider
+        applyConfigValue = stubConfigApplier
     })
     
     let (Error(ErrorText text)) = configValueOutput

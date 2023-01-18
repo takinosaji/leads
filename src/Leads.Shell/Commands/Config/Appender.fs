@@ -5,6 +5,7 @@ open Leads.Shell
 
 open Leads.Shell.Commands.Config.Get
 open Leads.Shell.Commands.Config.Set
+open Leads.Shell.Commands.Config.List
 
 let appendConfigCommands: RootCommandAppender =
     fun cmd ->
@@ -14,6 +15,7 @@ let appendConfigCommands: RootCommandAppender =
         configCommand
             |> appendGetConfigSubCommand
             |> appendSetConfigSubCommand
+            |> appendListConfigSubCommand
             |> cmd.AddCommand
         
         cmd

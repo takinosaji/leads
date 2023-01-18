@@ -3,7 +3,12 @@
 open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Config
 
-type ConfigurationSource = Map<string, string> Option
+type ConfigInputDto = Map<string, string> Option
+type ConfigEntryDto =
+    | ValidEntry of {| Key: string; Value: string |}
+    | InvalidKey of {| Key: string; Error: string |}
+    | InvalidValue of {| Key: string; Value: string; Error: string |}
+type ConfigOutputDto = ConfigEntryDto list
 
 type ValidEntry = {
     Key: ConfigKey
@@ -24,10 +29,10 @@ type InvalidValue = {
 type ConfigEntry =
     | ValidEntry of ValidEntry
     | InvalidKey of InvalidKey
-    | InvalidValueEntry of InvalidValue
+    | InvalidValue of InvalidValue
 type Configuration = private Configuration of ConfigEntry list Option
 module Configuration =           
-    type ConfigurationFactory = ConfigurationSource -> Configuration
+    type ConfigurationFactory = ConfigInputDto -> Configuration
     let create: ConfigurationFactory = function
         | Some stringMap ->
             stringMap
@@ -42,7 +47,7 @@ module Configuration =
                 | Error keyError, _ ->
                     InvalidKey { KeyString = fst textEntry; Error = keyError }
                 | Ok key, Error valueError ->
-                    InvalidValueEntry { Key = key; ValueString = snd textEntry; Error = valueError })
+                    InvalidValue { Key = key; ValueString = snd textEntry; Error = valueError })
             |> Some
             |> Configuration
         | None -> None
@@ -56,12 +61,15 @@ module Configuration =
             let entry = List.tryFind (fun i ->
                 match i with
                 | ValidEntry entry -> entry.Key = key
-                | InvalidValueEntry entry -> entry.Key = key
+                | InvalidValue entry -> entry.Key = key
                 | _ -> false) configEntries
             
             match entry with
                 | Some(ValidEntry validEntry) -> Ok(Some (validEntry.Value |> ConfigValue.value))
-                | Some(InvalidValueEntry invalidEntry) -> Error invalidEntry.Error
+                | Some(InvalidValue invalidEntry) -> Error invalidEntry.Error
                 | Some _
                 | None -> Ok None
         | None -> Ok None
+        
+    let toOutputDto (configuration: Configuration) :Result<ConfigOutputDto, ErrorText> =
+        

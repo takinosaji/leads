@@ -22,8 +22,8 @@ let private handler = fun keyString newValueString ->
         let! setResult = setConfigWorkflow keyString newValueString
         setResult |> printSetResult        
     } |> Reader.run {
-        configProvider = yamlFileConfigurationProvider
-        configApplier = yamlFileConfigurationApplier
+        provideConfig = provideJsonFileConfiguration
+        applyConfigValue = applyJsonFileConfiguration
     }
 
 let appendSetConfigSubCommand: SubCommandAppender =

@@ -12,6 +12,7 @@
       <Compile Include="Utilities.fs" />
       <Compile Include="Commands\Config\GetConfig.fs" />
       <Compile Include="Commands\Config\SetConfig.fs" />
+      <Compile Include="Commands\Config\ListConfig.fs" />
       <Compile Include="Commands\Config\Appender.fs" />
       <Compile Include="Program.fs" />
     </ItemGroup>
