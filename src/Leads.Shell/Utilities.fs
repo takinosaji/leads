@@ -1,5 +1,6 @@
 ﻿module Leads.Shell.Utilities
 
+open System
 open System.CommandLine
 
 
@@ -28,4 +29,8 @@ let addArgument<'a> (name:string) description (cmd:Command) =
     
     cmd
    
-   
+
+let writeColoredLine color (text:string) =
+    Console.ForegroundColor <- color
+    Console.WriteLine text
+    Console.ResetColor()

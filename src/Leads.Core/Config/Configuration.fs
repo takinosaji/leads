@@ -4,11 +4,12 @@ open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Config
 
 type ConfigInputDto = Map<string, string> Option
+
 type ConfigEntryDto =
-    | ValidEntry of {| Key: string; Value: string |}
-    | InvalidKey of {| Key: string; Error: string |}
-    | InvalidValue of {| Key: string; Value: string; Error: string |}
-type ConfigOutputDto = ConfigEntryDto list
+    | ValidEntryDto of {| Key: string; Value: string |}
+    | InvalidKeyDto of {| Key: string; Error: string |}
+    | InvalidValueDto of {| Key: string; Value: string; Error: string |}
+type ConfigOutputDto = ConfigEntryDto list option
 
 type ValidEntry = {
     Key: ConfigKey
@@ -30,7 +31,9 @@ type ConfigEntry =
     | ValidEntry of ValidEntry
     | InvalidKey of InvalidKey
     | InvalidValue of InvalidValue
-type Configuration = private Configuration of ConfigEntry list Option
+    
+type Configuration = private Configuration of ConfigEntry list option
+
 module Configuration =           
     type ConfigurationFactory = ConfigInputDto -> Configuration
     let create: ConfigurationFactory = function
@@ -71,5 +74,22 @@ module Configuration =
                 | None -> Ok None
         | None -> Ok None
         
-    let toOutputDto (configuration: Configuration) :Result<ConfigOutputDto, ErrorText> =
-        
+    let toOutputDto (configuration: Configuration) :ConfigOutputDto =        
+        match value configuration with
+        | Some configEntries ->
+            configEntries
+            |> List.map (function
+                | ValidEntry ve ->
+                    let key = ConfigKey.value ve.Key
+                    let value = ConfigValue.value ve.Value
+                    ValidEntryDto {| Key = key; Value = value |}
+                | InvalidKey ik ->
+                    let (ErrorText errorText) = ik.Error
+                    InvalidKeyDto {| Key = ik.KeyString; Error = errorText |}
+                | InvalidValue iv ->
+                    let key = ConfigKey.value iv.Key
+                    let (ErrorText errorText) = iv.Error
+                    InvalidValueDto {| Key = key; Value = iv.ValueString; Error = errorText |}
+                )
+            |> Some
+        | None -> None

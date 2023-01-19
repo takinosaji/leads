@@ -47,8 +47,8 @@ let ``When requesting the unknown key expect error message`` () =
         applyConfigValue = stubConfigApplier
     })
     
-    let (Error(ErrorText text)) = configValueOutput
-    text |> should equal "ConfigKey's value must be in range of allowed values"
+    let (Error errorText) = configValueOutput
+    errorText |> should equal "ConfigKey's value must be in range of allowed values"
     
 [<Fact>]
 let ``When requesting the missing entry expect None`` () =
@@ -99,5 +99,5 @@ let ``When requesting the known key and configuration provider throws expect err
         applyConfigValue = stubConfigApplier
     })
     
-    let (Error(ErrorText text)) = configValueOutput
-    text |> should equal errorMessage
+    let (Error errorText) = configValueOutput
+    errorText |> should equal errorMessage

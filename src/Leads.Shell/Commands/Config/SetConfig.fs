@@ -14,8 +14,8 @@ open Leads.Shell.Utilities
 
 let private printSetResult = function
     | Ok _ -> ()
-    | Error (ErrorText error) ->
-        Console.WriteLine error
+    | Error (errorText:string) ->
+        Console.WriteLine errorText
         
 let private handler = fun keyString newValueString ->
     reader {        

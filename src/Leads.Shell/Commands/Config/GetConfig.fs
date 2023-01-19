@@ -18,8 +18,8 @@ let private printValue = function
         Console.WriteLine(value)
     | Ok None ->
         Console.WriteLine("The config value is not set")
-    | Error (ErrorText error) ->
-        Console.WriteLine error
+    | Error (errorText:string) ->
+        Console.WriteLine errorText
         
 let private handler = fun requestedKey ->
     reader {        

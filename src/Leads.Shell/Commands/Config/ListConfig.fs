@@ -5,7 +5,6 @@ open System.CommandLine
 
 open Leads.Core.Config
 open Leads.Core.Config.Workflows
-open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Dependencies
 
 open Leads.DrivenAdapters.ConfigAdapters
@@ -13,22 +12,39 @@ open Leads.DrivenAdapters.ConfigAdapters
 open Leads.Shell
 open Leads.Shell.Utilities
 
-let private printConfiguration (configuration: ConfigOutput) =
-    match configuration with
-    | Some  ->
-        let validEntries = List.filter (fun li -> match li with | ValidEntry _-> true) configuration
-        let invalidValues = List.filter (fun li -> match li with | InvalidValue _-> true) configuration
-        let invalidKeys = List.filter (fun li -> match li with | InvalidKey _-> true) configuration
+let private printConfiguration (configurationDto: ConfigOutputDto) =
+    match configurationDto with
+    | Some configuration ->       
+        let validItemsToPrint = List.choose (fun li -> match li with  | ValidEntryDto dto -> Some $"{dto.Key} = {dto.Value}" | _ -> None ) configuration
+        match validItemsToPrint with
+        | [_] ->
+            List.iter (fun (li:string) -> Console.WriteLine li) validItemsToPrint
+        | [] -> ()
         
-        List.iter (fun li ->
-            let printItem = $"{li.Key} = {li.Value} 
-            Console.WriteLine li) validEntries
+        let validValuesToPrint = List.choose (fun li -> match li with | InvalidValueDto dto -> Some $"{dto.Key} = {dto.Value} | Error: ${dto.Error}" | _ -> None) configuration
+        match validValuesToPrint with
+        | [_] ->
+            "Invalid values" |> writeColoredLine ConsoleColor.Red
+            List.iter (fun (li:string) -> Console.WriteLine li) validValuesToPrint
+        | [] -> ()
+        
+        let invalidValuesToPrint = List.choose (fun li -> match li with | InvalidKeyDto dto -> Some $"{dto.Key} | {dto.Error}" | _ -> None) configuration
+        match invalidValuesToPrint with
+        | [_] ->
+            "Invalid keys" |> writeColoredLine ConsoleColor.Red
+            List.iter (fun (li:string) -> Console.WriteLine li) invalidValuesToPrint
+        | [] -> ()
     | None -> ()
         
 let private handler = fun (_:unit) ->
     reader {        
-        let! configuration = listConfigWorkflow()
-        configuration |> printConfiguration      
+        let! configurationResult = listConfigWorkflow()
+        
+        match configurationResult with
+        | Ok configuration ->
+            configuration |> printConfiguration
+        | Error errorText ->
+            errorText |> writeColoredLine ConsoleColor.Red
     } |> Reader.run {
         provideConfig = provideJsonFileConfiguration
         applyConfigValue = applyJsonFileConfiguration

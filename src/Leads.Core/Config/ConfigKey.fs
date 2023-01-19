@@ -11,6 +11,6 @@ module ConfigKey =
     
     let create (keyString:string) =
         createPredefinedString (nameof(ConfigKey)) ConfigKey (keyString.ToLower()) AllowedConfigKeys           
-    let value (ConfigKey key) = key    
+    let value (ConfigKey key) = key
 
 

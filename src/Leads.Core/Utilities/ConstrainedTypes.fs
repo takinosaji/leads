@@ -3,6 +3,10 @@
 open System
 
 type ErrorText = ErrorText of string
+let errorTextToString errorText =
+    let (ErrorText text) = errorText
+    text
+            
 
 let createNotEmptyString fieldName ctor str = 
     if String.IsNullOrEmpty(str) then

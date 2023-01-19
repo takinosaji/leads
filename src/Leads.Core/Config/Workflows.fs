@@ -14,7 +14,7 @@ type ConfigEnvironment = {
 }
 
 type ConfigValueOutputDto = Option<string>
-type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<ConfigValueOutputDto, ErrorText>>
+type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<ConfigValueOutputDto, string>>
 let getConfigWorkflow: GetConfigWorkflow = 
     fun requestedKey -> reader {
         let! services = Reader.ask
@@ -27,11 +27,11 @@ let getConfigWorkflow: GetConfigWorkflow =
                          |> Configuration.create
                          |> Configuration.getValue key    
             return value // TODO: why cant use return! - dig into extension code
-        }     
+        } |> Result.mapError errorTextToString     
     }
 
 // TODO: Write unit tests
-type SetConfigWorkflow = string -> string -> Reader<ConfigEnvironment, Result<unit, ErrorText>>
+type SetConfigWorkflow = string -> string -> Reader<ConfigEnvironment, Result<unit, string>>
 let setConfigWorkflow: SetConfigWorkflow =
     fun keyToUpdateString newValueString -> reader {
         let! services = Reader.ask
@@ -42,18 +42,19 @@ let setConfigWorkflow: SetConfigWorkflow =
             let! updateResult = services.applyConfigValue key value
             
             return updateResult
-        }
+        } |> Result.mapError errorTextToString
     }
     
 // TODO: Write unit tests
-type ListConfigWorkflow = unit -> Reader<ConfigEnvironment, ConfigOutputDto>
+type ListConfigWorkflow = unit -> Reader<ConfigEnvironment, Result<ConfigOutputDto, string>>
 let listConfigWorkflow: ListConfigWorkflow = 
-    fun _ -> reader {
+    fun () -> reader {
         let! services = Reader.ask
        
         return result {     
             let! unvalidatedConfiguration = services.provideConfig()
-            let configuration = unvalidatedConfiguration |> Configuration.create
-            let configOutput = configuration
-        }     
+            return unvalidatedConfiguration
+                |> Configuration.create
+                |> Configuration.toOutputDto            
+        } |> Result.mapError errorTextToString     
     }
