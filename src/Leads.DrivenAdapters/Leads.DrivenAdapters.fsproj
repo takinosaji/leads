@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <Compile Include="ConfigAdapters.fs" />
-        <Compile Include="PersistenceAdapters.fs" />
+        <Compile Include="StreamAdapters.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -14,7 +14,20 @@ The Hexagonal Architecture is preferable due to the least range of restriction a
 ### Leads.Shell
 Is the first adapter created for the Leads application. The idea is to distribute it as self-sufficient Docker container ready to use from the shells in different OS.
 
-## Leads.Core
+### Leads.Core
 The core part of the application which contains:
 - Domain Models and Services
 - Primary and Secondary Ports
+
+## Domain
+### Core Concepts
+
+#### Stream
+
+#### Trail
+
+#### Lead
+
+#### Tag
+
+#### Config
