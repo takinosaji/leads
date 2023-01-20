@@ -14,9 +14,15 @@
         <Compile Include="Config\ConfigValue.fs" />
         <Compile Include="Config\Configuration.fs" />
         <Compile Include="Config\Workflows.fs" />
-        <Compile Include="Streams.fs" />
         <Compile Include="Trails.fs" />
         <Compile Include="Leads.fs" />
+        <Compile Include="Streams\StreamName.fs" />
+        <Compile Include="Streams\Stream.fs" />
+        <Compile Include="Streams\Workflows.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ default.stream
 working.dir
 
 leads config set config-name config-value
-leags config get config-name
+leads config get config-name
 
 leads add stream [name]
 leads add trail [theme-text] --stream [stream-hash exact match or stream-name LIKE]
@@ -23,7 +23,7 @@ leads copy trail [trail-hash exact match or trail-theme LIKE] --source-stream [s
 leads describe stream
 leads describe trail
 leads describe lead hash exact match OR text LIKE
-leads describe tags --tags tag-or-tags --latest # THis commang gets leads marked with specific tags sorted chronologically. Each item is lead with reference to trail, date time etc
+leads describe tags --tags tag-or-tags --latest # THis command gets leads marked with specific tags sorted chronologically. Each item is lead with reference to trail, date time etc
 
 leads list streams
 leads list trails [--stream]

@@ -2,13 +2,15 @@
 
 open System
 
-//open ConstrainedTypes
+open Leads.Core.Utilities.ConstrainedTypes
 
-// module Tag =
-//     type Tag = private Tag of string 
-//     let create tag =
-//         createLimitedString ("Tag") Tag 5 tag           
-//     let value (Tag name) = name    
+module Hash =
+    type Hash = private Hash of string 
+    let create hash =
+     createLimitedString (nameof(Hash)) Hash 10 hash           
+    let value (Hash hash) = hash    
+
+
 
  
 
@@ -45,12 +47,3 @@ type Trail =
     | CompletedTrail of TrailData
     | ArchivedTrail of TrailData
 
-type StreamData = {
-        Name: String  
-        CreationDateTime: DateTime
-        Trails: Trail list
-    }
-type Stream =
-    | ActiveStream of StreamData
-    | CompletedStream of StreamData
-    | ArchivedStream of StreamData

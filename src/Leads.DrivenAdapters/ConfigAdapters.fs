@@ -36,9 +36,11 @@ let applyJsonFileConfiguration: ConfigurationValueApplier =
         let newConfigSource = provideJsonFileConfiguration()
         match newConfigSource with        
         | Ok someSource ->   
-            let source = match someSource with
+            let source =
+                match someSource with
                 | None -> Map.empty.Add(keyString, valueString)
-                | Some source -> match source.ContainsKey keyString with
+                | Some source ->
+                    match source.ContainsKey keyString with
                     | true -> source.Change(keyString, (fun _ -> Some valueString))
                     | false -> source.Add(keyString, valueString)
             try   
