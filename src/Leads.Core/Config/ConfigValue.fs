@@ -2,6 +2,8 @@
 
 open Leads.Core.Utilities.ConstrainedTypes
 
+type ConfigValueOutputDto = Option<string>
+
 type ConfigValue = private ConfigValue of value:string
 
 module ConfigValue =

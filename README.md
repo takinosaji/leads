@@ -22,7 +22,7 @@ The core part of the application which contains:
 ## Domain
 ### Core Concepts
 
-#### Stream
+#### Forest
 
 #### Trail
 

@@ -13,7 +13,6 @@ type ConfigEnvironment = {
     applyConfigValue: ConfigurationValueApplier
 }
 
-type ConfigValueOutputDto = Option<string>
 type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<ConfigValueOutputDto, string>>
 let getConfigWorkflow: GetConfigWorkflow = 
     fun requestedKey -> reader {

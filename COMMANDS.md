@@ -5,6 +5,8 @@ working.dir
 leads config set config-name config-value
 leads config get config-name
 
+leads stream list --status
+
 leads add stream [name]
 leads add trail [theme-text] --stream [stream-hash exact match or stream-name LIKE]
 leads add lead [text] --trail [trail-hash exact match or trail-theme LIKE] --tags [tags] --new
@@ -25,7 +27,7 @@ leads describe trail
 leads describe lead hash exact match OR text LIKE
 leads describe tags --tags tag-or-tags --latest # THis command gets leads marked with specific tags sorted chronologically. Each item is lead with reference to trail, date time etc
 
-leads list streams
+
 leads list trails [--stream]
 
 leads list leads trail-hash exact match OR THEME LIKE

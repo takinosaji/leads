@@ -16,9 +16,9 @@
         <Compile Include="Config\Workflows.fs" />
         <Compile Include="Trails.fs" />
         <Compile Include="Leads.fs" />
-        <Compile Include="Streams\StreamName.fs" />
-        <Compile Include="Streams\Stream.fs" />
-        <Compile Include="Streams\Workflows.fs" />
+        <Compile Include="Forests\ForestName.fs" />
+        <Compile Include="Forests\Forest.fs" />
+        <Compile Include="Forests\Workflows.fs" />
     </ItemGroup>
 
     <ItemGroup>

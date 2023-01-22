@@ -3,10 +3,22 @@
 open System
 open System.CommandLine
 
+let createCommand name description =
+    let command = Command(name, description)
+    command.AddAlias($"-{name[0]}")   
+    
+    command
 
 let createOption<'a> (name:string) description isRequired =
     let option = Option<'a>($"--{name}", description)
     option.AddAlias($"-{name[0]}")        
+    option.IsRequired <- isRequired
+    
+    option
+    
+let createOptionWithAlias<'a> (name:string) alias description isRequired =
+    let option = Option<'a>($"--{name}", description)
+    option.AddAlias($"-{alias}")        
     option.IsRequired <- isRequired
     
     option

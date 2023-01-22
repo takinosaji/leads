@@ -50,7 +50,7 @@ let private handler = fun (_:unit) ->
         applyConfigValue = applyJsonFileConfiguration
     }
     
-let appendListConfigSubCommand: SubCommandAppender =
+let appendListForestsSubCommand: SubCommandAppender =
     fun cmd ->    
         let getConfigSubCommand = Command("list", "The get command retrieves all config keys and values")   
                   

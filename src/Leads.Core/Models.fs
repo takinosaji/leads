@@ -4,8 +4,8 @@ open System
 
 open Leads.Core.Utilities.ConstrainedTypes
 
+type Hash = private Hash of string 
 module Hash =
-    type Hash = private Hash of string 
     let create hash =
      createLimitedString (nameof(Hash)) Hash 10 hash           
     let value (Hash hash) = hash    

@@ -1,7 +1,9 @@
 ﻿module Leads.Shell.Startup
 
 open System.CommandLine
+
 open Leads.Shell.Commands.Config.Appender
+open Leads.Shell.Commands.Forest.Appender
 
 [<EntryPoint>]
 let main args =
@@ -9,6 +11,7 @@ let main args =
     
     rootCommand
         |> appendConfigCommands
+        |> appendForestCommands
         |> ignore
     
     rootCommand.Invoke(args)

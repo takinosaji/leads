@@ -10,11 +10,12 @@
     <ItemGroup>
       <Compile Include="Types.fs" />
       <Compile Include="Utilities.fs" />
-      <Compile Include="Commands\Config\GetConfig.fs" />
-      <Compile Include="Commands\Config\SetConfig.fs" />
-      <Compile Include="Commands\Config\ListConfig.fs" />
+      <Compile Include="Commands\Config\Get.fs" />
+      <Compile Include="Commands\Config\Set.fs" />
+      <Compile Include="Commands\Config\List.fs" />
       <Compile Include="Commands\Config\Appender.fs" />
-      <Folder Include="Commands\Streams" />
+      <Compile Include="Commands\Forest\List.fs" />
+      <Compile Include="Commands\Forest\Appender.fs" />
       <Compile Include="Program.fs" />
     </ItemGroup>
 
