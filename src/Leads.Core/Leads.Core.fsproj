@@ -14,11 +14,11 @@
         <Compile Include="Config\ConfigValue.fs" />
         <Compile Include="Config\Configuration.fs" />
         <Compile Include="Config\Workflows.fs" />
-        <Compile Include="Trails.fs" />
-        <Compile Include="Leads.fs" />
         <Compile Include="Forests\ForestName.fs" />
         <Compile Include="Forests\Forest.fs" />
         <Compile Include="Forests\Workflows.fs" />
+        <Compile Include="Leads.fs" />
+        <Compile Include="Trails.fs" />
     </ItemGroup>
 
     <ItemGroup>

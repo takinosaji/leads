@@ -1,2 +1,0 @@
-﻿module Leads.DrivenAdapters.PersistenceAdapters
-

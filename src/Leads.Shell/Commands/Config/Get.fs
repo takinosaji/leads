@@ -23,12 +23,9 @@ let private printValue = function
         
 let private handler = fun requestedKey ->
     reader {        
-        let! configValue = getConfigWorkflow requestedKey
+        let! configValue = getConfigValueWorkflow requestedKey
         configValue |> printValue        
-    } |> Reader.run {
-        provideConfig = provideJsonFileConfiguration
-        applyConfigValue = applyJsonFileConfiguration
-    }
+    } |> Reader.run Environment.environment
     
 let appendGetConfigSubCommand: SubCommandAppender =
     fun cmd ->    

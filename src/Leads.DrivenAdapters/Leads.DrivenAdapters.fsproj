@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <Compile Include="ConfigAdapters.fs" />
-        <Compile Include="StreamAdapters.fs" />
+        <Compile Include="ForestAdapters.fs" />
     </ItemGroup>
 
     <ItemGroup>

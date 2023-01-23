@@ -1,6 +1,5 @@
 ﻿module Leads.DrivenAdapters.ConfigAdapters
 
-open System
 open System.IO
 open FSharp.Json
 open Leads.Core.Config
@@ -8,12 +7,9 @@ open Leads.Core.Config
 open Leads.Core.Config.Workflows
 open Leads.Core.Utilities.ConstrainedTypes
 
-let filePath = $"{Environment.GetFolderPath Environment.SpecialFolder.UserProfile}/leads-config.yaml"
-
-
 // TODO: write unit tests
 let provideJsonFileConfiguration: ConfigurationProvider =
-    fun _ ->
+    fun filePath ->
     using (File.Open(filePath, FileMode.OpenOrCreate))
             (fun fileStream -> 
                 use reader = new StreamReader(fileStream)
@@ -29,11 +25,11 @@ let provideJsonFileConfiguration: ConfigurationProvider =
 
 // TODO: write unit tests
 let applyJsonFileConfiguration: ConfigurationValueApplier =
-    fun key value ->
+    fun key value filePath ->
         let keyString = ConfigKey.value key
         let valueString = ConfigValue.value value
                 
-        let newConfigSource = provideJsonFileConfiguration()
+        let newConfigSource = provideJsonFileConfiguration filePath
         match newConfigSource with        
         | Ok someSource ->   
             let source =

@@ -19,12 +19,9 @@ let private printSetResult = function
         
 let private handler = fun keyString newValueString ->
     reader {        
-        let! setResult = setConfigWorkflow keyString newValueString
+        let! setResult = setConfigValueWorkflow keyString newValueString
         setResult |> printSetResult        
-    } |> Reader.run {
-        provideConfig = provideJsonFileConfiguration
-        applyConfigValue = applyJsonFileConfiguration
-    }
+    } |> Reader.run Environment.environment
 
 let appendSetConfigSubCommand: SubCommandAppender =
     fun cmd ->    

@@ -2,6 +2,7 @@
 
 open System
 open System.CommandLine
+open System.Drawing
 
 let createCommand name description =
     let command = Command(name, description)
@@ -46,3 +47,5 @@ let writeColoredLine color (text:string) =
     Console.ForegroundColor <- color
     Console.WriteLine text
     Console.ResetColor()
+    
+let writeErrorLine = writeColoredLine ConsoleColor.Red

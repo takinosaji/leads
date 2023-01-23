@@ -7,8 +7,6 @@ open Leads.Core.Config
 open Leads.Core.Config.Workflows
 open Leads.Core.Utilities.Dependencies
 
-open Leads.DrivenAdapters.ConfigAdapters
-
 open Leads.Shell
 open Leads.Shell.Utilities
 
@@ -45,10 +43,7 @@ let private handler = fun (_:unit) ->
             configuration |> printConfiguration
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run {
-        provideConfig = provideJsonFileConfiguration
-        applyConfigValue = applyJsonFileConfiguration
-    }
+    } |> Reader.run Environment.environment
     
 let appendListForestsSubCommand: SubCommandAppender =
     fun cmd ->    

@@ -6,52 +6,66 @@ open Leads.Core.Utilities.Dependencies
 open Leads.Core.Config
 
 
-type ConfigurationProvider = unit -> Result<ConfigInputDto, ErrorText>
-type ConfigurationValueApplier = ConfigKey -> ConfigValue -> Result<unit, ErrorText>
-type ConfigEnvironment = {
+type ConfigurationProvider = string -> Result<ConfigInputDto, ErrorText>
+type ConfigurationValueApplier = ConfigKey -> ConfigValue -> string -> Result<unit, ErrorText>
+type GetConfigEnvironment = {
+    configFilePath: string
     provideConfig: ConfigurationProvider
+}
+
+type SetConfigEnvironment = {
+    configFilePath: string
     applyConfigValue: ConfigurationValueApplier
 }
 
-type GetConfigWorkflow = string -> Reader<ConfigEnvironment, Result<ConfigValueOutputDto, string>>
-let getConfigWorkflow: GetConfigWorkflow = 
+type internal GetConfigValueInternalWorkflow = string -> Reader<GetConfigEnvironment, Result<ConfigValue option, ErrorText>>
+let internal getConfigInternalWorkflow: GetConfigValueInternalWorkflow =
     fun requestedKey -> reader {
-        let! services = Reader.ask
+        let! environment = Reader.ask
        
         return result {
             let! key = ConfigKey.create requestedKey            
-            let! unvalidatedConfiguration = services.provideConfig()
+            let! unvalidatedConfiguration = environment.provideConfig environment.configFilePath
             
             let! value = unvalidatedConfiguration
                          |> Configuration.create
-                         |> Configuration.getValue key    
+                         |> Configuration.keyValue key
             return value // TODO: why cant use return! - dig into extension code
-        } |> Result.mapError errorTextToString     
+        }  
+    }
+
+type GetConfigValueWorkflow = string -> Reader<GetConfigEnvironment, Result<ConfigValueOutputDto, string>>
+let getConfigValueWorkflow: GetConfigValueWorkflow = 
+    fun requestedKey -> reader {
+        let! value = getConfigInternalWorkflow(requestedKey)
+        return value
+               |> Result.map ConfigValue.optionValue
+               |> Result.mapError errorTextToString     
     }
 
 // TODO: Write unit tests
-type SetConfigWorkflow = string -> string -> Reader<ConfigEnvironment, Result<unit, string>>
-let setConfigWorkflow: SetConfigWorkflow =
+type SetConfigValueWorkflow = string -> string -> Reader<SetConfigEnvironment, Result<unit, string>>
+let setConfigValueWorkflow: SetConfigValueWorkflow =
     fun keyToUpdateString newValueString -> reader {
         let! services = Reader.ask
        
         return result {
             let! key = ConfigKey.create keyToUpdateString
             let! value = ConfigValue.create newValueString
-            let! updateResult = services.applyConfigValue key value
+            let! updateResult = services.applyConfigValue key value services.configFilePath
             
             return updateResult
         } |> Result.mapError errorTextToString
     }
-    
+        
 // TODO: Write unit tests
-type ListConfigWorkflow = unit -> Reader<ConfigEnvironment, Result<ConfigOutputDto, string>>
+type ListConfigWorkflow = unit -> Reader<GetConfigEnvironment, Result<ConfigOutputDto, string>>
 let listConfigWorkflow: ListConfigWorkflow = 
     fun () -> reader {
         let! services = Reader.ask
        
         return result {     
-            let! unvalidatedConfiguration = services.provideConfig()
+            let! unvalidatedConfiguration = services.provideConfig services.configFilePath
             return unvalidatedConfiguration
                 |> Configuration.create
                 |> Configuration.toOutputDto            
