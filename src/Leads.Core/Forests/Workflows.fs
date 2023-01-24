@@ -30,10 +30,14 @@ let listForestsWorkflow: ListForestsWorkflow =
         let! getWorkingDirPathResult = getConfigInternalWorkflow WorkingDirKey
                                     |> Reader.withEnv toGetConfigEnvironment
         return result {
-            let! workingDirPath = getWorkingDirPathResult
+            let! workingDirPathOption = getWorkingDirPathResult
+            let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.configFilePath
             
-            let! defaultWorkingDirPath = environment.provideForests environment.defaultWorkingDirPath
+            let! unvalidatedForests = ConfigValue.value workingDirPath |> environment.provideForests
             
-          
+            let! value = unvalidatedForests
+                         |> List.map Forest.create
+                         |> List.map Forest.toOutputDto
+            return value // TODO: why cant use return! - dig into extension code
         } |> Result.mapError errorTextToString     
     }

@@ -58,7 +58,7 @@ module Configuration =
     
     let value (Configuration configuration) = configuration
     
-    let keyValue key (configuration: Configuration) =
+    let keyValue key (configuration: Configuration) = // TODO: re evaluate if result is needed here
         match (value configuration) with
         | Some configEntries ->
             let entry = List.tryFind (fun i ->
@@ -68,7 +68,7 @@ module Configuration =
                 | _ -> false) configEntries
             
             match entry with
-                | Some(ValidEntry validEntry) -> Ok(Some (validEntry.Value))
+                | Some(ValidEntry validEntry) -> Ok(Some validEntry.Value)
                 | Some(InvalidValue invalidEntry) -> Error invalidEntry.Error
                 | Some _
                 | None -> Ok None

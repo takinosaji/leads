@@ -13,5 +13,13 @@ module ConfigValue =
     
     let optionValue optionValue =
         Option.map (fun v -> value v) optionValue
+        
+    let valueOrDefaultOption valueOption defaultValue =
+        match valueOption with
+        | Some value -> value
+        | None -> ConfigValue defaultValue
+        
+        
+    
 
 
