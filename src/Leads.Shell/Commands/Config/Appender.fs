@@ -16,7 +16,7 @@ let appendConfigCommands: RootCommandAppender =
         configCommand
             |> appendGetConfigSubCommand
             |> appendSetConfigSubCommand
-            |> appendListForestsSubCommand
+            |> appendListConfigSubCommand
             |> cmd.AddCommand
         
         cmd

@@ -4,16 +4,19 @@ open System
 
 open System.CommandLine
 
-open Leads.Core.Forests.DTO
-open Leads.Core.Forests.Workflows
 open Leads.Core.Utilities.Dependencies
 
-open Leads.DrivenAdapters.ForestAdapters
+open Leads.Core.Forests.DTO
+open Leads.Core.Forests.ForestStatus.DTO
+open Leads.Core.Forests.Workflows
 
 open Leads.Shell
 open Leads.Shell.Utilities
+open Leads.Shell.Commands.Forest.Environment
 
-let private printForests (forestsDto: ForestsDto) =
+
+
+let private printForests (forestsDto: ForestsOutboundDto) =
    ()
 
 let private composeStatusDto =
@@ -37,9 +40,7 @@ let private handler =
             configuration |> printForests
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run {
-        provideForests = provideJsonFileForests
-    }
+    } |> Reader.run environment
     
 let appendListForestsSubCommand: SubCommandAppender =
     fun cmd ->        

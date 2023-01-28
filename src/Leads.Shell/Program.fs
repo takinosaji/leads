@@ -30,6 +30,6 @@ let main args =
         |> appendForestCommands
         |> ignore
     
-    ensureFolders (seq { yield environment.defaultWorkingDirPath })
+    ensureFolders (seq { yield shellEnvironment.defaultWorkingDirPath })
     
     rootCommand.Invoke(args)

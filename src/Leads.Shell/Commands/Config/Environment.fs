@@ -4,8 +4,12 @@ open Leads.Shell.Environment
 open Leads.Core.Config.Workflows
 open Leads.DrivenAdapters.ConfigAdapters
 
-let environment = {
-        configFilePath = environment.configFilePath
+let environmentGet: GetConfigEnvironment = {
+        configFilePath = shellEnvironment.configFilePath
         provideConfig = provideJsonFileConfiguration
+    }
+
+let environmentSet: SetConfigEnvironment = {
+        configFilePath = shellEnvironment.configFilePath
         applyConfigValue = applyJsonFileConfiguration
     }

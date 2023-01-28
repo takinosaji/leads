@@ -10,9 +10,12 @@ module Hash =
      createLimitedString (nameof(Hash)) Hash 10 hash           
     let value (Hash hash) = hash    
 
+let createDateTime dateTimeString =
+    try
+        Ok (DateTime.Parse dateTimeString)
+    with
+    | excp -> Error (ErrorText excp.Message)
 
-
- 
 
 type Tag = Tag of string
 
@@ -30,9 +33,7 @@ type Lead = {
         Links: Link list
     }
     
-type CompletionStatus =
-    | Finished
-    | Archived
+
    
 type Theme = Theme of string
         

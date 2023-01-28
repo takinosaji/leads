@@ -7,8 +7,8 @@ open Leads.DrivenAdapters.ConfigAdapters
 open Leads.DrivenAdapters.ForestAdapters
 
 let environment = {
-        defaultWorkingDirPath = environment.defaultWorkingDirPath
-        configFilePath = environment.configFilePath
+        defaultWorkingDirPath = shellEnvironment.defaultWorkingDirPath
+        configFilePath = shellEnvironment.configFilePath
         provideForests = provideJsonFileForests
         provideConfig = provideJsonFileConfiguration
     }

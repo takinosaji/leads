@@ -2,9 +2,11 @@
 
 open Leads.Core.Utilities.ConstrainedTypes
 
-type ConfigValueOutputDto = Option<string>
+module DTO = 
+    type OptionalConfigValueDto = Option<string>
 
 type ConfigValue = private ConfigValue of value:string
+type OptionalConfigValue = ConfigValue option
 
 module ConfigValue =
     let create (valueString:string) =

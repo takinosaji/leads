@@ -3,6 +3,7 @@
 open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Dependencies
 open Leads.Core.Config.Workflows
+open Leads.Core.Config.Services
 
 open Xunit
 open Swensen.Unquote
@@ -11,8 +12,6 @@ let private fullConfiguration =
                 Map.empty
                     .Add("working.dir", "path")
                     .Add("default.stream", "defaultStream")
-                    
-let stubConfigApplier _ _ _: Result<unit, ErrorText> = Ok () 
   
 let private emptyConfiguration = Map.empty
                         
@@ -28,7 +27,6 @@ let ``When requesting the existing key expect return value`` requestedKey expect
     } |> Reader.run {
         configFilePath = "any"
         provideConfig = stubConfigProvider
-        applyConfigValue = stubConfigApplier
     })
     
     let (Ok(Some text)) = configValueOutput
@@ -46,7 +44,6 @@ let ``When requesting the unknown key expect error message`` () =
     } |> Reader.run {
         configFilePath = "any"
         provideConfig = stubConfigProvider
-        applyConfigValue = stubConfigApplier
     })
     
     let (Error errorText) = configValueOutput
@@ -64,7 +61,6 @@ let ``When requesting the missing entry expect None`` () =
     } |> Reader.run {
         configFilePath = "any"
         provideConfig = stubConfigProvider
-        applyConfigValue = stubConfigApplier
     })
     
     let (Ok value) = configValueOutput
@@ -82,7 +78,6 @@ let ``When requesting the known key and configuration file is missing expect Non
     } |> Reader.run {
         configFilePath = "any"
         provideConfig = stubConfigProvider
-        applyConfigValue = stubConfigApplier
     })
     
     let (Ok value) = configValueOutput
@@ -101,7 +96,6 @@ let ``When requesting the known key and configuration provider throws expect err
     } |> Reader.run {
         configFilePath = "any"
         provideConfig = stubConfigProvider
-        applyConfigValue = stubConfigApplier
     })
     
     let (Error errorText) = configValueOutput

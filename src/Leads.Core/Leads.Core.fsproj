@@ -13,8 +13,10 @@
         <Compile Include="Config\ConfigKey.fs" />
         <Compile Include="Config\ConfigValue.fs" />
         <Compile Include="Config\Configuration.fs" />
+        <Compile Include="Config\Services.fs" />
         <Compile Include="Config\Workflows.fs" />
         <Compile Include="Forests\ForestName.fs" />
+        <Compile Include="Forests\ForestStatus.fs" />
         <Compile Include="Forests\Forest.fs" />
         <Compile Include="Forests\Workflows.fs" />
         <Compile Include="Leads.fs" />

@@ -3,41 +3,20 @@
 open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Result
 open Leads.Core.Utilities.Dependencies
-open Leads.Core.Config
+open Leads.Core.Config.DTO
+open Leads.Core.Config.Services
 
-
-type ConfigurationProvider = string -> Result<ConfigInputDto, ErrorText>
 type ConfigurationValueApplier = ConfigKey -> ConfigValue -> string -> Result<unit, ErrorText>
-type GetConfigEnvironment = {
-    configFilePath: string
-    provideConfig: ConfigurationProvider
-}
 
 type SetConfigEnvironment = {
     configFilePath: string
     applyConfigValue: ConfigurationValueApplier
 }
 
-type internal GetConfigValueInternalWorkflow = string -> Reader<GetConfigEnvironment, Result<ConfigValue option, ErrorText>>
-let internal getConfigInternalWorkflow: GetConfigValueInternalWorkflow =
-    fun requestedKey -> reader {
-        let! environment = Reader.ask
-       
-        return result {
-            let! key = ConfigKey.create requestedKey            
-            let! unvalidatedConfiguration = environment.provideConfig environment.configFilePath
-            
-            let! value = unvalidatedConfiguration
-                         |> Configuration.create
-                         |> Configuration.keyValue key
-            return value // TODO: why cant use return! - dig into extension code
-        }  
-    }
-
-type GetConfigValueWorkflow = string -> Reader<GetConfigEnvironment, Result<ConfigValueOutputDto, string>>
+type GetConfigValueWorkflow = string -> Reader<GetConfigEnvironment, Result<OptionalConfigValueDto, string>>
 let getConfigValueWorkflow: GetConfigValueWorkflow = 
     fun requestedKey -> reader {
-        let! value = getConfigInternalWorkflow(requestedKey)
+        let! value = getConfigValue(requestedKey)
         return value
                |> Result.map ConfigValue.optionValue
                |> Result.mapError errorTextToString     

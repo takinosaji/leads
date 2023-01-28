@@ -43,14 +43,14 @@ let private handler = fun (_:unit) ->
             configuration |> printConfiguration
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run Environment.environment
+    } |> Reader.run Environment.environmentGet
     
-let appendListForestsSubCommand: SubCommandAppender =
+let appendListConfigSubCommand: SubCommandAppender =
     fun cmd ->    
-        let getConfigSubCommand = Command("list", "The get command retrieves all config keys and values")   
+        let listConfigSubCommand = Command("list", "The get command retrieves all config keys and values")   
                   
-        getConfigSubCommand.SetHandler(handler)
+        listConfigSubCommand.SetHandler(handler)
         
-        cmd.AddCommand getConfigSubCommand
+        cmd.AddCommand listConfigSubCommand
         
         cmd      

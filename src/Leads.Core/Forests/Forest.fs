@@ -1,81 +1,89 @@
 ﻿namespace Leads.Core.Forests
 
 open System
+
+open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Core.Utilities.Result
+
+open Leads.Core.Forests.ForestStatus.DTO
+
 open Leads.Core.Models
-open ForestName
 
 module DTO =
-    type ForestDTO =
-        | ValidForestDto of {| Hash: string; Name: string; CreationDateTime: DateTime; Status: string |}
-        | InvalidForestDto of {| Serialized:string; Error:string |}
-    type ForestsDto = ForestDTO list option
-
-    [<Flags>]
-    type ForestStatusDto =
-        | All = 0
-        | Active = 1
-        | Completed = 2
-        | Archived = 4
+    type ForestInboundDto = { Hash: string; Name: string; Created: string; LastModified: string; Status: string }
+    type ForestsInboundDto = ForestInboundDto list option
+        
+    type ForestOutboundDto =
+        | ValidForestDto of {| Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string |}
+        | InvalidForestDto of {| Forest: ForestInboundDto; Error: string |}
+    
+    type ForestsOutboundDto = ForestOutboundDto list option
+    
 open DTO
 
-type ForestData = {
+type ValidForest = {
     Hash: Hash
-    Name: ForestName  
-    CreationDateTime: DateTime
+    Name: ForestName
+    Status: ForestStatus
+    Created: DateTime
+    LastModified: DateTime
 }
     
-type ValidForest =
-    | ActiveForest of ForestData
-    | CompletedForest of ForestData
-    | ArchivedForest of ForestData
-
 type InvalidForest = {
-    Serialized: string
-    Error: string
+    Forest: ForestInboundDto
+    Error: ErrorText
 }
 
 type ValidatedForest = 
     | ValidForest of ValidForest
     | InvalidForest of InvalidForest
     
-type Forest = private Forest of ValidatedForest
-    
+type Forest = private Forest of ValidatedForest    
 type Forests = Forest list option
        
 module Forest =
     let value (Forest forest) = forest
     
-    let toOutputDto (forest:Forest) :ForestDTO  =
-        let forestValue = value forest
+    let create (inboundDto:ForestInboundDto): Forest =
+        let fieldsValidationResult = result {
+            let! forestStatus = ForestStatus.create inboundDto.Status 
+            let! forestHash = Hash.create inboundDto.Hash
+            let! forestName = ForestName.create inboundDto.Name
+            let! created = createDateTime inboundDto.Created            
+            let! lastModified = createDateTime inboundDto.LastModified            
+           
+            return {
+                Hash = forestHash
+                Name = forestName
+                Status = forestStatus
+                Created = created
+                LastModified = lastModified
+            }
+        }
         
+        match fieldsValidationResult with
+        | Ok validatedFields ->
+            Forest(ValidForest validatedFields)
+        | Error errorText ->
+            Forest(InvalidForest {
+                Forest = inboundDto
+                Error = errorText
+            })
+                
+    let toOutputDto (forest:Forest) :ForestOutboundDto =
+        let forestValue = value forest
         match forestValue with
         | ValidForest validForest ->
-            match validForest with
-            | ActiveForest activeForest ->
-                ValidForestDto {|
-                   Hash = Hash.value activeForest.Hash
-                   Name = ForestName.value activeForest.Name
-                   CreationDateTime = activeForest.CreationDateTime
-                   Status = nameof(ActiveForest)
-                |}
-            | CompletedForest completedForest ->
-                ValidForestDto {|
-                   Hash = Hash.value completedForest.Hash
-                   Name = ForestName.value completedForest.Name
-                   CreationDateTime = completedForest.CreationDateTime
-                   Status = nameof(CompletedForest)
-                |}
-            | ArchivedForest archivedForest ->
-                ValidForestDto {|
-                   Hash = Hash.value archivedForest.Hash
-                   Name = ForestName.value archivedForest.Name
-                   CreationDateTime = archivedForest.CreationDateTime
-                   Status = nameof(ArchivedForest)
+            ValidForestDto {|
+                   Hash = Hash.value validForest.Hash
+                   Name = ForestName.value validForest.Name
+                   Created = validForest.Created
+                   LastModified = validForest.LastModified
+                   Status = ForestStatus.toDto validForest.Status
                 |}
         | InvalidForest invalidForest ->
             InvalidForestDto {|
-                Serialized = invalidForest.Serialized
-                Error = invalidForest.Error
+                Forest = invalidForest.Forest
+                Error = errorTextToString invalidForest.Error
             |}
-            
-        
+    

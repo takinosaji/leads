@@ -25,7 +25,7 @@ let private handler = fun requestedKey ->
     reader {        
         let! configValue = getConfigValueWorkflow requestedKey
         configValue |> printValue        
-    } |> Reader.run Environment.environment
+    } |> Reader.run Environment.environmentGet
     
 let appendGetConfigSubCommand: SubCommandAppender =
     fun cmd ->    

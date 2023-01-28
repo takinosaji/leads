@@ -2,8 +2,9 @@
 
 open System.IO
 open FSharp.Json
-open Leads.Core.Config
 
+open Leads.Core.Config
+open Leads.Core.Config.Services
 open Leads.Core.Config.Workflows
 open Leads.Core.Utilities.ConstrainedTypes
 
