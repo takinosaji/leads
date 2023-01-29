@@ -8,6 +8,7 @@
     <ItemGroup>
         <Compile Include="ConfigAdapters.fs" />
         <Compile Include="ForestAdapters.fs" />
+        <Compile Include="ConsoleAdapters.fs" />
     </ItemGroup>
 
     <ItemGroup>

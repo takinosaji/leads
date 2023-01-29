@@ -21,7 +21,7 @@ let private handler = fun keyString newValueString ->
     reader {        
         let! setResult = setConfigValueWorkflow keyString newValueString
         setResult |> printSetResult        
-    } |> Reader.run Environment.environmentSet
+    } |> Reader.run Environment.setConfigValueEnvironment
 
 let appendSetConfigSubCommand: SubCommandAppender =
     fun cmd ->    

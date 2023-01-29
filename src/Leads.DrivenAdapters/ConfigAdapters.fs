@@ -4,14 +4,12 @@ open System.IO
 open FSharp.Json
 
 open Leads.Core.Config
-open Leads.Core.Config.Services
-open Leads.Core.Config.Workflows
 open Leads.Core.Utilities.ConstrainedTypes
 
 // TODO: write unit tests
-let provideJsonFileConfiguration: ConfigurationProvider =
+let private provideJsonFileConfiguration =
     fun filePath ->
-    using (File.Open(filePath, FileMode.OpenOrCreate))
+        using (File.Open(filePath, FileMode.OpenOrCreate))
             (fun fileStream -> 
                 use reader = new StreamReader(fileStream)
                 let content = reader.ReadToEnd()
@@ -25,8 +23,8 @@ let provideJsonFileConfiguration: ConfigurationProvider =
             )
 
 // TODO: write unit tests
-let applyJsonFileConfiguration: ConfigurationValueApplier =
-    fun key value filePath ->
+let private applyJsonFileConfiguration =
+    fun filePath key value ->
         let keyString = ConfigKey.value key
         let valueString = ConfigValue.value value
                 
@@ -48,4 +46,9 @@ let applyJsonFileConfiguration: ConfigurationValueApplier =
                 Error(ErrorText excp.Message)       
         | Error errorText -> Error errorText
       
-        
+let createLocalJsonConfigFileAdapters defaultWorkingDirPath =
+    {|
+       provideJsonFileConfiguration = fun (_:unit) -> provideJsonFileConfiguration defaultWorkingDirPath
+       applyJsonFileConfiguration = fun key value -> applyJsonFileConfiguration defaultWorkingDirPath key value
+    |}
+            

@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <Compile Include="Utilities\ResultExtensions.fs" />
+        <Compile Include="Utilities\ListExtensions.fs" />
         <Compile Include="Utilities\ConstrainedTypes.fs" />
         <Compile Include="Utilities\Reader.fs" />
         <Compile Include="Models.fs" />

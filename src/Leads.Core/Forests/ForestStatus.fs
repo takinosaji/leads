@@ -18,10 +18,12 @@ module ForestStatus =
             | Completed = 2
             | Archived = 4
     
-    [<Literal>] let private ActiveForestStatus = "active"
-    [<Literal>] let private CompletedForestStatus = "completed"
-    [<Literal>] let private ArchivedForestStatus = "archived"
-    // let private AllowedStatuses = [ ActiveForestStatus; CompletedForestStatus; ArchivedForestStatus ]
+    [<Literal>]
+    let private ActiveForestStatus = "active"
+    [<Literal>]
+    let private CompletedForestStatus = "completed"
+    [<Literal>]
+    let private ArchivedForestStatus = "archived"
     
     let create (status:string) =
         match status.ToLower() with
@@ -34,6 +36,3 @@ module ForestStatus =
         | Active -> ActiveForestStatus
         | Completed -> CompletedForestStatus
         | Archived -> ArchivedForestStatus
-        
-        
-    // let value (ForestStatus status) = status

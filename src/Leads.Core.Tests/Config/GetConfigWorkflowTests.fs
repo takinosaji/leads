@@ -11,13 +11,13 @@ open Swensen.Unquote
 let private fullConfiguration =
                 Map.empty
                     .Add("working.dir", "path")
-                    .Add("default.stream", "defaultStream")
+                    .Add("default.forest", "defaultForest")
   
 let private emptyConfiguration = Map.empty
                         
 [<Theory>]
 [<InlineData("working.dir", "path")>]
-[<InlineData("default.stream", "defaultStream")>]
+[<InlineData("default.forest", "defaultForest")>]
 let ``When requesting the existing key expect return value`` requestedKey expectedValue =
     let stubConfigProvider: ConfigurationProvider =
         fun _ ->
@@ -25,7 +25,6 @@ let ``When requesting the existing key expect return value`` requestedKey expect
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow requestedKey
     } |> Reader.run {
-        configFilePath = "any"
         provideConfig = stubConfigProvider
     })
     
@@ -42,7 +41,6 @@ let ``When requesting the unknown key expect error message`` () =
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow unknownKey
     } |> Reader.run {
-        configFilePath = "any"
         provideConfig = stubConfigProvider
     })
     
@@ -59,7 +57,6 @@ let ``When requesting the missing entry expect None`` () =
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow knownKey
     } |> Reader.run {
-        configFilePath = "any"
         provideConfig = stubConfigProvider
     })
     
@@ -76,7 +73,6 @@ let ``When requesting the known key and configuration file is missing expect Non
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow knownKey
     } |> Reader.run {
-        configFilePath = "any"
         provideConfig = stubConfigProvider
     })
     
@@ -94,7 +90,6 @@ let ``When requesting the known key and configuration provider throws expect err
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow knownKey
     } |> Reader.run {
-        configFilePath = "any"
         provideConfig = stubConfigProvider
     })
     

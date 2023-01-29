@@ -7,7 +7,6 @@ open Leads.Core.Utilities.Dependencies
 
 open Leads.Core.Config
 open Leads.Core.Config.ConfigKey
-open Leads.Core.Config.Workflows
 
 open Leads.Core.Forests.DTO
 open Leads.Core.Forests.ForestStatus.DTO
@@ -15,14 +14,12 @@ open Leads.Core.Forests.ForestStatus.DTO
 type ForestsProvider = string -> Result<ForestsInboundDto, ErrorText>
 
 type ForestEnvironment = {
-    configFilePath: string
     defaultWorkingDirPath: string
     provideConfig: ConfigurationProvider
     provideForests: ForestsProvider
 }
 
 let private toGetConfigEnvironment forestEnvironment = {
-    configFilePath = forestEnvironment.configFilePath
     provideConfig =  forestEnvironment.provideConfig
 }
 
@@ -47,7 +44,7 @@ let listForestsWorkflow: ListForestsWorkflow =
                                     |> Reader.withEnv toGetConfigEnvironment
         return result {
             let! workingDirPathOption = getWorkingDirPathResult
-            let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.configFilePath
+            let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.defaultWorkingDirPath
             
             let! unvalidatedForests = ConfigValue.value workingDirPath |> environment.provideForests
             match unvalidatedForests with

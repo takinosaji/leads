@@ -22,14 +22,14 @@ let ensureFolders dirPaths =
     
 
 [<EntryPoint>]
-let main args =
+let main args =    
+    ensureFolders (seq { yield shellEnvironment.defaultWorkingDirPath })
+    
     let rootCommand = RootCommand("Ultimate productivity and task management app.")
     
     rootCommand
         |> appendConfigCommands
         |> appendForestCommands
         |> ignore
-    
-    ensureFolders (seq { yield shellEnvironment.defaultWorkingDirPath })
-    
+        
     rootCommand.Invoke(args)

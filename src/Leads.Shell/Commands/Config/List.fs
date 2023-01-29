@@ -43,7 +43,7 @@ let private handler = fun (_:unit) ->
             configuration |> printConfiguration
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run Environment.environmentGet
+    } |> Reader.run Environment.getConfigEnvironment
     
 let appendListConfigSubCommand: SubCommandAppender =
     fun cmd ->    

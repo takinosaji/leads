@@ -1,15 +1,19 @@
 ﻿module Leads.Shell.Commands.Config.Environment
 
-open Leads.Shell.Environment
+open Leads.Core.Config.Services
 open Leads.Core.Config.Workflows
+
 open Leads.DrivenAdapters.ConfigAdapters
 
-let environmentGet: GetConfigEnvironment = {
-        configFilePath = shellEnvironment.configFilePath
-        provideConfig = provideJsonFileConfiguration
+open Leads.Shell.Environment
+
+let private configFilePath = $"{shellEnvironment.defaultWorkingDirPath}/config.json";
+let private configDrivenAdapters = createLocalJsonConfigFileAdapters configFilePath
+
+let getConfigEnvironment: GetConfigEnvironment = {
+        provideConfig = configDrivenAdapters.provideJsonFileConfiguration
     }
 
-let environmentSet: SetConfigEnvironment = {
-        configFilePath = shellEnvironment.configFilePath
-        applyConfigValue = applyJsonFileConfiguration
+let setConfigValueEnvironment: SetConfigEnvironment = {
+        applyConfigValue = configDrivenAdapters.applyJsonFileConfiguration
     }

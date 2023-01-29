@@ -6,10 +6,9 @@ open Leads.Core.Utilities.Dependencies
 open Leads.Core.Config.DTO
 open Leads.Core.Config.Services
 
-type ConfigurationValueApplier = ConfigKey -> ConfigValue -> string -> Result<unit, ErrorText>
+type ConfigurationValueApplier = ConfigKey -> ConfigValue -> Result<unit, ErrorText>
 
 type SetConfigEnvironment = {
-    configFilePath: string
     applyConfigValue: ConfigurationValueApplier
 }
 
@@ -31,7 +30,7 @@ let setConfigValueWorkflow: SetConfigValueWorkflow =
         return result {
             let! key = ConfigKey.create keyToUpdateString
             let! value = ConfigValue.create newValueString
-            let! updateResult = services.applyConfigValue key value services.configFilePath
+            let! updateResult = services.applyConfigValue key value
             
             return updateResult
         } |> Result.mapError errorTextToString
@@ -44,7 +43,7 @@ let listConfigWorkflow: ListConfigWorkflow =
         let! services = Reader.ask
        
         return result {     
-            let! unvalidatedConfiguration = services.provideConfig services.configFilePath
+            let! unvalidatedConfiguration = services.provideConfig()
             return unvalidatedConfiguration
                 |> Configuration.create
                 |> Configuration.toOutputDto            

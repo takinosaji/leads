@@ -3,7 +3,7 @@
 open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Config
 
-type ConfigInputDto = Map<string, string> Option
+type ConfigInboundDto = Map<string, string> Option
 
 type ConfigEntryDto =
     | ValidEntryDto of {| Key: string; Value: string |}
@@ -35,7 +35,7 @@ type ConfigEntry =
 type Configuration = private Configuration of ConfigEntry list option
 
 module Configuration =           
-    type ConfigurationFactory = ConfigInputDto -> Configuration
+    type ConfigurationFactory = ConfigInboundDto -> Configuration
     let create: ConfigurationFactory = function
         | Some stringMap ->
             stringMap

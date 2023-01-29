@@ -4,10 +4,9 @@ open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Result
 open Leads.Core.Utilities.Dependencies
 
-type ConfigurationProvider = string -> Result<ConfigInputDto, ErrorText>
+type ConfigurationProvider = unit -> Result<ConfigInboundDto, ErrorText>
 
 type GetConfigEnvironment = {
-    configFilePath: string
     provideConfig: ConfigurationProvider
 }
 
@@ -18,7 +17,7 @@ let internal getConfigValue: GetConfigValue =
        
         return result {
             let! key = ConfigKey.create requestedKey            
-            let! unvalidatedConfiguration = environment.provideConfig environment.configFilePath
+            let! unvalidatedConfiguration = environment.provideConfig()
             
             let! value = unvalidatedConfiguration
                          |> Configuration.create

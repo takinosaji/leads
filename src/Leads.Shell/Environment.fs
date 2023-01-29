@@ -4,5 +4,4 @@ open System
 
 let shellEnvironment = {|
         defaultWorkingDirPath = $"{Environment.GetFolderPath Environment.SpecialFolder.UserProfile}/.leads"
-        configFilePath = $"{Environment.GetFolderPath Environment.SpecialFolder.UserProfile}/.leads/config.yaml"
     |}
