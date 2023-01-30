@@ -4,6 +4,7 @@ open Leads.Shell
 open Leads.Shell.Utilities
 
 open Leads.Shell.Commands.Forest.List
+open Leads.Shell.Commands.Forest.Add
 
 let appendForestCommands: RootCommandAppender =
     fun cmd ->   
@@ -11,7 +12,8 @@ let appendForestCommands: RootCommandAppender =
             createCommand "forest" "The forest command allows you to manipulate with the streams"
         
         forestCommand
-            |> appendListForestsSubCommand
+            |> appendForestListSubCommand
+            |> appendForestAddSubCommand
             |> cmd.AddCommand
         
         cmd

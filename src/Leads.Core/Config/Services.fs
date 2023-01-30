@@ -4,7 +4,7 @@ open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Result
 open Leads.Core.Utilities.Dependencies
 
-type ConfigurationProvider = unit -> Result<ConfigInboundDto, ErrorText>
+type ConfigurationProvider = unit -> Result<ConfigDrivenDto, ErrorText>
 
 type GetConfigEnvironment = {
     provideConfig: ConfigurationProvider

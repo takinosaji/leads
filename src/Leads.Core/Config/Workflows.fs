@@ -37,7 +37,7 @@ let setConfigValueWorkflow: SetConfigValueWorkflow =
     }
         
 // TODO: Write unit tests
-type ListConfigWorkflow = unit -> Reader<GetConfigEnvironment, Result<ConfigOutputDto, string>>
+type ListConfigWorkflow = unit -> Reader<GetConfigEnvironment, Result<ConfigDrivingDto, string>>
 let listConfigWorkflow: ListConfigWorkflow = 
     fun () -> reader {
         let! services = Reader.ask

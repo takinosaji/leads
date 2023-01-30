@@ -30,7 +30,7 @@ let private printInvalidForest (InvalidForestDto invalidForestDto) =
     Console.WriteLine $"{nameof(invalidForestDto.Forest)}: {JSONize invalidForestDto.Forest}"
 
 let private printForests = function
-   | Some (forestDTOs: ForestOutboundDto list) ->
+   | Some (forestDTOs: ForestDrivingDto list) ->
         let validForestsToPrint = List.choose (fun li -> match li with | ValidForestDto dto -> Some (ValidForestDto dto) | _ -> None ) forestDTOs
         match validForestsToPrint with
         | [_] ->
@@ -74,19 +74,19 @@ let private handler =
             errorText |> writeColoredLine ConsoleColor.Red
     } |> Reader.run environment
     
-let appendListForestsSubCommand: SubCommandAppender =
+let appendForestListSubCommand: SubCommandAppender =
     fun cmd ->        
-        let getConfigSubCommand =
+        let listForestsSubCommand =
             createCommand "list" "The get command retrieves the existing forests"
         let allOption =
-            createOptionWithAlias<bool> "all" "A" "Show all forests if additional options are not provided" false  
+            createOptionWithAlias<bool> "all" "A" "Show all forests" false  
         let completedOption =
-            createOption<bool>  "archived" "Show only completed forests if additional options are not provided" false  
+            createOption<bool>  "completed" "Show only completed forests if additional options are not provided" false  
         let archivedOption =
             createOption<bool>  "archived" "Show only archived forests if additional options are not provided" false    
         
-        getConfigSubCommand.SetHandler(handler, allOption, completedOption, archivedOption)
+        listForestsSubCommand.SetHandler(handler, allOption, completedOption, archivedOption)
         
-        cmd.AddCommand getConfigSubCommand
+        cmd.AddCommand listForestsSubCommand
         
         cmd      

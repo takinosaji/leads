@@ -8,14 +8,14 @@ open Leads.Core.Utilities.Result
 open Leads.Core.Models
 
 module DTO =
-    type ForestInboundDto = { Hash: string; Name: string; Created: string; LastModified: string; Status: string }
-    type ForestsInboundDto = ForestInboundDto list option
+    type ForestDrivenDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
+    type ForestsDrivenDto = ForestDrivenDto list option
         
-    type ForestOutboundDto =
+    type ForestDrivingDto =
         | ValidForestDto of {| Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string |}
-        | InvalidForestDto of {| Forest: ForestInboundDto; Error: string |}
+        | InvalidForestDto of {| Forest: ForestDrivenDto; Error: string |}
     
-    type ForestsOutboundDto = ForestOutboundDto list option
+    type ForestsDrivingDto = ForestDrivingDto list option
     
 open DTO
 
@@ -28,7 +28,7 @@ type ValidForest = {
 }
     
 type InvalidForest = {
-    Forest: ForestInboundDto
+    Forest: ForestDrivenDto
     Error: ErrorText
 }
 
@@ -42,20 +42,18 @@ type Forests = Forest list option
 module Forest =
     let value (Forest forest) = forest
     
-    let create (inboundDto:ForestInboundDto): Forest =
+    let create (inboundDto:ForestDrivenDto): Forest =
         let fieldsValidationResult = result {
             let! forestStatus = ForestStatus.create inboundDto.Status 
             let! forestHash = Hash.create inboundDto.Hash
-            let! forestName = ForestName.create inboundDto.Name
-            let! created = createDateTime inboundDto.Created            
-            let! lastModified = createDateTime inboundDto.LastModified            
+            let! forestName = ForestName.create inboundDto.Name          
            
             return {
                 Hash = forestHash
                 Name = forestName
                 Status = forestStatus
-                Created = created
-                LastModified = lastModified
+                Created = inboundDto.Created
+                LastModified = inboundDto.LastModified 
             }
         }
         
@@ -68,7 +66,7 @@ module Forest =
                 Error = errorText
             })
                 
-    let toOutputDto (forest:Forest) :ForestOutboundDto =
+    let toOutputDto (forest:Forest) :ForestDrivingDto =
         let forestValue = value forest
         match forestValue with
         | ValidForest validForest ->

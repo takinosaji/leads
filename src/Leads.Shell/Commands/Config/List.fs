@@ -10,7 +10,7 @@ open Leads.Core.Utilities.Dependencies
 open Leads.Shell
 open Leads.Shell.Utilities
 
-let private printConfiguration (configurationDto: ConfigOutputDto) =
+let private printConfiguration (configurationDto: ConfigDrivingDto) =
     match configurationDto with
     | Some configuration ->       
         let validItemsToPrint = List.choose (fun li -> match li with  | ValidEntryDto dto -> Some $"{dto.Key} = {dto.Value}" | _ -> None ) configuration
@@ -45,7 +45,7 @@ let private handler = fun (_:unit) ->
             errorText |> writeColoredLine ConsoleColor.Red
     } |> Reader.run Environment.getConfigEnvironment
     
-let appendListConfigSubCommand: SubCommandAppender =
+let appendConfigListSubCommand: SubCommandAppender =
     fun cmd ->    
         let listConfigSubCommand = Command("list", "The get command retrieves all config keys and values")   
                   

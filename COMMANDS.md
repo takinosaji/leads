@@ -1,34 +1,34 @@
 configs:
-default.stream
+default.forest
 working.dir
 
 leads config set config-name config-value
 leads config get config-name
 
-leads stream list --status
+leads forest list --status
 
-leads add stream [name]
-leads add trail [theme-text] --stream [stream-hash exact match or stream-name LIKE]
+leads add forest [name]
+leads add trail [theme-text] --forest [forest-hash exact match or forest-name LIKE]
 leads add lead [text] --trail [trail-hash exact match or trail-theme LIKE] --tags [tags] --new
 
 
-leads use [stream-hash exact match or stream-name LIKE]
+leads use [forest-hash exact match or forest-name LIKE]
 
-leads delete stream [stream-hash exact match or stream-name LIKE]
+leads delete forest [forest-hash exact match or forest-name LIKE]
 leads delete trail [trail-hash exact match or trail-theme LIKE]
 leads delete lead [lead-hash exact match or lead-text LIKE]
 
-leads move trail [trail-hash exact match or trail-theme LIKE] --source-stream [stream-hash exact match or stream-name LIKE] --target-stream [stream-hash exact match or stream-name LIKE]
+leads move trail [trail-hash exact match or trail-theme LIKE] --source-forest [forest-hash exact match or forest-name LIKE] --target-forest [forest-hash exact match or forest-name LIKE]
 
-leads copy trail [trail-hash exact match or trail-theme LIKE] --source-stream [stream-hash exact match or stream-name LIKE] --target-stream [stream-hash exact match or stream-name LIKE]
+leads copy trail [trail-hash exact match or trail-theme LIKE] --source-forest [forest-hash exact match or forest-name LIKE] --target-forest [forest-hash exact match or forest-name LIKE]
 
-leads describe stream
+leads describe forest
 leads describe trail
 leads describe lead hash exact match OR text LIKE
 leads describe tags --tags tag-or-tags --latest # THis command gets leads marked with specific tags sorted chronologically. Each item is lead with reference to trail, date time etc
 
 
-leads list trails [--stream]
+leads list trails [--forest]
 
 leads list leads trail-hash exact match OR THEME LIKE
 SAME AS

@@ -14,9 +14,9 @@ let appendConfigCommands: RootCommandAppender =
             createCommand "config" "The config command allows you to manipulate with utility configuration"
         
         configCommand
-            |> appendGetConfigSubCommand
-            |> appendSetConfigSubCommand
-            |> appendListConfigSubCommand
+            |> appendConfigGetSubCommand
+            |> appendConfigSetSubCommand
+            |> appendConfigListSubCommand
             |> cmd.AddCommand
         
         cmd

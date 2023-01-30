@@ -18,6 +18,7 @@
       <Compile Include="Commands\Config\Appender.fs" />
       <Compile Include="Commands\Forest\Environment.fs" />
       <Compile Include="Commands\Forest\List.fs" />
+      <Compile Include="Commands\Forest\Add.fs" />
       <Compile Include="Commands\Forest\Appender.fs" />
       <Compile Include="Program.fs" />
     </ItemGroup>

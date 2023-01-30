@@ -23,7 +23,7 @@ let private handler = fun keyString newValueString ->
         setResult |> printSetResult        
     } |> Reader.run Environment.setConfigValueEnvironment
 
-let appendSetConfigSubCommand: SubCommandAppender =
+let appendConfigSetSubCommand: SubCommandAppender =
     fun cmd ->    
         let getConfigSubCommand = Command("set", "The set command updates the specific configuration key with the value")   
 

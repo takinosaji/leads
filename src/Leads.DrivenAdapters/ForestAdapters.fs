@@ -20,7 +20,7 @@ let provideJsonFileForests: ForestsProvider =
                 | "" -> Ok None
                 | _ ->
                     try
-                        Ok(Some(Json.deserialize<ForestInboundDto list> content))
+                        Ok(Some(Json.deserialize<ForestDrivenDto list> content))
                     with excp ->
                         Error(ErrorText excp.Message)
             )

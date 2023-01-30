@@ -11,15 +11,23 @@ open Leads.Core.Config.ConfigKey
 open Leads.Core.Forests.DTO
 open Leads.Core.Forests.ForestStatus.DTO
 
-type ForestsProvider = string -> Result<ForestsInboundDto, ErrorText>
+type ForestsProvider = string -> Result<ForestsDrivenDto, ErrorText>
+type ForestAppender = Forest -> Result<unit, ErrorText>
 
-type ForestEnvironment = {
+type GetForestsEnvironment = {
     defaultWorkingDirPath: string
     provideConfig: ConfigurationProvider
     provideForests: ForestsProvider
 }
 
-let private toGetConfigEnvironment forestEnvironment = {
+type AddForestEnvironment = {
+    defaultWorkingDirPath: string
+    provideConfig: ConfigurationProvider
+    provideForests: ForestsProvider
+    addForest: ForestAppender
+}
+
+let private toGetConfigEnvironment (forestEnvironment:GetForestsEnvironment) = {
     provideConfig =  forestEnvironment.provideConfig
 }
 
@@ -36,7 +44,7 @@ let private filterByStatusPredicate forestStatusDto (forest: Forest) =
     | InvalidForest _ -> false 
 
 // TODO: Write unit tests
-type ListForestsWorkflow = ForestStatusDto -> Reader<ForestEnvironment, Result<ForestsOutboundDto, string>>
+type ListForestsWorkflow = ForestStatusDto -> Reader<GetForestsEnvironment, Result<ForestsDrivingDto, string>>
 let listForestsWorkflow: ListForestsWorkflow =
     fun statusDto -> reader {
         let! environment = Reader.ask
@@ -58,3 +66,5 @@ let listForestsWorkflow: ListForestsWorkflow =
         } |> Result.mapError errorTextToString     
     }
     
+// TODO: Write unit tests
+type AddForestWorkflow = ForestDrivingDto -> Reader<AddForestEnvironment, Result<unit, string>>

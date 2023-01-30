@@ -27,7 +27,7 @@ let private handler = fun requestedKey ->
         configValue |> printValue        
     } |> Reader.run Environment.getConfigEnvironment
     
-let appendGetConfigSubCommand: SubCommandAppender =
+let appendConfigGetSubCommand: SubCommandAppender =
     fun cmd ->    
         let getConfigSubCommand = Command("get", "The get command retrieves the specific configuration value by key")   
 
