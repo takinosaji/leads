@@ -1,24 +1,19 @@
 ﻿module Leads.Core.Forests.Workflows
 
-open Leads.Core.Config.Services
-open Leads.Core.Utilities.Result
+open System
 open Leads.Core.Utilities.ConstrainedTypes
 open Leads.Core.Utilities.Dependencies
+open Leads.Core.Utilities.Result
 
-open Leads.Core.Config
-open Leads.Core.Config.ConfigKey
+open Leads.Core.Config.Services
 
-open Leads.Core.Forests.DTO
+open Leads.Core.Forests
+open Leads.Core.Forests.Services
+open Leads.Core.Forests.ForestDTO
+open Leads.Core.Forests.ForestsDTO
 open Leads.Core.Forests.ForestStatus.DTO
 
-type ForestsProvider = string -> Result<ForestsDrivenDto, ErrorText>
 type ForestAppender = Forest -> Result<unit, ErrorText>
-
-type GetForestsEnvironment = {
-    defaultWorkingDirPath: string
-    provideConfig: ConfigurationProvider
-    provideForests: ForestsProvider
-}
 
 type AddForestEnvironment = {
     defaultWorkingDirPath: string
@@ -27,44 +22,43 @@ type AddForestEnvironment = {
     addForest: ForestAppender
 }
 
-let private toGetConfigEnvironment (forestEnvironment:GetForestsEnvironment) = {
-    provideConfig =  forestEnvironment.provideConfig
+let private toListForestsEnvironment (addForestEnvironment:AddForestEnvironment) = {
+    defaultWorkingDirPath = addForestEnvironment.defaultWorkingDirPath
+    provideConfig =  addForestEnvironment.provideConfig
+    provideForests = addForestEnvironment.provideForests
 }
 
-let private filterByStatusPredicate forestStatusDto (forest: Forest) =
-    let validatedForest = Forest.value forest
-    match validatedForest with
-    | ValidForest validForest ->
-        match forestStatusDto with
-        | ForestStatusDto.All -> true
-        | _ ->
-            ((forestStatusDto &&& ForestStatusDto.Active = ForestStatusDto.Active) && validForest.Status = ForestStatus.Active) || 
-            ((forestStatusDto &&& ForestStatusDto.Completed = ForestStatusDto.Completed) && validForest.Status = ForestStatus.Completed) || 
-            ((forestStatusDto &&& ForestStatusDto.Archived = ForestStatusDto.Archived) && validForest.Status = ForestStatus.Archived)                      
-    | InvalidForest _ -> false 
-
 // TODO: Write unit tests
-type ListForestsWorkflow = ForestStatusDto -> Reader<GetForestsEnvironment, Result<ForestsDrivingDto, string>>
+type ListForestsWorkflow = ForestStatusDto -> Reader<ListForestsEnvironment, Result<ForestsDrivingDto, string>>
 let listForestsWorkflow: ListForestsWorkflow =
     fun statusDto -> reader {
-        let! environment = Reader.ask
-        let! getWorkingDirPathResult = getConfigValue WorkingDirKey
-                                    |> Reader.withEnv toGetConfigEnvironment
-        return result {
-            let! workingDirPathOption = getWorkingDirPathResult
-            let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.defaultWorkingDirPath
-            
-            let! unvalidatedForests = ConfigValue.value workingDirPath |> environment.provideForests
-            match unvalidatedForests with
-            | Some forests ->                
-                return forests
-                        |> List.map Forest.create
-                        |> List.filter (filterByStatusPredicate statusDto)                        
-                        |> List.map Forest.toOutputDto
-                        |> Some
-            | None -> return None            
-        } |> Result.mapError errorTextToString     
+        let! listForestResult = listForests(statusDto)
+        return listForestResult
+               |> Result.map Forests.toDrivingDtoList                 
+               |> Result.mapError errorTextToString     
     }
+        
     
 // TODO: Write unit tests
-type AddForestWorkflow = ForestDrivingDto -> Reader<AddForestEnvironment, Result<unit, string>>
+type AddForestWorkflow = string -> Reader<AddForestEnvironment, Result<ValidForestDto, string>>
+let addForestWorkflow: AddForestWorkflow =
+    fun nameDto -> reader {
+        let! environment = Reader.ask
+        let! listForestResult = listForests ForestStatusDto.All
+                                    |> Reader.withEnv toListForestsEnvironment
+        
+        return result {
+            let! forests = listForestResult
+            let! name = ForestName.create nameDto
+            let! addedForest = match Forests.exists name forests with
+            | false ->
+                Forest.create 
+                environment.addForest 
+                Ok { Hash = "1111"; Name = "1111"; Created = DateTime.Now; LastModified = DateTime.Now; Status = "1111"; }
+            | true ->
+                Error (ErrorText $"Forest with the name {nameDto} already exists")
+            
+            return addedForest
+        } |> Result.mapError errorTextToString                     
+    } 
+            

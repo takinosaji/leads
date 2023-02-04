@@ -7,17 +7,17 @@ open Leads.Core.Utilities.Result
 
 open Leads.Core.Models
 
-module DTO =
+module ForestDTO =
     type ForestDrivenDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
-    type ForestsDrivenDto = ForestDrivenDto list option
+    
+    type ValidForestDto = ForestDrivenDto
+    type InvalidForestDto = { Forest: ForestDrivenDto; Error: string }
         
     type ForestDrivingDto =
-        | ValidForestDto of {| Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string |}
-        | InvalidForestDto of {| Forest: ForestDrivenDto; Error: string |}
+        | ValidForestDto of ValidForestDto
+        | InvalidForestDto of InvalidForestDto
     
-    type ForestsDrivingDto = ForestDrivingDto list option
-    
-open DTO
+open ForestDTO
 
 type ValidForest = {
     Hash: Hash
@@ -37,12 +37,11 @@ type ValidatedForest =
     | InvalidForest of InvalidForest
     
 type Forest = private Forest of ValidatedForest    
-type Forests = Forest list option
-       
+
 module Forest =
     let value (Forest forest) = forest
     
-    let create (inboundDto:ForestDrivenDto): Forest =
+    let fromDrivenDto (inboundDto:ForestDrivenDto): Forest =
         let fieldsValidationResult = result {
             let! forestStatus = ForestStatus.create inboundDto.Status 
             let! forestHash = Hash.create inboundDto.Hash
@@ -70,16 +69,15 @@ module Forest =
         let forestValue = value forest
         match forestValue with
         | ValidForest validForest ->
-            ValidForestDto {|
+            ValidForestDto {
                    Hash = Hash.value validForest.Hash
                    Name = ForestName.value validForest.Name
                    Created = validForest.Created
                    LastModified = validForest.LastModified
                    Status = ForestStatus.toDto validForest.Status
-                |}
+                }
         | InvalidForest invalidForest ->
-            InvalidForestDto {|
+            InvalidForestDto {
                 Forest = invalidForest.Forest
                 Error = errorTextToString invalidForest.Error
-            |}
-    
+            }           

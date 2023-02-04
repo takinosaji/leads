@@ -2,7 +2,8 @@
 
 open System.IO
 open FSharp.Json
-open Leads.Core.Forests.DTO
+open Leads.Core.Forests.ForestDTO
+open Leads.Core.Forests.Services
 open Leads.Core.Forests.Workflows
 open Leads.Core.Utilities.ConstrainedTypes
 
@@ -24,3 +25,7 @@ let provideJsonFileForests: ForestsProvider =
                     with excp ->
                         Error(ErrorText excp.Message)
             )
+            
+let addForestToJsonFile: ForestAppender =
+    fun _ ->
+        Ok ()
