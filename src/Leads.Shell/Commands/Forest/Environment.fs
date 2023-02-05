@@ -8,15 +8,15 @@ open Leads.DrivenAdapters.ForestAdapters
 open Leads.Shell.Environment
 open Leads.Shell.Commands.Config.Environment
 
+let private forestDrivenAdapters = createLocalJsonFileForestAdapters shellEnvironment.defaultWorkingDirPath
+
 let getForestsEnvironment: ListForestsEnvironment = {
-        defaultWorkingDirPath = shellEnvironment.defaultWorkingDirPath
-        provideForests = provideJsonFileForests
         provideConfig = getConfigEnvironment.provideConfig
+        provideForests = forestDrivenAdapters.provideJsonFileForests
     }
 
 let addForestEnvironment: AddForestEnvironment = {
-    defaultWorkingDirPath = shellEnvironment.defaultWorkingDirPath
-    provideForests = provideJsonFileForests
-    provideConfig = getConfigEnvironment.provideConfig
-    addForest = addForestToJsonFile
-} 
+    provideForests = getForestsEnvironment.provideForests
+    provideConfig = getForestsEnvironment.provideConfig
+    addForest = forestDrivenAdapters.addForest
+}

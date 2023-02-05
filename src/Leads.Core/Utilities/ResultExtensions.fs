@@ -26,7 +26,7 @@ let toOption result =
 
 type ResultBuilder() as self =
     member _.Return(x) = Ok x
-    member _.ReturnFrom(m: 'T option) = m
+    member _.ReturnFrom(m: 'T) = m
     member _.Bind(m, f) = Result.bind f m
     member _.Zero() = None
     member _.Combine(m, f) = Option.bind f m

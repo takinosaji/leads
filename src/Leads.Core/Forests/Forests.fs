@@ -26,6 +26,6 @@ module Forests =
     
     let toDrivingDtoList (forests: Forests): ForestsDrivingDto =
         match forests with
-        | Some forests -> Some (forests |> List.map Forest.toOutputDto)
+        | Some forests -> Some (forests |> List.map Forest.toDrivingDto)
         | None -> None
     

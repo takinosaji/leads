@@ -46,9 +46,9 @@ let private applyJsonFileConfiguration =
                 Error(ErrorText excp.Message)       
         | Error errorText -> Error errorText
       
-let createLocalJsonConfigFileAdapters defaultWorkingDirPath =
+let createLocalJsonFileConfigAdapters configFilePath =
     {|
-       provideJsonFileConfiguration = fun (_:unit) -> provideJsonFileConfiguration defaultWorkingDirPath
-       applyJsonFileConfiguration = fun key value -> applyJsonFileConfiguration defaultWorkingDirPath key value
+       provideJsonFileConfiguration = fun (_:unit) -> provideJsonFileConfiguration configFilePath
+       applyJsonFileConfiguration = fun key value -> applyJsonFileConfiguration configFilePath key value
     |}
             

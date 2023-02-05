@@ -2,13 +2,19 @@
 
 open System
 
+open System.Security.Cryptography
 open Leads.Core.Utilities.ConstrainedTypes
 
 type Hash = private Hash of string 
 module Hash =
     let create hash =
-     createLimitedString (nameof(Hash)) Hash 10 hash           
-    let value (Hash hash) = hash    
+        createLimitedString (nameof(Hash)) Hash 10 hash           
+    let value (Hash hash) = hash
+    
+    let newRandom() =
+        Guid.NewGuid().ToByteArray()
+        |> BitConverter.ToString
+        |> create
 
 let createDateTime dateTimeString =
     try

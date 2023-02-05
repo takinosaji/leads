@@ -11,10 +11,9 @@ open Leads.Core.Config.ConfigKey
 open Leads.Core.Forests.ForestsDTO
 open Leads.Core.Forests.ForestStatus.DTO
 
-type ForestsProvider = string -> Result<ForestsDrivenDto, ErrorText>
+type ForestsProvider = unit -> Result<ForestsDrivenDto, ErrorText>
 
 type ListForestsEnvironment = {
-    defaultWorkingDirPath: string
     provideConfig: ConfigurationProvider
     provideForests: ForestsProvider
 }

@@ -13,17 +13,15 @@ open Leads.Core.Forests.ForestDTO
 open Leads.Core.Forests.ForestsDTO
 open Leads.Core.Forests.ForestStatus.DTO
 
-type ForestAppender = Forest -> Result<unit, ErrorText>
+type ForestAppender = ValidForest -> Result<ForestDrivenDto, ErrorText>
 
 type AddForestEnvironment = {
-    defaultWorkingDirPath: string
     provideConfig: ConfigurationProvider
     provideForests: ForestsProvider
     addForest: ForestAppender
 }
 
 let private toListForestsEnvironment (addForestEnvironment:AddForestEnvironment) = {
-    defaultWorkingDirPath = addForestEnvironment.defaultWorkingDirPath
     provideConfig =  addForestEnvironment.provideConfig
     provideForests = addForestEnvironment.provideForests
 }
@@ -50,15 +48,16 @@ let addForestWorkflow: AddForestWorkflow =
         return result {
             let! forests = listForestResult
             let! name = ForestName.create nameDto
-            let! addedForest = match Forests.exists name forests with
-            | false ->
-                Forest.create 
-                environment.addForest 
-                Ok { Hash = "1111"; Name = "1111"; Created = DateTime.Now; LastModified = DateTime.Now; Status = "1111"; }
-            | true ->
-                Error (ErrorText $"Forest with the name {nameDto} already exists")
             
-            return addedForest
+            return!
+                match Forests.exists name forests with
+                | false ->
+                    match Forest.create name with
+                    | Ok forest -> environment.addForest forest
+                    | Error e -> Error e
+                | true ->
+                    Error (ErrorText $"Forest with the name {nameDto} already exists")
+           
         } |> Result.mapError errorTextToString                     
     } 
             

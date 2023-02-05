@@ -41,6 +41,20 @@ type Forest = private Forest of ValidatedForest
 module Forest =
     let value (Forest forest) = forest
     
+    let create (forestName: ForestName) = result {
+        let timeStamp = DateTime.UtcNow
+        let! hash = Hash.newRandom()
+        let! status = ForestStatus.createActive()
+        
+        return {
+            Hash = hash
+            Name = forestName
+            Status = status
+            Created = timeStamp
+            LastModified = timeStamp
+        }
+    }
+
     let fromDrivenDto (inboundDto:ForestDrivenDto): Forest =
         let fieldsValidationResult = result {
             let! forestStatus = ForestStatus.create inboundDto.Status 
@@ -64,18 +78,21 @@ module Forest =
                 Forest = inboundDto
                 Error = errorText
             })
-                
-    let toOutputDto (forest:Forest) :ForestDrivingDto =
+            
+    let toDrivenDto (validForest:ValidForest) :ForestDrivenDto =
+        {
+           Hash = Hash.value validForest.Hash
+           Name = ForestName.value validForest.Name
+           Created = validForest.Created
+           LastModified = validForest.LastModified
+           Status = ForestStatus.value validForest.Status
+        }                
+        
+    let toDrivingDto (forest:Forest) :ForestDrivingDto =
         let forestValue = value forest
         match forestValue with
         | ValidForest validForest ->
-            ValidForestDto {
-                   Hash = Hash.value validForest.Hash
-                   Name = ForestName.value validForest.Name
-                   Created = validForest.Created
-                   LastModified = validForest.LastModified
-                   Status = ForestStatus.toDto validForest.Status
-                }
+            toDrivenDto validForest |> ValidForestDto
         | InvalidForest invalidForest ->
             InvalidForestDto {
                 Forest = invalidForest.Forest
