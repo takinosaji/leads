@@ -1,6 +1,6 @@
 ﻿namespace Leads.Core.Config
 
-open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Utilities.ConstrainedTypes
 
 module DTO = 
     type OptionalConfigValueDto = Option<string>

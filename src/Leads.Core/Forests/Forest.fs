@@ -2,22 +2,11 @@
 
 open System
 
-open Leads.Core.Utilities.ConstrainedTypes
-open Leads.Core.Utilities.Result
+open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Result
 
-open Leads.Core.Models
-
-module ForestDTO =
-    type ForestDrivenDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
-    
-    type ValidForestDto = ForestDrivenDto
-    type InvalidForestDto = { Forest: ForestDrivenDto; Error: string }
-        
-    type ForestDrivingDto =
-        | ValidForestDto of ValidForestDto
-        | InvalidForestDto of InvalidForestDto
-    
-open ForestDTO
+open Leads.Core.Models   
+open Leads.DrivenPorts.Forest.DTO
 
 type ValidForest = {
     Hash: Hash

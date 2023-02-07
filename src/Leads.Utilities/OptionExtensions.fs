@@ -1,4 +1,4 @@
-﻿module Leads.Core.Utilities.OptionExtensions
+﻿module Leads.Utilities.OptionExtensions
 
 type Option<'a> with
     static member toBoolean = function

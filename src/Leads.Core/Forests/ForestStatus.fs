@@ -1,7 +1,7 @@
 ﻿namespace Leads.Core.Forests
 
 open System
-open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Utilities.ConstrainedTypes
 
 type ForestStatus = // TODO: rewrite - this stinks we should be fine with simple enum or add proper smart constructor
      private
@@ -9,15 +9,7 @@ type ForestStatus = // TODO: rewrite - this stinks we should be fine with simple
     | Completed
     | Archived
 
-module ForestStatus =
-    module DTO =            
-        [<Flags>]
-        type ForestStatusDto =
-            | All = 0
-            | Active = 1
-            | Completed = 2
-            | Archived = 4
-    
+module ForestStatus =    
     [<Literal>]
     let private ActiveForestStatus = "active"
     [<Literal>]

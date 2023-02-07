@@ -1,15 +1,8 @@
 ﻿namespace Leads.Core.Config
 
-open Leads.Core.Utilities.ConstrainedTypes
+open Leads.DrivenPorts.Config.DTO
+open Leads.Utilities.ConstrainedTypes
 open Leads.Core.Config
-
-type ConfigDrivenDto = Map<string, string> Option
-
-type ConfigEntryDto =
-    | ValidEntryDto of {| Key: string; Value: string |}
-    | InvalidKeyDto of {| Key: string; Error: string |}
-    | InvalidValueDto of {| Key: string; Value: string; Error: string |}
-type ConfigDrivingDto = ConfigEntryDto list option
 
 type ValidEntry = {
     Key: ConfigKey
@@ -74,7 +67,7 @@ module Configuration =
                 | None -> Ok None
         | None -> Ok None
         
-    let toOutputDto (configuration: Configuration) :ConfigDrivingDto =        
+    let toDrivingDto (configuration: Configuration) :ConfigDrivingDto =        
         match value configuration with
         | Some configEntries ->
             configEntries

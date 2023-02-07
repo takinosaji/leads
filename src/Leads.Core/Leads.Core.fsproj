@@ -6,11 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Utilities\OptionExtensions.fs" />
-        <Compile Include="Utilities\ResultExtensions.fs" />
-        <Compile Include="Utilities\ListExtensions.fs" />
-        <Compile Include="Utilities\ConstrainedTypes.fs" />
-        <Compile Include="Utilities\Reader.fs" />
         <Compile Include="Models.fs" />
         <Compile Include="Config\ConfigKey.fs" />
         <Compile Include="Config\ConfigValue.fs" />
@@ -29,6 +24,11 @@
 
     <ItemGroup>
       <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Leads.DrivenPorts\Leads.DrivenPorts.fsproj" />
+      <ProjectReference Include="..\Leads.Utilities\Leads.Utilities.fsproj" />
     </ItemGroup>
 
 </Project>

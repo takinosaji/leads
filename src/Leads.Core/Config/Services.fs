@@ -1,10 +1,10 @@
 ﻿module Leads.Core.Config.Services
 
-open Leads.Core.Utilities.ConstrainedTypes
-open Leads.Core.Utilities.Result
-open Leads.Core.Utilities.Dependencies
-
-type ConfigurationProvider = unit -> Result<ConfigDrivenDto, ErrorText>
+open Leads.DrivenPorts.Config
+open Leads.DrivenPorts.Config.DTO
+open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Result
+open Leads.Utilities.Dependencies
 
 type GetConfigEnvironment = {
     provideConfig: ConfigurationProvider
@@ -17,11 +17,25 @@ let internal getConfigValue: GetConfigValue =
        
         return result {
             let! key = ConfigKey.create requestedKey            
-            let! unvalidatedConfiguration = environment.provideConfig()
+            let! unvalidatedConfiguration =
+                environment.provideConfig() |> Result.mapError stringToErrorText
             
             let! value = unvalidatedConfiguration
                          |> Configuration.create
                          |> Configuration.keyValue key
             return value // TODO: why cant use return! - dig into extension code
         }  
+    }
+    
+type internal GetConfig = unit -> Reader<GetConfigEnvironment, Result<Configuration, ErrorText>>
+let internal listConfigWorkflow: GetConfig = 
+    fun () -> reader {
+        let! services = Reader.ask
+       
+        return result {     
+            let! unvalidatedConfiguration = services.provideConfig() |> Result.mapError stringToErrorText
+            return unvalidatedConfiguration
+                |> Configuration.create
+                |> Configuration.toDrivingDto            
+        }    
     }

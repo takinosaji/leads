@@ -1,4 +1,4 @@
-﻿module Leads.Core.Utilities.ConstrainedTypes
+﻿module Leads.Utilities.ConstrainedTypes
 
 open System
 
@@ -6,7 +6,7 @@ type ErrorText = ErrorText of string
 let errorTextToString errorText =
     let (ErrorText text) = errorText
     text
-            
+let stringToErrorText errorString = ErrorText errorString
 
 let createNotEmptyString fieldName ctor str = 
     if String.IsNullOrEmpty(str) then

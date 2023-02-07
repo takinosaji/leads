@@ -4,10 +4,10 @@ open System
 
 open System.CommandLine
 
-open Leads.Core.Utilities.Dependencies
-open Leads.Core.Utilities.ListExtensions
+open Leads.Utilities.Dependencies
+open Leads.Utilities.ListExtensions
 
-open Leads.Core.Forests.ForestDTO
+open Leads.DrivenPorts.Forest.DTO
 open Leads.Core.Forests.ForestStatus.DTO
 open Leads.Core.Forests.Workflows
 

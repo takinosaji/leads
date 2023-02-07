@@ -1,6 +1,6 @@
 ﻿namespace Leads.Core.Config
 
-open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Utilities.ConstrainedTypes
 
 type ConfigKey = private ConfigKey of key:string
 module ConfigKey =

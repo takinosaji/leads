@@ -4,9 +4,9 @@ open System
 
 open System.CommandLine
 
-open Leads.Core.Utilities.Dependencies
+open Leads.Utilities.Dependencies
 
-open Leads.Core.Forests.ForestDTO
+open Leads.DrivenPorts.Forest.DTO
 open Leads.Core.Forests.Workflows
 
 open Leads.Shell

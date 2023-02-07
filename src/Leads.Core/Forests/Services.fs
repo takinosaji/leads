@@ -1,17 +1,15 @@
 ﻿module Leads.Core.Forests.Services
 
 open Leads.Core.Config.Services
-open Leads.Core.Utilities.Result
-open Leads.Core.Utilities.ConstrainedTypes
-open Leads.Core.Utilities.Dependencies
+open Leads.DrivenPorts.Config
+open Leads.DrivenPorts.Forest
+open Leads.DrivenPorts.Forest.DTO
+open Leads.Utilities.Result
+open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Dependencies
 
 open Leads.Core.Config
 open Leads.Core.Config.ConfigKey
-
-open Leads.Core.Forests.ForestsDTO
-open Leads.Core.Forests.ForestStatus.DTO
-
-type ForestsProvider = unit -> Result<ForestsDrivenDto, ErrorText>
 
 type ListForestsEnvironment = {
     provideConfig: ConfigurationProvider
@@ -44,7 +42,7 @@ let internal listForests: ListForests =
             let! workingDirPathOption = getWorkingDirPathResult
             let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.defaultWorkingDirPath
             
-            let! unvalidatedForests = ConfigValue.value workingDirPath |> environment.provideForests
+            let! unvalidatedForests = ConfigValue.value workingDirPath |> environment.provideForests 
             match unvalidatedForests with
             | Some forests ->                
                 return forests

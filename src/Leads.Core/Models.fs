@@ -3,7 +3,7 @@
 open System
 
 open System.Security.Cryptography
-open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Utilities.ConstrainedTypes
 
 type Hash = private Hash of string 
 module Hash =

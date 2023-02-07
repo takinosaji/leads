@@ -1,4 +1,4 @@
-﻿module Leads.Core.Utilities.Dependencies
+﻿module Leads.Utilities.Dependencies
 
   type Reader<'env,'a> = Reader of action:('env -> 'a)
   

@@ -15,4 +15,8 @@
       <PackageReference Include="FSharp.Json" Version="0.4.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Leads.DrivenPorts\Leads.DrivenPorts.fsproj" />
+    </ItemGroup>
+
 </Project>

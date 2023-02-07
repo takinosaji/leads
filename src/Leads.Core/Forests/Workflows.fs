@@ -1,19 +1,14 @@
 ﻿module Leads.Core.Forests.Workflows
 
-open System
-open Leads.Core.Utilities.ConstrainedTypes
-open Leads.Core.Utilities.Dependencies
-open Leads.Core.Utilities.Result
-
-open Leads.Core.Config.Services
+open Leads.DrivenPorts.Config
+open Leads.DrivenPorts.Forest
+open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Dependencies
+open Leads.Utilities.Result
 
 open Leads.Core.Forests
 open Leads.Core.Forests.Services
-open Leads.Core.Forests.ForestDTO
-open Leads.Core.Forests.ForestsDTO
-open Leads.Core.Forests.ForestStatus.DTO
-
-type ForestAppender = ValidForest -> Result<ForestDrivenDto, ErrorText>
+open Leads.DrivenPorts.Forest.DTO
 
 type AddForestEnvironment = {
     provideConfig: ConfigurationProvider
@@ -53,7 +48,9 @@ let addForestWorkflow: AddForestWorkflow =
                 match Forests.exists name forests with
                 | false ->
                     match Forest.create name with
-                    | Ok forest -> environment.addForest forest
+                    | Ok forest ->
+                        environment.addForest (Forest.toDrivenDto forest)
+                        |> Result.mapError stringToErrorText
                     | Error e -> Error e
                 | true ->
                     Error (ErrorText $"Forest with the name {nameDto} already exists")

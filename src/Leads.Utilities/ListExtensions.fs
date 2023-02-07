@@ -1,4 +1,4 @@
-﻿module Leads.Core.Utilities.ListExtensions
+﻿module Leads.Utilities.ListExtensions
 
 type List<'a> with
     static member iterp (everyPredicate: 'a -> unit) (allExceptLastPredicate: 'a -> unit) (list: 'a list): unit =

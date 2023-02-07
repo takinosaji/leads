@@ -4,8 +4,8 @@ open System
 open System.CommandLine
 
 open Leads.Core.Config.Workflows
-open Leads.Core.Utilities.ConstrainedTypes
-open Leads.Core.Utilities.Dependencies
+open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Dependencies
 
 open Leads.DrivenAdapters.ConfigAdapters
 

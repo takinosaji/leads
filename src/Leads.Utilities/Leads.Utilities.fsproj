@@ -6,8 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Config.fs" />
-        <Compile Include="Forest.fs" />
+      <Compile Include="OptionExtensions.fs" />
+      <Compile Include="ResultExtensions.fs" />
+      <Compile Include="ListExtensions.fs" />
+      <Compile Include="ConstrainedTypes.fs" />
+      <Compile Include="Reader.fs" />
     </ItemGroup>
 
 </Project>

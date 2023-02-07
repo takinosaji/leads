@@ -3,9 +3,6 @@
 open System.IO
 open FSharp.Json
 
-open Leads.Core.Config
-open Leads.Core.Utilities.ConstrainedTypes
-
 // TODO: write unit tests
 let private provideJsonFileConfiguration =
     fun filePath ->
@@ -19,15 +16,12 @@ let private provideJsonFileConfiguration =
                     try
                         Ok(Some(Json.deserialize<Map<string,string>> content))
                     with excp ->
-                        Error(ErrorText excp.Message)
+                        Error(excp.Message)
             )
 
 // TODO: write unit tests
 let private applyJsonFileConfiguration =
-    fun filePath key value ->
-        let keyString = ConfigKey.value key
-        let valueString = ConfigValue.value value
-                
+    fun filePath keyString valueString ->                
         let newConfigSource = provideJsonFileConfiguration filePath
         match newConfigSource with        
         | Ok someSource ->   
@@ -43,7 +37,7 @@ let private applyJsonFileConfiguration =
                 File.WriteAllText(filePath, json)
                 Ok ()
             with excp ->
-                Error(ErrorText excp.Message)       
+                Error(excp.Message)       
         | Error errorText -> Error errorText
       
 let createLocalJsonFileConfigAdapters configFilePath =

@@ -1,12 +1,12 @@
 ﻿module Leads.Core.Config.Workflows
 
-open Leads.Core.Utilities.ConstrainedTypes
-open Leads.Core.Utilities.Result
-open Leads.Core.Utilities.Dependencies
+open Leads.DrivenPorts.Config
+open Leads.DrivenPorts.Config.DTO
+open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Result
+open Leads.Utilities.Dependencies
 open Leads.Core.Config.DTO
 open Leads.Core.Config.Services
-
-type ConfigurationValueApplier = ConfigKey -> ConfigValue -> Result<unit, ErrorText>
 
 type SetConfigEnvironment = {
     applyConfigValue: ConfigurationValueApplier
@@ -26,11 +26,13 @@ type SetConfigValueWorkflow = string -> string -> Reader<SetConfigEnvironment, R
 let setConfigValueWorkflow: SetConfigValueWorkflow =
     fun keyToUpdateString newValueString -> reader {
         let! services = Reader.ask
-       
+
         return result {
             let! key = ConfigKey.create keyToUpdateString
             let! value = ConfigValue.create newValueString
-            let! updateResult = services.applyConfigValue key value
+            let! updateResult =
+                services.applyConfigValue (ConfigKey.value key) (ConfigValue.value value)
+                |> Result.mapError stringToErrorText
             
             return updateResult
         } |> Result.mapError errorTextToString
@@ -46,6 +48,6 @@ let listConfigWorkflow: ListConfigWorkflow =
             let! unvalidatedConfiguration = services.provideConfig()
             return unvalidatedConfiguration
                 |> Configuration.create
-                |> Configuration.toOutputDto            
-        } |> Result.mapError errorTextToString     
+                |> Configuration.toDrivingDto            
+        }    
     }

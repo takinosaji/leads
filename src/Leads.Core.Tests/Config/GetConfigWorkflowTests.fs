@@ -1,7 +1,7 @@
 ﻿module Leads.Core.Tests.Config.GetConfigWorkflowTests
 
-open Leads.Core.Utilities.ConstrainedTypes
-open Leads.Core.Utilities.Dependencies
+open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Dependencies
 open Leads.Core.Config.Workflows
 open Leads.Core.Config.Services
 

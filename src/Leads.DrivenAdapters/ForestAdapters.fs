@@ -3,22 +3,19 @@
 open System
 open System.IO
 open FSharp.Json
-open Leads.Core.Forests
-open Leads.Core.Forests.ForestDTO
-open Leads.Core.Forests.Services
-open Leads.Core.Forests.Workflows
-open Leads.Core.Utilities.ConstrainedTypes
+
+open Leads.DrivenPorts.Forest.DTO
 
 let private ForestsFileName = "forests.json"
 
 let private provideJsonFileForests =
     fun workingDirPath ->
         
-                let! getWorkingDirPathResult = getConfigValue WorkingDirKey
-                                    |> Reader.withEnv toGetConfigEnvironment
-        return result {
-            let! workingDirPathOption = getWorkingDirPathResult
-            let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.defaultWorkingDirPath
+        //         let! getWorkingDirPathResult = getConfigValue WorkingDirKey
+        //                             |> Reader.withEnv toGetConfigEnvironment
+        // return result {
+        //     let! workingDirPathOption = getWorkingDirPathResult
+        //     let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.defaultWorkingDirPath
         
         let forestsFilePath = Path.Combine(workingDirPath, ForestsFileName)
         
@@ -32,16 +29,16 @@ let private provideJsonFileForests =
                     try
                         Ok(Some(Json.deserialize<ForestDrivenDto list> content))
                     with excp ->
-                        Error(ErrorText excp.Message)
+                        Error(excp.Message)
             )
             
 let private addForestToJsonFile =
-    fun workingDirPath (forest: ValidForest) ->
+    fun workingDirPath (forest: ForestDrivenDto) ->
         provideJsonFileForests workingDirPath
         Ok { Hash = "string"; Name = "string"; Created = DateTime.Now; LastModified = DateTime.Now; Status = "string" }
         
 let createLocalJsonFileForestAdapters defaultWorkingDirPath =
     {|
        provideJsonFileForests = fun (_:unit) -> provideJsonFileForests defaultWorkingDirPath
-       addForestToJsonFile = fun (forest: ValidForest) -> addForestToJsonFile defaultWorkingDirPath forest
+       addForestToJsonFile = fun (forest: ForestDrivenDto) -> addForestToJsonFile defaultWorkingDirPath forest
     |}

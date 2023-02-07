@@ -5,7 +5,7 @@ open System.CommandLine
 
 open Leads.Core.Config
 open Leads.Core.Config.Workflows
-open Leads.Core.Utilities.Dependencies
+open Leads.Utilities.Dependencies
 
 open Leads.Shell
 open Leads.Shell.Utilities

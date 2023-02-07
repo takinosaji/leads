@@ -1,6 +1,6 @@
 ﻿namespace Leads.Core.Forests
 
-open Leads.Core.Utilities.ConstrainedTypes
+open Leads.Utilities.ConstrainedTypes
 
 type ForestName = private ForestName of string
 
