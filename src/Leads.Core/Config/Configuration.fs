@@ -4,6 +4,14 @@ open Leads.DrivenPorts.Config.DTO
 open Leads.Utilities.ConstrainedTypes
 open Leads.Core.Config
 
+module ConfigDTO =    
+    type ConfigEntryDto =
+        | ValidEntryDto of {| Key: string; Value: string |}
+        | InvalidKeyDto of {| Key: string; Error: string |}
+        | InvalidValueDto of {| Key: string; Value: string; Error: string |}
+    type ConfigDrivingDto = ConfigEntryDto list option
+open ConfigDTO
+
 type ValidEntry = {
     Key: ConfigKey
     Value: ConfigValue
@@ -86,3 +94,13 @@ module Configuration =
                 )
             |> Some
         | None -> None
+        
+        // LEFT OFF: how to resolve problem of duplicated logic around construction of the dto? Do i need dto at all? What should be the contract of listForestS?
+    let toDrivenDto (configuration: Configuration) :ConfigDrivenDto =
+        match value configuration with
+        | Some configEntries ->
+            let map = Map.empty<string, string>
+            List.iter (fun entry ->)
+        | None -> None
+        
+        

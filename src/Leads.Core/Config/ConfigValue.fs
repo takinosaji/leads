@@ -2,7 +2,7 @@
 
 open Leads.Utilities.ConstrainedTypes
 
-module DTO = 
+module ConfigValueDTO = 
     type OptionalConfigValueDto = Option<string>
 
 type ConfigValue = private ConfigValue of value:string

@@ -8,6 +8,15 @@ open Leads.Utilities.Result
 open Leads.Core.Models   
 open Leads.DrivenPorts.Forest.DTO
 
+module ForestDto =
+    type ValidForestDto = ForestDrivenDto
+    type InvalidForestDto = { Forest: ForestDrivenDto; Error: string }
+        
+    type ForestDrivingDto =
+        | ValidForestDto of ValidForestDto
+        | InvalidForestDto of InvalidForestDto
+open ForestDto
+
 type ValidForest = {
     Hash: Hash
     Name: ForestName

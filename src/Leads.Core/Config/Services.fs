@@ -1,7 +1,6 @@
 ﻿module Leads.Core.Config.Services
 
 open Leads.DrivenPorts.Config
-open Leads.DrivenPorts.Config.DTO
 open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Result
 open Leads.Utilities.Dependencies
@@ -28,14 +27,13 @@ let internal getConfigValue: GetConfigValue =
     }
     
 type internal GetConfig = unit -> Reader<GetConfigEnvironment, Result<Configuration, ErrorText>>
-let internal listConfigWorkflow: GetConfig = 
+let internal getConfig: GetConfig = 
     fun () -> reader {
         let! services = Reader.ask
        
         return result {     
             let! unvalidatedConfiguration = services.provideConfig() |> Result.mapError stringToErrorText
             return unvalidatedConfiguration
-                |> Configuration.create
-                |> Configuration.toDrivingDto            
+                |> Configuration.create       
         }    
     }

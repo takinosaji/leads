@@ -1,5 +1,7 @@
 ﻿module Leads.Core.Forests.Workflows
 
+open Leads.Core.Forests.ForestDto
+open Leads.Core.Forests.ForestsDto
 open Leads.DrivenPorts.Config
 open Leads.DrivenPorts.Forest
 open Leads.Utilities.ConstrainedTypes

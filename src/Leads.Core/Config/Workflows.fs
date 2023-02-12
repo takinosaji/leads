@@ -1,11 +1,12 @@
 ﻿module Leads.Core.Config.Workflows
 
+open Leads.Core.Config.ConfigDTO
 open Leads.DrivenPorts.Config
 open Leads.DrivenPorts.Config.DTO
 open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Result
 open Leads.Utilities.Dependencies
-open Leads.Core.Config.DTO
+open Leads.Core.Config.ConfigValueDTO
 open Leads.Core.Config.Services
 
 type SetConfigEnvironment = {
@@ -42,12 +43,8 @@ let setConfigValueWorkflow: SetConfigValueWorkflow =
 type ListConfigWorkflow = unit -> Reader<GetConfigEnvironment, Result<ConfigDrivingDto, string>>
 let listConfigWorkflow: ListConfigWorkflow = 
     fun () -> reader {
-        let! services = Reader.ask
-       
-        return result {     
-            let! unvalidatedConfiguration = services.provideConfig()
-            return unvalidatedConfiguration
-                |> Configuration.create
-                |> Configuration.toDrivingDto            
-        }    
+        let! config = getConfig()
+        return config
+            |> Result.map Configuration.toDrivingDto
+            |> Result.mapError errorTextToString   
     }

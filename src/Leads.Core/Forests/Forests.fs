@@ -1,9 +1,12 @@
 ﻿namespace Leads.Core.Forests
 
 open Leads.Utilities.OptionExtensions
+open Leads.Core.Forests.ForestDto
 
-open Leads.DrivenPorts.Forest.DTO
-    
+module ForestsDto =          
+    type ForestsDrivingDto = ForestDrivingDto list option
+open ForestsDto
+
 type Forests = Forest list option
     
 module Forests =
