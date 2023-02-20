@@ -3,7 +3,7 @@
 open Leads.Core.Forests.Services
 open Leads.Core.Forests.Workflows
 
-open Leads.DrivenAdapters.ForestAdapters
+open Leads.DrivenAdapters.FileBased.ForestAdapters
 
 open Leads.Shell.Environment
 open Leads.Shell.Commands.Config.Environment
@@ -12,11 +12,20 @@ let private forestDrivenAdapters = createLocalJsonFileForestAdapters shellEnviro
 
 let getForestsEnvironment: ListForestsEnvironment = {
         provideConfig = getConfigEnvironment.provideConfig
-        provideForests = forestDrivenAdapters.provideJsonFileForests
+        provideForests = forestDrivenAdapters.provideForests
     }
 
 let addForestEnvironment: AddForestEnvironment = {
-    provideForests = getForestsEnvironment.provideForests
     provideConfig = getForestsEnvironment.provideConfig
     addForest = forestDrivenAdapters.addForest
+}
+
+// let completeForestEnvironment: CompleteForestEnvironment = {
+//     provideConfig = getForestsEnvironment.provideConfig
+//     completeForest = forestDrivenAdapters.completeForest
+// }
+
+let describeForestEnvironment: DescribeForestEnvironment = {
+    provideConfig = getForestsEnvironment.provideConfig
+    findForest = forestDrivenAdapters.findForest
 }

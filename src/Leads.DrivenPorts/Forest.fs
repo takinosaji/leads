@@ -11,12 +11,16 @@ module DTO =
         | Completed = 2
         | Archived = 4
     
-    type ForestDrivenDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
-           
-    type ForestsDrivenDto = ForestDrivenDto list option
+    type ForestDrivenInputDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
+    type ForestDrivenOutputDto = ForestDrivenInputDto
+    
+    type ForestsDrivenInputDto = ForestDrivenInputDto list option
+    type ForestsDrivenOutputDto = ForestDrivenOutputDto list option
+    
 
 open DTO
 
-type ForestsProvider = ConfigDrivenDto -> Result<ForestsDrivenDto, string>
-type ForestAppender = ForestDrivenDto -> Result<ForestDrivenDto, string>
-
+type ForestsProvider = ValidConfigDrivenInputDto -> Result<ForestsDrivenOutputDto, string>
+type ForestAppender = ValidConfigDrivenInputDto -> ForestDrivenInputDto -> Result<ForestDrivenOutputDto, string>
+type ForestRetriever = ValidConfigDrivenInputDto -> string -> Result<ForestDrivenOutputDto option, string>
+type ForestFinder = ValidConfigDrivenInputDto -> string -> Result<ForestDrivenOutputDto list option, string>

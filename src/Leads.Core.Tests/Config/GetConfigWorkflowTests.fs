@@ -1,5 +1,6 @@
 ﻿module Leads.Core.Tests.Config.GetConfigWorkflowTests
 
+open Leads.DrivenPorts.Config
 open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Dependencies
 open Leads.Core.Config.Workflows
@@ -85,7 +86,7 @@ let ``When requesting the known key and configuration provider throws expect err
     let errorMessage = "Any error message"
     let stubConfigProvider: ConfigurationProvider =
         fun _ ->
-            Error(ErrorText errorMessage)
+            Error(errorMessage)
             
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow knownKey

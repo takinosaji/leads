@@ -20,7 +20,7 @@ let createLimitedString fieldName ctor maxLen str =
         let msg = $"%s{fieldName} must not be null or empty" 
         Error(ErrorText msg)
     elif str.Length > maxLen then
-        let msg = $"%s{nameof(ctor)} must not be more than %i{maxLen} chars" 
+        let msg = $"%s{fieldName} must not be more than %i{maxLen} chars" 
         Error(ErrorText msg)
     else
         Ok (ctor str)

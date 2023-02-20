@@ -1,4 +1,4 @@
-﻿module Leads.Shell.Commands.Forest.Add
+﻿module Leads.Shell.Commands.Forest.Describe
 
 open System
 
@@ -8,18 +8,18 @@ open Leads.Core.Forests.ForestDto
 open Leads.Utilities.Dependencies
 
 open Leads.DrivenPorts.Forest.DTO
-open Leads.Core.Forests.Workflows
 
 open Leads.Shell
 open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Environment
+
 open Spectre.Console
 
-let private printAddedForest (forestDto: ValidForestDto) =
+let private printForest (forestDto: ValidForestDto) =
     
     let table = Table()
     
-    table.Title <- TableTitle("New Forest")
+    table.Title <- TableTitle("Forest")
 
     table.AddColumn("Field")
     table.AddColumn("Value")
@@ -34,26 +34,26 @@ let private printAddedForest (forestDto: ValidForestDto) =
     
 let private handler name =
     reader {       
-        let! addForestResult = addForestWorkflow name
+        let! describeForestResult = describeForestWorkflow name
         
-        match addForestResult with
+        match describeForestResult with
         | Ok forest ->
-            forest |> printAddedForest
+            forest |> printForest
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run addForestEnvironment
+    } |> Reader.run completeForestEnvironment
     
-let appendForestAddSubCommand: SubCommandAppender =
+let appendForestDescribeSubCommand: SubCommandAppender =
     fun cmd ->        
-        let addForestSubCommand =
-            createCommand "add" "The add command creates the new forest"
-        let nameArgument =
-            createArgument<string> "name" "Set the unique forest name"   
+        let completeForestSubCommand =
+            createCommand "describe" "The describe command retrieves all fields of existing forests to display"
+        let searchTextArgument =
+            createArgument<string> "searchText" "Provide the complete or partial forest hash or name"   
         
-        addForestSubCommand.AddArgument nameArgument
+        completeForestSubCommand.AddArgument searchTextArgument
         
-        addForestSubCommand.SetHandler(handler, nameArgument)
+        completeForestSubCommand.SetHandler(handler, searchTextArgument)
         
-        cmd.AddCommand addForestSubCommand
+        cmd.AddCommand completeForestSubCommand
         
         cmd      

@@ -4,7 +4,7 @@ open Leads.Utilities.OptionExtensions
 open Leads.Core.Forests.ForestDto
 
 module ForestsDto =          
-    type ForestsDrivingDto = ForestDrivingDto list option
+    type ForestsDrivingDto = ForestDrivingOutputDto list option
 open ForestsDto
 
 type Forests = Forest list option
@@ -23,6 +23,6 @@ module Forests =
     
     let toDrivingDtoList (forests: Forests): ForestsDrivingDto =
         match forests with
-        | Some forests -> Some (forests |> List.map Forest.toDrivingDto)
+        | Some forests -> Some (forests |> List.map Forest.toDrivingOutputDto)
         | None -> None
     

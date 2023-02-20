@@ -3,7 +3,7 @@
 open System
 open System.CommandLine
 
-open Leads.Core.Config
+open Leads.Core.Config.ConfigDTO
 open Leads.Core.Config.Workflows
 open Leads.Utilities.Dependencies
 

@@ -2,25 +2,32 @@
 
 open System
 
-open System.Security.Cryptography
 open Leads.Utilities.ConstrainedTypes
 
 type Hash = private Hash of string 
 module Hash =
-    let create hash =
-        createLimitedString (nameof(Hash)) Hash 10 hash           
+    let create hash =        
+        createLimitedString (nameof(Hash)) Hash 32 hash           
     let value (Hash hash) = hash
     
-    let newRandom() =
-        Guid.NewGuid().ToByteArray()
-        |> BitConverter.ToString
+    let newRandom() =     
+        let hashString =
+            Guid
+                .NewGuid()
+                .ToByteArray()
+            |> BitConverter.ToString
+        
+        hashString
+            .Replace("-", "")
+            .ToLower()
         |> create
 
 let createDateTime dateTimeString =
     try
         Ok (DateTime.Parse dateTimeString)
     with
-    | excp -> Error (ErrorText excp.Message)
+    | excp ->
+        Error (ErrorText excp.Message)
 
 
 type Tag = Tag of string

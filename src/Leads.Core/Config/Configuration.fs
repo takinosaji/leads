@@ -36,7 +36,7 @@ type ConfigEntry =
 type Configuration = private Configuration of ConfigEntry list option
 
 module Configuration =           
-    type ConfigurationFactory = ConfigDrivenDto -> Configuration
+    type ConfigurationFactory = ConfigDrivenOutputDto -> Configuration
     let create: ConfigurationFactory = function
         | Some stringMap ->
             stringMap
@@ -95,12 +95,15 @@ module Configuration =
             |> Some
         | None -> None
         
-        // LEFT OFF: how to resolve problem of duplicated logic around construction of the dto? Do i need dto at all? What should be the contract of listForestS?
-    let toDrivenDto (configuration: Configuration) :ConfigDrivenDto =
+    // LEFT OFF: how to resolve problem of duplicated logic around construction of the dto? Do i need dto at all? What should be the contract of listForestS?
+    // LEFT OFF: Get rid of all mentions of file in config in application core and move required config to as adapters?
+    let toValidDrivenInputDto (configuration: Configuration) :ValidConfigDrivenInputDto =
         match value configuration with
         | Some configEntries ->
-            let map = Map.empty<string, string>
-            List.iter (fun entry ->)
+            configEntries
+                |> List.choose (fun ce -> match ce with | ValidEntry ve -> Some ve | _ -> None)
+                |> List.map (fun ve -> ConfigKey.value ve.Key, ConfigValue.value ve.Value)
+                |> Some
         | None -> None
         
         

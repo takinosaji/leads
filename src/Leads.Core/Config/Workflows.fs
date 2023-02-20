@@ -2,7 +2,6 @@
 
 open Leads.Core.Config.ConfigDTO
 open Leads.DrivenPorts.Config
-open Leads.DrivenPorts.Config.DTO
 open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Result
 open Leads.Utilities.Dependencies

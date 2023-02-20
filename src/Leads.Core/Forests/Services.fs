@@ -9,7 +9,6 @@ open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Dependencies
 
 open Leads.Core.Config
-open Leads.Core.Config.ConfigKey
 
 type ListForestsEnvironment = {
     provideConfig: ConfigurationProvider
@@ -36,13 +35,15 @@ type internal ListForests = ForestStatusDto -> Reader<ListForestsEnvironment, Re
 let internal listForests: ListForests =
     fun statusDto -> reader {
         let! environment = Reader.ask
-        let! getWorkingDirPathResult = getConfigValue WorkingDirKey
+        let! getConfigResult = getConfig()
                                     |> Reader.withEnv toGetConfigEnvironment
         return result {
-            let! workingDirPathOption = getWorkingDirPathResult
-            let workingDirPath = ConfigValue.valueOrDefaultOption workingDirPathOption environment.defaultWorkingDirPath
-            
-            let! unvalidatedForests = ConfigValue.value workingDirPath |> environment.provideForests 
+            let! config = getConfigResult
+            let! unvalidatedForests =
+                config
+                |> Configuration.toValidDrivenInputDto
+                |> environment.provideForests
+                |> Result.mapError stringToErrorText
             match unvalidatedForests with
             | Some forests ->                
                 return forests

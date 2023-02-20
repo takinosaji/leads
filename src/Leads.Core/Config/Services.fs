@@ -28,7 +28,7 @@ let internal getConfigValue: GetConfigValue =
     
 type internal GetConfig = unit -> Reader<GetConfigEnvironment, Result<Configuration, ErrorText>>
 let internal getConfig: GetConfig = 
-    fun () -> reader {
+    fun _ -> reader {
         let! services = Reader.ask
        
         return result {     

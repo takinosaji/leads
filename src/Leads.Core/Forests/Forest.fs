@@ -9,15 +9,21 @@ open Leads.Core.Models
 open Leads.DrivenPorts.Forest.DTO
 
 module ForestDto =
-    type ValidForestDto = ForestDrivenDto
-    type InvalidForestDto = { Forest: ForestDrivenDto; Error: string }
+    type ValidForestOutputDto = ForestDrivenOutputDto
+    type InvalidForestOutputDto = { Forest: ForestDrivenOutputDto; Error: string }
         
-    type ForestDrivingDto =
-        | ValidForestDto of ValidForestDto
-        | InvalidForestDto of InvalidForestDto
+    type ForestDrivingOutputDto =
+        | ValidForest of ValidForestOutputDto
+        | InvalidForest of InvalidForestOutputDto
+    module ForestDrivingOutputDto =
+        let fromDrivenOutputDto
+            (drivenOutputDto: ForestDrivenOutputDto)
+            :ValidForestOutputDto =
+                drivenOutputDto
+    
 open ForestDto
 
-type ValidForest = {
+type ValidForestModel = {
     Hash: Hash
     Name: ForestName
     Status: ForestStatus
@@ -25,16 +31,16 @@ type ValidForest = {
     LastModified: DateTime
 }
     
-type InvalidForest = {
-    Forest: ForestDrivenDto
+type InvalidForestModel = {
+    Forest: ForestDrivenOutputDto
     Error: ErrorText
 }
 
-type ValidatedForest = 
-    | ValidForest of ValidForest
-    | InvalidForest of InvalidForest
+type ValidatedForestModel = 
+    | ValidForest of ValidForestModel
+    | InvalidForest of InvalidForestModel
     
-type Forest = private Forest of ValidatedForest    
+type Forest = private Forest of ValidatedForestModel    
 
 module Forest =
     let value (Forest forest) = forest
@@ -53,7 +59,7 @@ module Forest =
         }
     }
 
-    let fromDrivenDto (inboundDto:ForestDrivenDto): Forest =
+    let fromDrivenDto (inboundDto:ForestDrivenOutputDto): Forest =
         let fieldsValidationResult = result {
             let! forestStatus = ForestStatus.create inboundDto.Status 
             let! forestHash = Hash.create inboundDto.Hash
@@ -77,7 +83,7 @@ module Forest =
                 Error = errorText
             })
             
-    let toDrivenDto (validForest:ValidForest) :ForestDrivenDto =
+    let toDrivenInputDto (validForest:ValidForestModel) :ForestDrivenInputDto =
         {
            Hash = Hash.value validForest.Hash
            Name = ForestName.value validForest.Name
@@ -86,13 +92,13 @@ module Forest =
            Status = ForestStatus.value validForest.Status
         }                
         
-    let toDrivingDto (forest:Forest) :ForestDrivingDto =
+    let toDrivingOutputDto (forest:Forest) :ForestDrivingOutputDto =
         let forestValue = value forest
         match forestValue with
         | ValidForest validForest ->
-            toDrivenDto validForest |> ValidForestDto
+            toDrivenInputDto validForest |> ValidForest
         | InvalidForest invalidForest ->
-            InvalidForestDto {
+            InvalidForest {
                 Forest = invalidForest.Forest
                 Error = errorTextToString invalidForest.Error
             }           

@@ -1,10 +1,10 @@
-﻿module Leads.DrivenAdapters.ConfigAdapters
+﻿module Leads.DrivenAdapters.FileBased.ConfigAdapters
 
 open System.IO
 open FSharp.Json
 
 // TODO: write unit tests
-let private provideJsonFileConfiguration =
+let private provideConfiguration =
     fun filePath ->
         using (File.Open(filePath, FileMode.OpenOrCreate))
             (fun fileStream -> 
@@ -20,9 +20,9 @@ let private provideJsonFileConfiguration =
             )
 
 // TODO: write unit tests
-let private applyJsonFileConfiguration =
+let private applyConfigValue =
     fun filePath keyString valueString ->                
-        let newConfigSource = provideJsonFileConfiguration filePath
+        let newConfigSource = provideConfiguration filePath
         match newConfigSource with        
         | Ok someSource ->   
             let source =
@@ -42,7 +42,7 @@ let private applyJsonFileConfiguration =
       
 let createLocalJsonFileConfigAdapters configFilePath =
     {|
-       provideJsonFileConfiguration = fun (_:unit) -> provideJsonFileConfiguration configFilePath
-       applyJsonFileConfiguration = fun key value -> applyJsonFileConfiguration configFilePath key value
+       provideConfiguration = fun (_:unit) -> provideConfiguration configFilePath
+       applyConfigValue = fun key value -> applyConfigValue configFilePath key value
     |}
             

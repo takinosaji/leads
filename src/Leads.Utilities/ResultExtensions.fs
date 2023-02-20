@@ -2,22 +2,28 @@
 
 open System
        
+let private prepend firstR restR =
+    match firstR, restR with
+    | Ok first, Ok rest -> Ok(first :: rest)
+    | Error err1, _ -> Error err1
+    | Ok _, Error err2 -> Error err2
+       
 type Result<'a, 'b> with
     static member zip x1 x2 =
         match x1,x2 with
         | Ok x1res, Ok x2res -> Ok (x1res, x2res)
         | Error e, _ -> Error e
         | _, Error e -> Error e
-
-let private prepend firstR restR =
-    match firstR, restR with
-    | Ok first, Ok rest -> Ok(first :: rest)
-    | Error err1, _ -> Error err1
-    | Ok _, Error err2 -> Error err2
-    
-let sequence aListOfResults =
-    let initialValue = Ok[]
-    List.foldBack prepend aListOfResults initialValue
+        
+    static member fromList aListOfResults =
+        let initialValue = Ok[]
+        List.foldBack prepend aListOfResults initialValue
+        
+    static member toList (resultOfaList: Result<'a list, 'b>) =
+        match resultOfaList with
+        | Ok list ->
+            List.map (fun li -> Ok li) list
+        | Error e -> [Error e]
     
 let toOption result =
     match result with

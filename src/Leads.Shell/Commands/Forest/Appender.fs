@@ -5,6 +5,7 @@ open Leads.Shell.Utilities
 
 open Leads.Shell.Commands.Forest.List
 open Leads.Shell.Commands.Forest.Add
+open Leads.Shell.Commands.Forest.Describe
 
 let appendForestCommands: RootCommandAppender =
     fun cmd ->   
@@ -14,6 +15,7 @@ let appendForestCommands: RootCommandAppender =
         forestCommand
             |> appendForestListSubCommand
             |> appendForestAddSubCommand
+            |> appendForestDescribeSubCommand
             |> cmd.AddCommand
         
         cmd

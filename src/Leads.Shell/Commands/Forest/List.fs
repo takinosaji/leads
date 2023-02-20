@@ -4,14 +4,13 @@ open System
 
 open System.CommandLine
 
+open Leads.Core.Forests.ForestDto
 open Leads.Utilities.Dependencies
-open Leads.Utilities.ListExtensions
 
 open Leads.DrivenPorts.Forest.DTO
-open Leads.Core.Forests.ForestStatus.DTO
 open Leads.Core.Forests.Workflows
 
-open Leads.DrivenAdapters.ConsoleAdapters
+open Leads.DrivenAdapters.JsonBased
 
 open Leads.Shell
 open Leads.Shell.Utilities
@@ -43,7 +42,7 @@ let printValidForestTable (validForests: ValidForestDto list) =
         
     AnsiConsole.Write(table);
 
-let printInvalidForestTable (invalidForests: InvalidForestDto list) =
+let printInvalidForestTable (invalidForests: InvalidForestOutputDto list) =
     let table = Table()
 
     table.AddColumn("Error")
@@ -54,7 +53,7 @@ let printInvalidForestTable (invalidForests: InvalidForestDto list) =
     List.iter
         (fun dto ->
             table.AddRow(
-                JSONize dto.Forest,
+                Serialize dto.Forest,
                 "[red]{dto.Error}[/]")
             ())
         invalidForests
@@ -62,16 +61,16 @@ let printInvalidForestTable (invalidForests: InvalidForestDto list) =
     AnsiConsole.Write(table);
 
 let private printForests = function
-   | Some (forestDTOs: ForestDrivingDto list) ->
-        let validForestsToPrint = List.choose (fun li -> match li with | ValidForestDto dto -> Some dto | _ -> None ) forestDTOs
+   | Some (forestDTOs: ForestDrivingOutputDto list) ->
+        let validForestsToPrint = List.choose (fun li -> match li with | ValidForest dto -> Some dto | _ -> None ) forestDTOs
         match validForestsToPrint with
-        | [_] -> printValidForestTable validForestsToPrint
-        | _ -> ()
+        | [] -> ()
+        | _ -> printValidForestTable validForestsToPrint
         
-        let invalidValuesToPrint = List.choose (fun li -> match li with | InvalidForestDto dto -> Some dto | _ -> None) forestDTOs
+        let invalidValuesToPrint = List.choose (fun li -> match li with | InvalidForest dto -> Some dto | _ -> None) forestDTOs
         match invalidValuesToPrint with
-        | [_] -> printInvalidForestTable invalidValuesToPrint
-        | _ -> ()
+        | [] -> ()
+        | _ -> printInvalidForestTable invalidValuesToPrint
    | None -> ()
 
 let private composeStatusDto =

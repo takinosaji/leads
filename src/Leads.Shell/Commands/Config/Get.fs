@@ -5,10 +5,7 @@ open System.CommandLine
 
 open Leads.Core.Config
 open Leads.Core.Config.Workflows
-open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Dependencies
-
-open Leads.DrivenAdapters.ConfigAdapters
 
 open Leads.Shell
 open Leads.Shell.Utilities
