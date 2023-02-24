@@ -4,10 +4,10 @@ open System
 
 open System.CommandLine
 
-open Leads.Core.Forests.ForestDto
+open Leads.Core.Forests.ForestDTO
 open Leads.Utilities.Dependencies
 
-open Leads.DrivenPorts.Forest.DTO
+open Leads.SecondaryPorts.Forest.DTO
 open Leads.Core.Forests.Workflows
 
 open Leads.Shell
@@ -15,7 +15,7 @@ open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Environment
 open Spectre.Console
 
-let private printAddedForest (forestDto: ValidForestDto) =
+let private printAddedForest (forestDto: ValidForestOutputDto) =
     
     let table = Table()
     

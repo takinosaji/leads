@@ -1,7 +1,7 @@
 ﻿module Leads.Core.Config.Workflows
 
 open Leads.Core.Config.ConfigDTO
-open Leads.DrivenPorts.Config
+open Leads.SecondaryPorts.Config
 open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Result
 open Leads.Utilities.Dependencies
@@ -39,11 +39,11 @@ let setConfigValueWorkflow: SetConfigValueWorkflow =
     }
         
 // TODO: Write unit tests
-type ListConfigWorkflow = unit -> Reader<GetConfigEnvironment, Result<ConfigDrivingDto, string>>
+type ListConfigWorkflow = unit -> Reader<GetConfigEnvironment, Result<ConfigPrimaryDto, string>>
 let listConfigWorkflow: ListConfigWorkflow = 
     fun () -> reader {
         let! config = getConfig()
         return config
-            |> Result.map Configuration.toDrivingDto
+            |> Result.map Configuration.toPrimaryDto
             |> Result.mapError errorTextToString   
     }

@@ -1,6 +1,6 @@
 ﻿module Leads.Core.Config.Services
 
-open Leads.DrivenPorts.Config
+open Leads.SecondaryPorts.Config
 open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Result
 open Leads.Utilities.Dependencies

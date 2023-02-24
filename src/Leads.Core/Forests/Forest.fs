@@ -6,22 +6,21 @@ open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Result
 
 open Leads.Core.Models   
-open Leads.DrivenPorts.Forest.DTO
+open Leads.SecondaryPorts.Forest.DTO
 
-module ForestDto =
-    type ValidForestOutputDto = ForestDrivenOutputDto
-    type InvalidForestOutputDto = { Forest: ForestDrivenOutputDto; Error: string }
+module ForestDTO =
+    type ValidForestOutputDto = ForestSecondaryOutputDto
+    type InvalidForestOutputDto = { Forest: ForestSecondaryOutputDto; Error: string }
         
-    type ForestDrivingOutputDto =
-        | ValidForest of ValidForestOutputDto
-        | InvalidForest of InvalidForestOutputDto
-    module ForestDrivingOutputDto =
-        let fromDrivenOutputDto
-            (drivenOutputDto: ForestDrivenOutputDto)
-            :ValidForestOutputDto =
-                drivenOutputDto
-    
-open ForestDto
+    type ForestPrimaryOutputDto =
+        | ValidForestOutputDto of ValidForestOutputDto
+        | InvalidForestOutputDto of InvalidForestOutputDto
+    module ForestPrimaryOutputDto =
+        let fromSecondaryOutputDto
+            (secondaryOutputDto: ForestSecondaryOutputDto)
+            :ForestPrimaryOutputDto =
+                ValidForestOutputDto secondaryOutputDto    
+open ForestDTO
 
 type ValidForestModel = {
     Hash: Hash
@@ -32,7 +31,7 @@ type ValidForestModel = {
 }
     
 type InvalidForestModel = {
-    Forest: ForestDrivenOutputDto
+    Forest: ForestSecondaryOutputDto
     Error: ErrorText
 }
 
@@ -46,9 +45,9 @@ module Forest =
     let value (Forest forest) = forest
     
     let create (forestName: ForestName) = result {
+        let hash = Hash.newRandom()
         let timeStamp = DateTime.UtcNow
-        let! hash = Hash.newRandom()
-        let! status = ForestStatus.createActive()
+        let status = ForestStatus.createActive()
         
         return {
             Hash = hash
@@ -59,7 +58,7 @@ module Forest =
         }
     }
 
-    let fromDrivenDto (inboundDto:ForestDrivenOutputDto): Forest =
+    let fromSecondaryOutputDto (inboundDto: ForestSecondaryOutputDto): Forest =
         let fieldsValidationResult = result {
             let! forestStatus = ForestStatus.create inboundDto.Status 
             let! forestHash = Hash.create inboundDto.Hash
@@ -83,7 +82,7 @@ module Forest =
                 Error = errorText
             })
             
-    let toDrivenInputDto (validForest:ValidForestModel) :ForestDrivenInputDto =
+    let toSecondaryInputDto (validForest:ValidForestModel) :ForestSecondaryInputDto =
         {
            Hash = Hash.value validForest.Hash
            Name = ForestName.value validForest.Name
@@ -92,13 +91,19 @@ module Forest =
            Status = ForestStatus.value validForest.Status
         }                
         
-    let toDrivingOutputDto (forest:Forest) :ForestDrivingOutputDto =
+    let toPrimaryOutputDto (forest:Forest) :ForestPrimaryOutputDto =
         let forestValue = value forest
         match forestValue with
         | ValidForest validForest ->
-            toDrivenInputDto validForest |> ValidForest
+            ValidForestOutputDto {
+                Hash = Hash.value validForest.Hash
+                Name = ForestName.value validForest.Name
+                Created = validForest.Created
+                LastModified = validForest.LastModified
+                Status = ForestStatus.value validForest.Status
+            }
         | InvalidForest invalidForest ->
-            InvalidForest {
+            InvalidForestOutputDto {
                 Forest = invalidForest.Forest
                 Error = errorTextToString invalidForest.Error
             }           

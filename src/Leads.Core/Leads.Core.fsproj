@@ -14,6 +14,7 @@
         <Compile Include="Config\Workflows.fs" />
         <Compile Include="Forests\ForestName.fs" />
         <Compile Include="Forests\ForestStatus.fs" />
+        <Compile Include="Forests\ForestStatuses.fs" />
         <Compile Include="Forests\Forest.fs" />
         <Compile Include="Forests\Forests.fs" />
         <Compile Include="Forests\Services.fs" />
@@ -27,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Leads.DrivenPorts\Leads.DrivenPorts.fsproj" />
+      <ProjectReference Include="..\Leads.SecondaryPorts\Leads.SecondaryPorts.fsproj" />
       <ProjectReference Include="..\Leads.Utilities\Leads.Utilities.fsproj" />
     </ItemGroup>
 

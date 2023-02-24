@@ -1,25 +1,25 @@
-﻿module Leads.DrivenAdapters.FileBased.ForestAdapters
+﻿module Leads.SecondaryAdapters.FileBased.ForestAdapters
 
 open System.IO
 open FSharp.Json
 
 open Leads.Utilities.Result
 
-open Leads.DrivenPorts.Config.DTO
-open Leads.DrivenPorts.Forest.DTO
+open Leads.SecondaryPorts.Config.DTO
+open Leads.SecondaryPorts.Forest.DTO
 
 let private getForestFilePath
     (defaultWorkingDirPath: string)
-    (validConfigurationDto: ValidConfigDrivenInputDto) = 
-    let workingDirPath = ValidConfigDrivenInputDto.findOrDefault
+    (validConfigurationDto: ValidConfigSecondaryInputDto) = 
+    let workingDirPath = ValidConfigSecondaryInputDto.findOrDefault
                                  validConfigurationDto
                                  ConfigKeys.WorkingDirKey
                                  defaultWorkingDirPath
     Path.Combine(workingDirPath, "forests.json")  
 
-let private provideForests
-    (forestsFilePath: string)
-    : Result<ForestDrivenOutputDto list option, string> =         
+let private listForests
+    (forestsFilePath: string)    
+    : Result<ForestSecondaryOutputDto list option, string> =         
         using (File.Open(forestsFilePath, FileMode.OpenOrCreate))
             (fun fileStream -> 
                 use reader = new StreamReader(fileStream)
@@ -28,27 +28,54 @@ let private provideForests
                 | "" -> Ok None
                 | _ ->
                     try
-                        Ok(Some(Json.deserialize<ForestDrivenOutputDto list> content))
+                        let forests = Json.deserialize<ForestSecondaryOutputDto list> content
+                        match forests with
+                        | [] -> Ok None
+                        | _ -> Ok (Some forests)
                     with excp ->
                         Error(excp.Message)
                 )
-
+            
 let private getForestByNameOrHash
     (forestsFilePath: string)
     (forestNameOrHash: string)
-    : Result<ForestDrivenOutputDto option, string> =
+    : Result<ForestSecondaryOutputDto option, string> =
         result {
-            let! forestOption = provideForests forestsFilePath
+            let! forestOption = listForests forestsFilePath
             match forestOption with
             | Some forests ->
                 return List.tryFind (fun li -> li.Name = forestNameOrHash || li.Hash = forestNameOrHash) forests
             | None ->
                 return None
         }
+      
+let private findForests
+    (forestsFilePath: string)
+    (findCriteria: FindCriteriaDto) =
+        result {
+            let! forestOption = listForests forestsFilePath 
+            return
+                match forestOption with
+                | Some forests ->
+                    let filteredForests =
+                        forests
+                        |> List.filter (fun li ->
+                            match findCriteria.text with
+                            | All -> true
+                            | ContainsText textToSearch ->
+                                li.Hash.ToLower().Contains(textToSearch.ToLower()) ||
+                                li.Name.ToLower().Contains(textToSearch.ToLower()))         
+                        |> List.filter (fun li -> List.contains li.Status findCriteria.statuses)
+                    match filteredForests with
+                    | [] -> None
+                    | _ -> Some filteredForests
+                | None ->
+                    None
+        }
 
 let private persistForests
     (forestsFilePath: string)
-    (forestsDto: ForestDrivenInputDto list) =    
+    (forestsDto: ForestSecondaryInputDto list) =    
     try   
         let json = Json.serialize forestsDto    
         File.WriteAllText(forestsFilePath, json)
@@ -58,9 +85,9 @@ let private persistForests
 
 let private addForest
     (forestsFilePath: string)
-    (forestDto: ForestDrivenInputDto) =
+    (forestDto: ForestSecondaryInputDto) =
         result {
-            let! forestOption = provideForests forestsFilePath
+            let! forestOption = listForests forestsFilePath
             let! _ =
                 match forestOption with
                 | Some forests ->
@@ -83,32 +110,14 @@ let private addForest
             return forestDto
         }
         
-let private findForest
-    (forestsFilePath: string)
-    (searchTextDto: string) =
-        result {
-            let! forestOption = provideForests forestsFilePath 
-            return
-                match forestOption with
-                | Some forests ->
-                    List.filter (fun li ->
-                        li.Hash.ToLower().Contains(searchTextDto.ToLower()) ||
-                        li.Name.ToLower().Contains(searchTextDto.ToLower())) forests
-                    |> Some
-                | None ->
-                    None
-        }
-        
 let createLocalJsonFileForestAdapters defaultWorkingDirPath =
     {|
-        provideForests = fun validConfigurationDto ->
-            provideForests <| getForestFilePath defaultWorkingDirPath validConfigurationDto
         getForest = fun validConfigurationDto forestNameOrHashDto ->
             getForestByNameOrHash <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestNameOrHashDto
         addForest = fun validConfigurationDto forestDto ->
            addForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto           
-        findForest = fun validConfigurationDto searchTextDto ->
-           findForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| searchTextDto
+        findForests = fun validConfigurationDto searchCriteriaDto ->
+           findForests <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| searchCriteriaDto
         // completeForest = fun validConfigurationDto forestDto ->
         //    completeForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto
            

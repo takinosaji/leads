@@ -7,7 +7,7 @@
 // open Leads.Core.Forests.ForestDto
 // open Leads.Utilities.Dependencies
 //
-// open Leads.DrivenPorts.Forest.DTO
+// open Leads.SecondaryPorts.Forest.DTO
 // open Leads.Core.Forests.Workflows
 //
 // open Leads.Shell

@@ -1,10 +1,10 @@
 ﻿namespace Leads.Core.Forests
 
 open Leads.Utilities.OptionExtensions
-open Leads.Core.Forests.ForestDto
+open Leads.Core.Forests.ForestDTO
 
 module ForestsDto =          
-    type ForestsDrivingDto = ForestDrivingOutputDto list option
+    type ForestsPrimaryDto = ForestPrimaryOutputDto list option
 open ForestsDto
 
 type Forests = Forest list option
@@ -21,8 +21,8 @@ module Forests =
             |> Option.toBoolean
         | None -> false
     
-    let toDrivingDtoList (forests: Forests): ForestsDrivingDto =
+    let toPrimaryDtoList (forests: Forests): ForestsPrimaryDto =
         match forests with
-        | Some forests -> Some (forests |> List.map Forest.toDrivingOutputDto)
+        | Some forests -> Some (forests |> List.map Forest.toPrimaryOutputDto)
         | None -> None
     

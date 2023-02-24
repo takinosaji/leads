@@ -4,97 +4,29 @@ open System
 
 open System.CommandLine
 
-open Leads.Core.Forests.ForestDto
+open Leads.Core.Forests
 open Leads.Utilities.Dependencies
 
-open Leads.DrivenPorts.Forest.DTO
 open Leads.Core.Forests.Workflows
-
-open Leads.DrivenAdapters.JsonBased
 
 open Leads.Shell
 open Leads.Shell.Utilities
+open Leads.Shell.Commands.Forest.Utilities
 open Leads.Shell.Commands.Forest.Environment
-open Spectre.Console
-
-
-let printValidForestTable (validForests: ValidForestDto list) =
-    let table = Table()
-
-    table.AddColumn("Name")
-    table.AddColumn("Hash")
-    table.AddColumn("Status")
-    table.AddColumn("LastModified")
-    table.AddColumn("Created")
-    
-    table.Title = TableTitle("Valid Forests")
-    
-    List.iter
-        (fun dto ->
-            table.AddRow(
-                dto.Name,
-                dto.Hash,
-                dto.Status,
-                dto.LastModified.ToString(),
-                dto.Created.ToString())
-            ())
-        validForests
-        
-    AnsiConsole.Write(table);
-
-let printInvalidForestTable (invalidForests: InvalidForestOutputDto list) =
-    let table = Table()
-
-    table.AddColumn("Error")
-    table.AddColumn("Forest")
-    
-    table.Title <- TableTitle("Invalid Forests")
-    
-    List.iter
-        (fun dto ->
-            table.AddRow(
-                Serialize dto.Forest,
-                "[red]{dto.Error}[/]")
-            ())
-        invalidForests
-        
-    AnsiConsole.Write(table);
-
-let private printForests = function
-   | Some (forestDTOs: ForestDrivingOutputDto list) ->
-        let validForestsToPrint = List.choose (fun li -> match li with | ValidForest dto -> Some dto | _ -> None ) forestDTOs
-        match validForestsToPrint with
-        | [] -> ()
-        | _ -> printValidForestTable validForestsToPrint
-        
-        let invalidValuesToPrint = List.choose (fun li -> match li with | InvalidForest dto -> Some dto | _ -> None) forestDTOs
-        match invalidValuesToPrint with
-        | [] -> ()
-        | _ -> printInvalidForestTable invalidValuesToPrint
-   | None -> ()
-
-let private composeStatusDto =
-    fun allOption completedOption archivedOption ->
-    match allOption, completedOption, archivedOption with
-    | true, _, _ -> ForestStatusDto.All
-    | false, true, true -> ForestStatusDto.Completed ||| ForestStatusDto.Archived
-    | false, true, false -> ForestStatusDto.Completed
-    | false, false, true -> ForestStatusDto.Archived
-    | _ -> ForestStatusDto.Active
     
 let private handler =
     fun allOption completedOption archivedOption ->
     reader {
-        let status = composeStatusDto allOption completedOption archivedOption
+        let statuses = ForestStatuses.composeStatuses allOption completedOption archivedOption
         
-        let! forestsListResult = listForestsWorkflow status
+        let! forestsListResult = listForestsWorkflow statuses
         
         match forestsListResult with
         | Ok forests ->
             forests |> printForests
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run getForestsEnvironment
+    } |> Reader.run findForestEnvironment
     
 let appendForestListSubCommand: SubCommandAppender =
     fun cmd ->        
@@ -106,6 +38,10 @@ let appendForestListSubCommand: SubCommandAppender =
             createOption<bool>  "completed" "Show only completed forests if additional options are not provided" false  
         let archivedOption =
             createOption<bool>  "archived" "Show only archived forests if additional options are not provided" false    
+        
+        listForestsSubCommand.AddOption allOption
+        listForestsSubCommand.AddOption completedOption
+        listForestsSubCommand.AddOption archivedOption
         
         listForestsSubCommand.SetHandler(handler, allOption, completedOption, archivedOption)
         

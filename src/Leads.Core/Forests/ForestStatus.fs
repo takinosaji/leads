@@ -3,11 +3,7 @@
 open System
 open Leads.Utilities.ConstrainedTypes
 
-type ForestStatus = // TODO: rewrite - this stinks we should be fine with simple enum or add proper smart constructor
-     private
-    | Active
-    | Completed
-    | Archived
+type ForestStatus = private ForestStatus of string
 
 module ForestStatus =    
     [<Literal>]
@@ -17,17 +13,22 @@ module ForestStatus =
     [<Literal>]
     let private ArchivedForestStatus = "archived"
     
-    let create (status:string) =
-        match status.ToLower() with
-        | ActiveForestStatus -> Ok ForestStatus.Active
-        | CompletedForestStatus -> Ok ForestStatus.Completed
-        | ArchivedForestStatus -> Ok ForestStatus.Archived
-        | _ -> Error <| ErrorText $"Unrecognized status: {status}"
-                
-    let value = function
-        | Active -> ActiveForestStatus
-        | Completed -> CompletedForestStatus
-        | Archived -> ArchivedForestStatus
+    let internal create (status:string) =
+        createPredefinedString
+             (nameof ForestStatus)
+             ForestStatus status
+             [ActiveForestStatus; CompletedForestStatus; ArchivedForestStatus] 
+       
+    let value (ForestStatus status) = status 
     
-    let createActive() =
-        create ActiveForestStatus
+    let internal createActive() =
+        let (Ok status) = create ActiveForestStatus
+        status
+        
+    let internal createArchived() =
+        let (Ok status) = create ArchivedForestStatus
+        status
+                
+    let internal createCompleted() =
+        let (Ok status) = create CompletedForestStatus
+        status

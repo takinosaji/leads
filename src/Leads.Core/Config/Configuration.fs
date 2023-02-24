@@ -1,6 +1,6 @@
 ﻿namespace Leads.Core.Config
 
-open Leads.DrivenPorts.Config.DTO
+open Leads.SecondaryPorts.Config.DTO
 open Leads.Utilities.ConstrainedTypes
 open Leads.Core.Config
 
@@ -9,7 +9,7 @@ module ConfigDTO =
         | ValidEntryDto of {| Key: string; Value: string |}
         | InvalidKeyDto of {| Key: string; Error: string |}
         | InvalidValueDto of {| Key: string; Value: string; Error: string |}
-    type ConfigDrivingDto = ConfigEntryDto list option
+    type ConfigPrimaryDto = ConfigEntryDto list option
 open ConfigDTO
 
 type ValidEntry = {
@@ -36,7 +36,7 @@ type ConfigEntry =
 type Configuration = private Configuration of ConfigEntry list option
 
 module Configuration =           
-    type ConfigurationFactory = ConfigDrivenOutputDto -> Configuration
+    type ConfigurationFactory = ConfigSecondaryOutputDto -> Configuration
     let create: ConfigurationFactory = function
         | Some stringMap ->
             stringMap
@@ -75,7 +75,7 @@ module Configuration =
                 | None -> Ok None
         | None -> Ok None
         
-    let toDrivingDto (configuration: Configuration) :ConfigDrivingDto =        
+    let toPrimaryDto (configuration: Configuration) :ConfigPrimaryDto =        
         match value configuration with
         | Some configEntries ->
             configEntries
@@ -97,7 +97,7 @@ module Configuration =
         
     // LEFT OFF: how to resolve problem of duplicated logic around construction of the dto? Do i need dto at all? What should be the contract of listForestS?
     // LEFT OFF: Get rid of all mentions of file in config in application core and move required config to as adapters?
-    let toValidDrivenInputDto (configuration: Configuration) :ValidConfigDrivenInputDto =
+    let toValidSecondaryInputDto (configuration: Configuration) :ValidConfigSecondaryInputDto =
         match value configuration with
         | Some configEntries ->
             configEntries

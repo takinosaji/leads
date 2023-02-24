@@ -17,10 +17,13 @@ module Hash =
                 .ToByteArray()
             |> BitConverter.ToString
         
-        hashString
-            .Replace("-", "")
-            .ToLower()
-        |> create
+        let (Ok hash) =
+            hashString
+                .Replace("-", "")
+                .ToLower()
+            |> create
+        hash
+        
 
 let createDateTime dateTimeString =
     try

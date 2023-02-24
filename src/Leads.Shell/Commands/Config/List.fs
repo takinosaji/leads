@@ -10,7 +10,7 @@ open Leads.Utilities.Dependencies
 open Leads.Shell
 open Leads.Shell.Utilities
 
-let private printConfiguration (configurationDto: ConfigDrivingDto) =
+let private printConfiguration (configurationDto: ConfigPrimaryDto) =
     match configurationDto with
     | Some configuration ->       
         let validItemsToPrint = List.choose (fun li -> match li with  | ValidEntryDto dto -> Some $"{dto.Key} = {dto.Value}" | _ -> None ) configuration

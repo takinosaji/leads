@@ -13,21 +13,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.Core.Tests", "Leads.Core.Tests\Leads.Core.Tests.fsproj", "{9ED5C129-7300-4D76-9E59-70C616832754}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.DrivenAdapters", "Leads.DrivenAdapters\Leads.DrivenAdapters.fsproj", "{231F0DB9-DAEC-43C7-A0C0-23376F2BFDC8}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.SecondaryAdapters", "Leads.SecondaryAdapters\Leads.SecondaryAdapters.fsproj", "{231F0DB9-DAEC-43C7-A0C0-23376F2BFDC8}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.Shell.Tests", "Leads.Shell.Tests\Leads.Shell.Tests.fsproj", "{3DD542AF-1D13-43C0-805C-065002737628}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DAC98C5A-336D-4B2D-B5E0-FA4E62DE79F3}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.DrivenPorts", "Leads.DrivenPorts\Leads.DrivenPorts.fsproj", "{B85C5D68-9EB6-46B9-A321-763272F941D5}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.SecondaryPorts", "Leads.SecondaryPorts\Leads.SecondaryPorts.fsproj", "{B85C5D68-9EB6-46B9-A321-763272F941D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationCore", "ApplicationCore", "{4E763486-8C17-4581-9D97-769DC6B48303}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leads.Utilities", "Leads.Utilities\Leads.Utilities.fsproj", "{8A0CAA4F-F490-4FC8-B6A0-11BADCC4DDB7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrivingAdapters", "DrivingAdapters", "{E2A5208C-DBC2-4ED6-91E4-2F439DE9105E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PrimaryAdapters", "PrimaryAdapters", "{E2A5208C-DBC2-4ED6-91E4-2F439DE9105E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrivenAdapters", "DrivenAdapters", "{3C944E5B-8CC0-48CA-8755-5D0E5A53BEE5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SecondaryAdapters", "SecondaryAdapters", "{3C944E5B-8CC0-48CA-8755-5D0E5A53BEE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
