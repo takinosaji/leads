@@ -97,7 +97,7 @@ module Configuration =
         
     // LEFT OFF: how to resolve problem of duplicated logic around construction of the dto? Do i need dto at all? What should be the contract of listForestS?
     // LEFT OFF: Get rid of all mentions of file in config in application core and move required config to as adapters?
-    let toValidSecondaryInputDto (configuration: Configuration) :ValidConfigSecondaryInputDto =
+    let toValidSODto (configuration: Configuration) :ValidConfigSIDto =
         match value configuration with
         | Some configEntries ->
             configEntries

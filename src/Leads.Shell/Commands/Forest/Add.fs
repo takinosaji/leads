@@ -33,15 +33,14 @@ let private printAddedForest (forestDto: ValidForestOutputDto) =
     AnsiConsole.Write(table);
     
 let private handler name =
-    reader {       
-        let! addForestResult = addForestWorkflow name
-        
-        match addForestResult with
-        | Ok forest ->
-            forest |> printAddedForest
-        | Error errorText ->
-            errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run addForestEnvironment
+    let addForestResult = addForestWorkflow name
+                          |> Reader.run addForestEnvironment
+    
+    match addForestResult with
+    | Ok forest ->
+        forest |> printAddedForest
+    | Error errorText ->
+        errorText |> writeColoredLine ConsoleColor.Red
     
 let appendForestAddSubCommand: SubCommandAppender =
     fun cmd ->        

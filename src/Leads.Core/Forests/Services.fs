@@ -19,7 +19,7 @@ let private toGetConfigEnvironment (forestEnvironment:FindForestEnvironment) = {
     provideConfig =  forestEnvironment.provideConfig
 }
 
-type internal FindForests = FindCriteriaDto -> Reader<FindForestEnvironment, Result<ForestsOption, ErrorText>>
+type internal FindForests = AdditiveFindCriteriaDto -> Reader<FindForestEnvironment, Result<ForestsOption, ErrorText>>
 let internal findForests: FindForests =
     fun findCriteria -> reader {
         let! environment = Reader.ask
@@ -27,7 +27,7 @@ let internal findForests: FindForests =
                                     |> Reader.withEnv toGetConfigEnvironment
         return result {
             let! config = getConfigResult
-            let configDto = config |> Configuration.toValidSecondaryInputDto
+            let configDto = config |> Configuration.toValidSODto
             
             let! unvalidatedForestsOption =
                 findCriteria

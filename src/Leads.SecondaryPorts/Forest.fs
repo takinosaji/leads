@@ -3,26 +3,26 @@
 open System
 open Leads.SecondaryPorts.Config.DTO
 
-module DTO =     
+module DTO =       
     type TextCriteria =
-        | All
-        | ContainsText of string
+        | Any
+        | Contains of string
+        | Exact of string
         
-    type FindCriteriaDto = {
-        text: TextCriteria
-        statuses: string list
+    type AdditiveFindCriteriaDto = {
+        Name: TextCriteria
+        Hash: TextCriteria
+        Statuses: string list
     }
     
-    type ForestSecondaryInputDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
-    type ForestSODto = ForestSecondaryInputDto
+    type ForestSIDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
+    type ForestSODto = ForestSIDto
     
-    type ForestsSecondaryInputDto = ForestSecondaryInputDto list option
-    type ForestsSecondaryOutputDto = ForestSODto list option
-    
-
+    type ForestsSecondaryInputDto = ForestSIDto list option
+    type ForestsSecondaryOutputDto = ForestSODto list option    
 open DTO
 
-type ForestAppender = ValidConfigSecondaryInputDto -> ForestSecondaryInputDto -> Result<ForestSODto, string>
-type ForestRetriever = ValidConfigSecondaryInputDto -> string -> Result<ForestSODto option, string>
-type ForestsFinder = ValidConfigSecondaryInputDto -> FindCriteriaDto -> Result<ForestSODto list option, string>
-type ForestUpdater = ValidConfigSecondaryInputDto -> ForestSecondaryInputDto -> Result<ForestSODto, string>
+type ForestAppender = ValidConfigSIDto -> ForestSIDto -> Result<ForestSODto, string>
+type ForestRetriever = ValidConfigSIDto -> string -> Result<ForestSODto option, string>
+type ForestsFinder = ValidConfigSIDto -> AdditiveFindCriteriaDto -> Result<ForestSODto list option, string>
+type ForestUpdater = ValidConfigSIDto -> ForestSIDto -> Result<ForestSODto, string>

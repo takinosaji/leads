@@ -3,9 +3,9 @@
 module DTO = 
     type ConfigSecondaryOutputDto = Map<string, string> Option
     
-    type ValidConfigSecondaryInputDto = (string * string) list option 
-    module ValidConfigSecondaryInputDto =
-        let find (validConfiguration: ValidConfigSecondaryInputDto) (key: string) =
+    type ValidConfigSIDto = (string * string) list option 
+    module ValidConfigSIDto =
+        let find (validConfiguration: ValidConfigSIDto) (key: string) =
             match validConfiguration with
             | Some configuration  ->
                match List.tryFind (fun li -> fst(li) = key) configuration with
@@ -14,7 +14,7 @@ module DTO =
                | None -> None
             | None -> None
             
-        let findOrDefault (validConfiguration: ValidConfigSecondaryInputDto) (key: string) (``default``: string) =
+        let findOrDefault (validConfiguration: ValidConfigSIDto) (key: string) (``default``: string) =
             match find validConfiguration key with
             | Some value -> value
             | None -> ``default``               

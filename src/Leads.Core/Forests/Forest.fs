@@ -82,7 +82,7 @@ module Forest =
                 Error = errorText
             })
             
-    let internal toSecondaryInputDto (validForest:ValidForest) :ForestSecondaryInputDto =
+    let internal toSIDto (validForest:ValidForest) :ForestSIDto =
         {
            Hash = Hash.value validForest.Hash
            Name = ForestName.value validForest.Name

@@ -20,7 +20,7 @@ let printForests = function
         let validForestsToPrint = List.choose (fun li -> match li with | ValidForestPODtoCase dto -> Some dto | _ -> None ) forestDTOs
         match validForestsToPrint with
         | [] -> ()
-        | _ -> printValidForestTable validForestsToPrint
+        | _ -> printValidForests "Valid Forests" validForestsToPrint
         
         let invalidValuesToPrint = List.choose (fun li -> match li with | InvalidForestPODtoCase dto -> Some dto | _ -> None) forestDTOs
         match invalidValuesToPrint with

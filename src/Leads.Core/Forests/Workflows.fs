@@ -1,9 +1,11 @@
 ﻿module Leads.Core.Forests.Workflows
 
+open System
 open Leads.Core.Config
 open Leads.Core.Config.Services
 open Leads.Core.Forests.Forest.DTO
 open Leads.Core.Forests.ForestsOption.DTO
+open Leads.Core.Models
 open Leads.SecondaryPorts.Config
 open Leads.SecondaryPorts.Forest
 open Leads.Utilities.ConstrainedTypes
@@ -18,18 +20,20 @@ type AddForestEnvironment = {
     provideConfig: ConfigurationProvider
     addForest: ForestAppender
 }
+let private addToGetConfigEnvironment (forestEnvironment:AddForestEnvironment): GetConfigEnvironment = {
+    provideConfig = forestEnvironment.provideConfig
+}
 
 type UpdateForestEnvironment = {
     provideConfig: ConfigurationProvider
     findForests: ForestsFinder
     updateForest: ForestUpdater
 }
-
-let private addToGetConfigEnvironment (forestEnvironment:AddForestEnvironment): GetConfigEnvironment = {
+let private updateToGetConfigEnvironment (forestEnvironment:UpdateForestEnvironment): GetConfigEnvironment = {
     provideConfig = forestEnvironment.provideConfig
 }
 
-let toFindForestsEnvironment (forestEnvironment: UpdateForestEnvironment): FindForestEnvironment = {
+let updateToFindForestsEnvironment (forestEnvironment: UpdateForestEnvironment): FindForestEnvironment = {
     provideConfig = forestEnvironment.provideConfig
     findForests = forestEnvironment.findForests
 }
@@ -39,8 +43,9 @@ type ListForestsWorkflow = ForestStatuses -> Reader<FindForestEnvironment, Resul
 let listForestsWorkflow: ListForestsWorkflow =
     fun statuses -> reader {
         let findCriteria = {
-            text = All
-            statuses = statuses |> ForestStatuses.toStatusesSecondaryDto
+            Name = Any
+            Hash = Any
+            Statuses = statuses |> ForestStatuses.toStatusesSecondaryDto
         }
         let! listForestResult = findForests findCriteria
         return listForestResult
@@ -49,12 +54,13 @@ let listForestsWorkflow: ListForestsWorkflow =
     }
        
 // TODO: Write unit tests        
-type DescribeForestsWorkflow = string -> ForestStatuses -> Reader<FindForestEnvironment, Result<ValidForestPODto list option, string>>
+type DescribeForestsWorkflow = string -> ForestStatuses -> Reader<FindForestEnvironment, Result<ValidForestsOptionPODto, string>>
 let describeForestsWorkflow: DescribeForestsWorkflow =
     fun searchText targetStatuses -> reader {                   
         let findCriteria = {
-            text = ContainsText searchText
-            statuses = targetStatuses |> ForestStatuses.toStatusesSecondaryDto
+            Name = Contains searchText
+            Hash = Contains searchText
+            Statuses = targetStatuses |> ForestStatuses.toStatusesSecondaryDto
         }
         
         let! listForestResult = findForests findCriteria
@@ -75,13 +81,13 @@ let addForestWorkflow: AddForestWorkflow =
         return result {   
             let! name = ForestName.create name
             let! config = getConfigResult
-            let configDto = Configuration.toValidSecondaryInputDto config
+            let configDto = Configuration.toValidSODto config
                             
             return!
                 match Forest.newForest name with
                 | Ok forest ->
                     forest
-                    |> Forest.toSecondaryInputDto
+                    |> Forest.toSIDto
                     |> environment.addForest configDto
                     |> Result.mapError stringToErrorText
                 | Error e -> Error e
@@ -90,3 +96,42 @@ let addForestWorkflow: AddForestWorkflow =
 
 type CompleteForestWorkflow = string -> Reader<UpdateForestEnvironment, Result<ValidForestPODto, string>>
 let completeForestWorkflow: CompleteForestWorkflow =
+    fun forestHash -> reader {
+        let! environment = Reader.ask
+        let! getConfigResult = getConfig()
+                                |> Reader.withEnv updateToGetConfigEnvironment
+        
+        let findCriteria = {
+            Name = Any
+            Hash = Exact forestHash
+            Statuses = ForestStatuses.Active |> ForestStatuses.toStatusesSecondaryDto
+        }        
+        let! findForestResult = findForests findCriteria
+                                |> Reader.withEnv updateToFindForestsEnvironment
+                                
+        return result {
+            let! config = getConfigResult
+            let configDto = Configuration.toValidSODto config
+            
+            let! foundForests = findForestResult
+                                |> Result.map ForestsOption.filterOutInvalid
+            return!
+                match foundForests with
+                | None ->
+                    Error (ErrorText "Active forest with Hash={forestHash} has not been found")
+                | Some [validForest] ->
+                    let completedForest =
+                        { validForest with
+                            LastModified = DateTime.UtcNow
+                            Status = ForestStatus.createCompleted() }
+                        
+                    completedForest
+                    |> Forest.toSIDto
+                    |> environment.updateForest configDto
+                    |> Result.map (fun _ -> completedForest |> Forest.toPrimaryOutputDto)
+                    |> Result.mapError stringToErrorText
+                | Some forests ->
+                    let names = String.Join(", ", forests |> List.map (fun f -> f.Name))
+                    Error (ErrorText $"Found multiple forests with Hash={forestHash}. Hash is supposed to be unique. Forest names are {names}.")
+        } |> Result.mapError errorTextToString    
+    }

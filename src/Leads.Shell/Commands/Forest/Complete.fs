@@ -4,9 +4,8 @@ open System
 
 open System.CommandLine
 
-open Leads.Core.Forests
-open Leads.Core.Forests.Workflows
 open Leads.Core.Forests.Forest.DTO
+open Leads.Core.Forests.Workflows
 open Leads.Utilities.Dependencies
 
 open Leads.SecondaryPorts.Forest.DTO
@@ -16,7 +15,7 @@ open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Environment
 open Spectre.Console
 
-let private printCompletedForest (forestDto: ValidForestOutputDto) =
+let private printCompletedForest (forestDto: ValidForestPODto) =
     
     let table = Table()
     
@@ -33,25 +32,16 @@ let private printCompletedForest (forestDto: ValidForestOutputDto) =
            
     AnsiConsole.Write(table);
     
-let private handler searchText =
-    reader {
-        let! forests = describeForestsWorkflow searchText ForestStatuses.Active
-                       |> Reader.withEnv toFindForestsEnvironment
-        
-        match forests with
-        | Ok None ->
-            writeLine $"Any forests with name or id containing {searchText} have not been found"
-        | Ok (Some [forest]) ->
-            let! completeForestResult = completeForestWorkflow forest
-        
-            match completeForestResult with
-            | Ok forest ->
-                forest |> printCompletedForest
-            | Error errorText ->
-                errorText |> writeColoredLine ConsoleColor.Red
-            | Error errorText ->
-            errorText |> writeColoredLine ConsoleColor.Red
-    } |> Reader.run updateForestEnvironment
+let private handler forestHash =
+    let completeForestResult = completeForestWorkflow forestHash
+                               |> Reader.run updateForestEnvironment
+
+    match completeForestResult with
+    | Ok completedForest ->
+        completedForest |> printCompletedForest
+    | Error errorText ->
+        errorText |> writeColoredLine ConsoleColor.Red
+
     
 let appendForestCompleteSubCommand: SubCommandAppender =
     fun cmd ->        

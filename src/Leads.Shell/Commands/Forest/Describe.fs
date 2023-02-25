@@ -4,7 +4,6 @@ open System
 open System.CommandLine
 
 open Leads.Core.Forests
-open Leads.Core.Forests.Forest.DTO
 open Leads.Utilities.Dependencies
 
 open Leads.Core.Forests.Workflows
@@ -14,13 +13,6 @@ open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Utilities
 open Leads.Shell.Commands.Forest.Environment
 
-let printValidForests = function
-    | Some (validForests: ValidForestPODto list) ->
-        match validForests with
-        | [] -> ()
-        | _ -> printValidForestTable validForests
-    | None -> ()    
-
 let private handler searchText allOption completedOption archivedOption =
     reader {
         let statuses = ForestStatuses.composeStatuses allOption completedOption archivedOption
@@ -28,8 +20,11 @@ let private handler searchText allOption completedOption archivedOption =
         let! findForestsResult = describeForestsWorkflow searchText statuses
         
         match findForestsResult with
-        | Ok forests ->
-            forests |> printValidForests
+        | Ok forestsOption ->
+            match forestsOption with
+            | None -> ()
+            | Some forests ->
+                forests |> printValidForests "Found Forests"
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
     } |> Reader.run findForestEnvironment

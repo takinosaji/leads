@@ -10,8 +10,8 @@ open Leads.SecondaryPorts.Forest.DTO
 
 let private getForestFilePath
     (defaultWorkingDirPath: string)
-    (validConfigurationDto: ValidConfigSecondaryInputDto) = 
-    let workingDirPath = ValidConfigSecondaryInputDto.findOrDefault
+    (validConfigurationDto: ValidConfigSIDto) = 
+    let workingDirPath = ValidConfigSIDto.findOrDefault
                                  validConfigurationDto
                                  ConfigKeys.WorkingDirKey
                                  defaultWorkingDirPath
@@ -36,36 +36,41 @@ let private listForests
                         Error(excp.Message)
                 )
             
-let private getForestByNameOrHash
-    (forestsFilePath: string)
-    (forestNameOrHash: string)
-    : Result<ForestSODto option, string> =
-        result {
-            let! forestOption = listForests forestsFilePath
-            match forestOption with
-            | Some forests ->
-                return List.tryFind (fun li -> li.Name = forestNameOrHash || li.Hash = forestNameOrHash) forests
-            | None ->
-                return None
-        }
+// let private getForestByNameOrHash
+//     (forestsFilePath: string)
+//     (forestNameOrHash: string)
+//     : Result<ForestSODto option, string> =
+//         result {
+//             let! forestOption = listForests forestsFilePath
+//             match forestOption with
+//             | Some forests ->
+//                 return List.tryFind (fun li -> li.Name = forestNameOrHash || li.Hash = forestNameOrHash) forests
+//             | None ->
+//                 return None
+//         }
       
+let private forestFieldPredicate (fieldResolver: ForestSODto -> string) textCriteria forest =
+    let fieldValue = fieldResolver forest
+    match textCriteria with
+    | Any -> true
+    | Contains textToSearch ->
+        fieldValue.ToLower().Contains(textToSearch.ToLower())
+    | Exact textToSearch ->
+        fieldValue.ToLower() = textToSearch.ToLower()
+        
 let private findForests
     (forestsFilePath: string)
-    (findCriteria: FindCriteriaDto) =
+    (findCriteria: AdditiveFindCriteriaDto) =
         result {
             let! forestOption = listForests forestsFilePath 
             return
                 match forestOption with
                 | Some forests ->
                     let filteredForests =
-                        forests
-                        |> List.filter (fun li ->
-                            match findCriteria.text with
-                            | All -> true
-                            | ContainsText textToSearch ->
-                                li.Hash.ToLower().Contains(textToSearch.ToLower()) ||
-                                li.Name.ToLower().Contains(textToSearch.ToLower()))         
-                        |> List.filter (fun li -> List.contains li.Status findCriteria.statuses)
+                        forests                        
+                        |> List.filter (forestFieldPredicate (fun f -> f.Name) findCriteria.Name) 
+                        |> List.filter (forestFieldPredicate (fun f -> f.Hash) findCriteria.Hash)            
+                        |> List.filter (fun li -> List.contains li.Status findCriteria.Statuses)
                     match filteredForests with
                     | [] -> None
                     | _ -> Some filteredForests
@@ -75,7 +80,7 @@ let private findForests
 
 let private persistForests
     (forestsFilePath: string)
-    (forestsDto: ForestSecondaryInputDto list) =    
+    (forestsDto: ForestSIDto list) =    
     try   
         let json = Json.serialize forestsDto    
         File.WriteAllText(forestsFilePath, json)
@@ -85,11 +90,11 @@ let private persistForests
 
 let private addForest
     (forestsFilePath: string)
-    (forestDto: ForestSecondaryInputDto) =
+    (forestDto: ForestSIDto) =
         result {
-            let! forestOption = listForests forestsFilePath
+            let! forestsOption = listForests forestsFilePath
             let! _ =
-                match forestOption with
+                match forestsOption with
                 | Some forests ->
                     match List.choose (fun li ->
                         if li.Hash = forestDto.Hash  then
@@ -100,7 +105,7 @@ let private addForest
                             None
                             ) forests with
                     | firstFinding :: _ ->
-                        Error($"The forest with {fst firstFinding} {snd firstFinding} already exists")
+                        Error $"The forest with {fst firstFinding} {snd firstFinding} already exists"
                     | [] ->
                         List.append forests [forestDto] 
                         |> persistForests forestsFilePath
@@ -110,10 +115,29 @@ let private addForest
             return forestDto
         }
         
+let updateForest
+    (forestsFilePath: string)
+    (forestToUpdate: ForestSIDto) =
+    result {
+        let! forestsOption = listForests forestsFilePath
+        return!
+            match forestsOption with
+            | Some forests ->
+                let indexToReplace = List.findIndex (fun li -> li.Hash = forestToUpdate.Hash) forests
+                     
+                forests
+                |> List.removeAt indexToReplace
+                |> List.insertAt indexToReplace forestToUpdate
+                |> persistForests forestsFilePath
+            | None ->
+                Error $"Forest with Hash={forestToUpdate.Hash} has not been found"                
+    }
+    
+    
 let createLocalJsonFileForestAdapters defaultWorkingDirPath =
     {|
-        getForest = fun validConfigurationDto forestNameOrHashDto ->
-            getForestByNameOrHash <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestNameOrHashDto
+        // getForest = fun validConfigurationDto forestNameOrHash ->
+        //     getForestByNameOrHash <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestNameOrHash
         addForest = fun validConfigurationDto forestDto ->
            addForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto           
         findForests = fun validConfigurationDto searchCriteriaDto ->
