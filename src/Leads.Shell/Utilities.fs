@@ -5,7 +5,7 @@ open System.CommandLine
 
 let createCommand name description =
     let command = Command(name, description)
-    command.AddAlias($"-{name[0]}")   
+    command.AddAlias($"{name[0]}")   
     
     command
 
@@ -41,6 +41,9 @@ let addArgument<'a> (name:string) description (cmd:Command) =
     
     cmd
    
+
+let writeLine (text:string) =
+    Console.WriteLine text
 
 let writeColoredLine color (text:string) =
     Console.ForegroundColor <- color

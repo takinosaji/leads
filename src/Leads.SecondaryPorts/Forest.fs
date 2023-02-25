@@ -14,15 +14,15 @@ module DTO =
     }
     
     type ForestSecondaryInputDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
-    type ForestSecondaryOutputDto = ForestSecondaryInputDto
+    type ForestSODto = ForestSecondaryInputDto
     
     type ForestsSecondaryInputDto = ForestSecondaryInputDto list option
-    type ForestsSecondaryOutputDto = ForestSecondaryOutputDto list option
+    type ForestsSecondaryOutputDto = ForestSODto list option
     
 
 open DTO
 
-type ForestsProvider = ValidConfigSecondaryInputDto -> Result<ForestSecondaryOutputDto, string>
-type ForestAppender = ValidConfigSecondaryInputDto -> ForestSecondaryInputDto -> Result<ForestSecondaryOutputDto, string>
-type ForestRetriever = ValidConfigSecondaryInputDto -> string -> Result<ForestSecondaryOutputDto option, string>
-type ForestsFinder = ValidConfigSecondaryInputDto -> FindCriteriaDto -> Result<ForestSecondaryOutputDto list option, string>
+type ForestAppender = ValidConfigSecondaryInputDto -> ForestSecondaryInputDto -> Result<ForestSODto, string>
+type ForestRetriever = ValidConfigSecondaryInputDto -> string -> Result<ForestSODto option, string>
+type ForestsFinder = ValidConfigSecondaryInputDto -> FindCriteriaDto -> Result<ForestSODto list option, string>
+type ForestUpdater = ValidConfigSecondaryInputDto -> ForestSecondaryInputDto -> Result<ForestSODto, string>

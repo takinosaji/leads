@@ -19,7 +19,7 @@ let private getForestFilePath
 
 let private listForests
     (forestsFilePath: string)    
-    : Result<ForestSecondaryOutputDto list option, string> =         
+    : Result<ForestSODto list option, string> =         
         using (File.Open(forestsFilePath, FileMode.OpenOrCreate))
             (fun fileStream -> 
                 use reader = new StreamReader(fileStream)
@@ -28,7 +28,7 @@ let private listForests
                 | "" -> Ok None
                 | _ ->
                     try
-                        let forests = Json.deserialize<ForestSecondaryOutputDto list> content
+                        let forests = Json.deserialize<ForestSODto list> content
                         match forests with
                         | [] -> Ok None
                         | _ -> Ok (Some forests)
@@ -39,7 +39,7 @@ let private listForests
 let private getForestByNameOrHash
     (forestsFilePath: string)
     (forestNameOrHash: string)
-    : Result<ForestSecondaryOutputDto option, string> =
+    : Result<ForestSODto option, string> =
         result {
             let! forestOption = listForests forestsFilePath
             match forestOption with
@@ -118,7 +118,7 @@ let createLocalJsonFileForestAdapters defaultWorkingDirPath =
            addForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto           
         findForests = fun validConfigurationDto searchCriteriaDto ->
            findForests <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| searchCriteriaDto
-        // completeForest = fun validConfigurationDto forestDto ->
-        //    completeForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto
+        updateForest = fun validConfigurationDto forestDto ->
+           updateForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto
            
     |}

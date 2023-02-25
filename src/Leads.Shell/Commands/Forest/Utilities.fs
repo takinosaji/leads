@@ -1,14 +1,14 @@
 ﻿module Leads.Shell.Commands.Forest.Utilities
 
 open Leads.Core.Forests
-open Leads.Core.Forests.ForestDTO
+open Leads.Core.Forests.Forest.DTO
 
 open Leads.SecondaryPorts.Forest.DTO
 
 open Spectre.Console
 open FSharp.Json
 
-let printValidForestTable (validForests: ValidForestOutputDto list) =
+let printValidForestTable (validForests: ValidForestPODto list) =
     let table = Table()
 
     table.AddColumn("Name")
@@ -50,16 +50,5 @@ let printInvalidForestTable (invalidForests: InvalidForestOutputDto list) =
         
     AnsiConsole.Write(table);
 
-let printForests = function
-   | Some (forestDTOs: ForestPrimaryOutputDto list) ->
-        let validForestsToPrint = List.choose (fun li -> match li with | ValidForestOutputDto dto -> Some dto | _ -> None ) forestDTOs
-        match validForestsToPrint with
-        | [] -> ()
-        | _ -> printValidForestTable validForestsToPrint
-        
-        let invalidValuesToPrint = List.choose (fun li -> match li with | InvalidForestOutputDto dto -> Some dto | _ -> None) forestDTOs
-        match invalidValuesToPrint with
-        | [] -> ()
-        | _ -> printInvalidForestTable invalidValuesToPrint
-   | None -> ()
+
   

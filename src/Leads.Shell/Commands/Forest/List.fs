@@ -5,6 +5,7 @@ open System
 open System.CommandLine
 
 open Leads.Core.Forests
+open Leads.Core.Forests.Forest.DTO
 open Leads.Utilities.Dependencies
 
 open Leads.Core.Forests.Workflows
@@ -13,6 +14,19 @@ open Leads.Shell
 open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Utilities
 open Leads.Shell.Commands.Forest.Environment
+    
+let printForests = function
+   | Some (forestDTOs: ForestPODto list) ->
+        let validForestsToPrint = List.choose (fun li -> match li with | ValidForestPODtoCase dto -> Some dto | _ -> None ) forestDTOs
+        match validForestsToPrint with
+        | [] -> ()
+        | _ -> printValidForestTable validForestsToPrint
+        
+        let invalidValuesToPrint = List.choose (fun li -> match li with | InvalidForestPODtoCase dto -> Some dto | _ -> None) forestDTOs
+        match invalidValuesToPrint with
+        | [] -> ()
+        | _ -> printInvalidForestTable invalidValuesToPrint
+   | None -> ()
     
 let private handler =
     fun allOption completedOption archivedOption ->

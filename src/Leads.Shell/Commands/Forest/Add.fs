@@ -4,7 +4,7 @@ open System
 
 open System.CommandLine
 
-open Leads.Core.Forests.ForestDTO
+open Leads.Core.Forests.Forest.DTO
 open Leads.Utilities.Dependencies
 
 open Leads.SecondaryPorts.Forest.DTO

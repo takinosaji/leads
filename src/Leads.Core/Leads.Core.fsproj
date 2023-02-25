@@ -16,7 +16,7 @@
         <Compile Include="Forests\ForestStatus.fs" />
         <Compile Include="Forests\ForestStatuses.fs" />
         <Compile Include="Forests\Forest.fs" />
-        <Compile Include="Forests\Forests.fs" />
+        <Compile Include="Forests\ForestsOption.fs" />
         <Compile Include="Forests\Services.fs" />
         <Compile Include="Forests\Workflows.fs" />
         <Compile Include="Leads.fs" />

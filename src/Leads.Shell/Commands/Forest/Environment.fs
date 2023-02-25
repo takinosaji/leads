@@ -20,8 +20,9 @@ let addForestEnvironment: AddForestEnvironment = {
     addForest = forestSecondaryAdapters.addForest
 }
 
-// let completeForestEnvironment: CompleteForestEnvironment = {
-//     provideConfig = getForestsEnvironment.provideConfig
-//     completeForest = forestSecondaryAdapters.completeForest
-// }
+let updateForestEnvironment: UpdateForestEnvironment = {
+    provideConfig = findForestEnvironment.provideConfig
+    findForests = forestSecondaryAdapters.findForests
+    updateForest = forestSecondaryAdapters.updateForest
+}
 
