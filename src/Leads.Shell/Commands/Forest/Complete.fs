@@ -47,12 +47,12 @@ let appendForestCompleteSubCommand: SubCommandAppender =
     fun cmd ->        
         let completeForestSubCommand =
             createCommand "complete" "The complete command completes existing active forest"
-        let nameOrHashArgument =
-            createArgument<string> "searchText" "Provide the complete or partial forest hash or name"   
+        let hashArgument =
+            createArgument<string> "hash" "Provide the complete or partial forest hash or name"   
         
-        completeForestSubCommand.AddArgument nameOrHashArgument
+        completeForestSubCommand.AddArgument hashArgument
         
-        completeForestSubCommand.SetHandler(handler, nameOrHashArgument)
+        completeForestSubCommand.SetHandler(handler, hashArgument)
         
         cmd.AddCommand completeForestSubCommand
         

@@ -57,20 +57,25 @@ let private forestFieldPredicate (fieldResolver: ForestSODto -> string) textCrit
         fieldValue.ToLower().Contains(textToSearch.ToLower())
     | Exact textToSearch ->
         fieldValue.ToLower() = textToSearch.ToLower()
-        
 let private findForests
     (forestsFilePath: string)
-    (findCriteria: AdditiveFindCriteriaDto) =
+    (orFindCriteria: OrFindCriteria) =
         result {
             let! forestOption = listForests forestsFilePath 
             return
                 match forestOption with
                 | Some forests ->
                     let filteredForests =
-                        forests                        
-                        |> List.filter (forestFieldPredicate (fun f -> f.Name) findCriteria.Name) 
-                        |> List.filter (forestFieldPredicate (fun f -> f.Hash) findCriteria.Hash)            
-                        |> List.filter (fun li -> List.contains li.Status findCriteria.Statuses)
+                        orFindCriteria
+                        |> List.map (fun andCriteria ->                              
+                            forests                        
+                            |> List.filter (forestFieldPredicate (fun f -> f.Name) andCriteria.Name) 
+                            |> List.filter (forestFieldPredicate (fun f -> f.Hash) andCriteria.Hash)            
+                            |> List.filter (fun li -> List.contains li.Status andCriteria.Statuses)
+                        )
+                        |> List.concat
+                        |> List.distinct                    
+                 
                     match filteredForests with
                     | [] -> None
                     | _ -> Some filteredForests
@@ -90,29 +95,22 @@ let private persistForests
 
 let private addForest
     (forestsFilePath: string)
-    (forestDto: ForestSIDto) =
+    (forestToAdd: ForestSIDto) =
         result {
             let! forestsOption = listForests forestsFilePath
             let! _ =
                 match forestsOption with
                 | Some forests ->
-                    match List.choose (fun li ->
-                        if li.Hash = forestDto.Hash  then
-                            Some ("hash", li.Hash)
-                        elif li.Name = forestDto.Name then
-                            Some ("name", li.Name)
-                        else
-                            None
-                            ) forests with
-                    | firstFinding :: _ ->
-                        Error $"The forest with {fst firstFinding} {snd firstFinding} already exists"
-                    | [] ->
-                        List.append forests [forestDto] 
+                    match List.tryFind (fun li -> li.Hash = forestToAdd.Hash) forests with
+                    | Some foundForest ->
+                        Error $"The forest with Hash {foundForest.Hash} already exists"
+                    | None ->
+                        List.append forests [forestToAdd] 
                         |> persistForests forestsFilePath
                 | None ->
-                    persistForests forestsFilePath [forestDto]
+                    persistForests forestsFilePath [forestToAdd]
                         
-            return forestDto
+            return forestToAdd
         }
         
 let updateForest
@@ -130,10 +128,9 @@ let updateForest
                 |> List.insertAt indexToReplace forestToUpdate
                 |> persistForests forestsFilePath
             | None ->
-                Error $"Forest with Hash={forestToUpdate.Hash} has not been found"                
+                Error $"Forest with Hash {forestToUpdate.Hash} has not been found"                
     }
-    
-    
+       
 let createLocalJsonFileForestAdapters defaultWorkingDirPath =
     {|
         // getForest = fun validConfigurationDto forestNameOrHash ->

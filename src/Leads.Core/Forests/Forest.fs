@@ -33,7 +33,7 @@ module Forest =
     let value (Forest forest) = forest
     
     let internal newForest (forestName: ForestName) = result {
-        let hash = Hash.newRandom()
+        let! hash = Hash.newRandom()
         let timeStamp = DateTime.UtcNow
         let status = ForestStatus.createActive()
         

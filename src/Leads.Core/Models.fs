@@ -3,6 +3,7 @@
 open System
 
 open Leads.Utilities.ConstrainedTypes
+open Leads.Utilities.Result
 
 type Hash = private Hash of string 
 module Hash =
@@ -10,20 +11,17 @@ module Hash =
         createLimitedString (nameof(Hash)) Hash 32 hash           
     let value (Hash hash) = hash
     
-    let newRandom() =     
+    let newRandom() =    
         let hashString =
             Guid
                 .NewGuid()
                 .ToByteArray()
             |> BitConverter.ToString
-        
-        let (Ok hash) =
-            hashString
-                .Replace("-", "")
-                .ToLower()
-            |> create
-        hash
-        
+
+        hashString
+            .Replace("-", "")
+            .ToLower()
+        |> create            
 
 let createDateTime dateTimeString =
     try

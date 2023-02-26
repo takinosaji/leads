@@ -17,6 +17,7 @@ let findForestEnvironment: FindForestEnvironment = {
 
 let addForestEnvironment: AddForestEnvironment = {
     provideConfig = findForestEnvironment.provideConfig
+    findForests = findForestEnvironment.findForests
     addForest = forestSecondaryAdapters.addForest
 }
 
