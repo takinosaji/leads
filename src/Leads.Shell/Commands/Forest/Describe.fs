@@ -24,7 +24,7 @@ let private handler searchText allOption completedOption archivedOption =
             match forestsOption with
             | None -> ()
             | Some forests ->
-                forests |> printValidForests "Found Forests"
+                forests |> printForests "Found Forests"
         | Error errorText ->
             errorText |> writeColoredLine ConsoleColor.Red
     } |> Reader.run findForestEnvironment

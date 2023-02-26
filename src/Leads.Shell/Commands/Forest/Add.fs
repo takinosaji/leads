@@ -15,8 +15,7 @@ open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Environment
 open Spectre.Console
 
-let private printAddedForest (forestDto: ValidForestOutputDto) =
-    
+let private printAddedForest (forestDto: ForestPODto) =
     let table = Table()
     
     table.Title <- TableTitle("New Forest")

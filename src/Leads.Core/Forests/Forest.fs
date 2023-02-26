@@ -8,7 +8,7 @@ open Leads.Utilities.Result
 open Leads.Core.Models   
 open Leads.SecondaryPorts.Forest.DTO
 
-type ValidForest = {
+type ForestData = {
     Hash: Hash
     Name: ForestName
     Status: ForestStatus
@@ -16,30 +16,18 @@ type ValidForest = {
     LastModified: DateTime
 }
     
-type InvalidForestModel = {
-    Forest: ForestSODto
-    Error: ErrorText
-}
-
-type ValidatedForest = 
-    | ValidForestCase of ValidForest
-    | InvalidForestCase of InvalidForestModel
-    
-type Forest = private Forest of ValidatedForest    
+type Forest = private Forest of ForestData    
 
 module Forest =
     module DTO =
-        type ValidForestPODto = ForestSODto
+        type ForestPODto = ForestSODto
         type InvalidForestOutputDto = { Forest: ForestSODto; Error: string }
             
-        type ForestPODto =
-            | ValidForestPODtoCase of ValidForestPODto
-            | InvalidForestPODtoCase of InvalidForestOutputDto
         module ForestPODto =
             let fromSecondaryOutputDto
                 (secondaryOutputDto: ForestSODto)
                 :ForestPODto =
-                    ValidForestPODtoCase secondaryOutputDto    
+                    secondaryOutputDto    
     open DTO
 
     let value (Forest forest) = forest
@@ -49,7 +37,7 @@ module Forest =
         let timeStamp = DateTime.UtcNow
         let status = ForestStatus.createActive()
         
-        return {
+        return Forest {
             Hash = hash
             Name = forestName
             Status = status
@@ -58,56 +46,37 @@ module Forest =
         }
     }
 
-    let internal fromSecondaryOutputDto (inboundDto: ForestSODto): Forest =
-        let fieldsValidationResult = result {
-            let! forestStatus = ForestStatus.create inboundDto.Status 
-            let! forestHash = Hash.create inboundDto.Hash
-            let! forestName = ForestName.create inboundDto.Name          
+    let internal fromSecondaryOutputDto (forestDto: ForestSODto) =
+        result {
+            let! forestStatus = ForestStatus.create forestDto.Status 
+            let! forestHash = Hash.create forestDto.Hash
+            let! forestName = ForestName.create forestDto.Name          
            
-            return {
+            return Forest {
                 Hash = forestHash
                 Name = forestName
                 Status = forestStatus
-                Created = inboundDto.Created
-                LastModified = inboundDto.LastModified 
+                Created = forestDto.Created
+                LastModified = forestDto.LastModified 
             }
         }
-        
-        match fieldsValidationResult with
-        | Ok validatedFields ->
-            Forest(ValidForestCase validatedFields)
-        | Error errorText ->
-            Forest(InvalidForestCase {
-                Forest = inboundDto
-                Error = errorText
-            })
             
-    let internal toSIDto (validForest:ValidForest) :ForestSIDto =
+    let internal toSIDto (forest: Forest) :ForestSIDto =
+        let forestData = value forest
         {
-           Hash = Hash.value validForest.Hash
-           Name = ForestName.value validForest.Name
-           Created = validForest.Created
-           LastModified = validForest.LastModified
-           Status = ForestStatus.value validForest.Status
+           Hash = Hash.value forestData.Hash
+           Name = ForestName.value forestData.Name
+           Created = forestData.Created
+           LastModified = forestData.LastModified
+           Status = ForestStatus.value forestData.Status
         }                
     
-    let internal toValidForestOutputDto validForest: ValidForestPODto =
+    let internal toPODto forest: ForestPODto =
+        let forestData = value forest
         {
-            Hash = Hash.value validForest.Hash
-            Name = ForestName.value validForest.Name
-            Created = validForest.Created
-            LastModified = validForest.LastModified
-            Status = ForestStatus.value validForest.Status
+            Hash = Hash.value forestData.Hash
+            Name = ForestName.value forestData.Name
+            Created = forestData.Created
+            LastModified = forestData.LastModified
+            Status = ForestStatus.value forestData.Status
         }
-    
-    let internal toPrimaryOutputDto (forest:Forest) :ForestPODto =
-        let forestValue = value forest
-        match forestValue with
-        | ValidForestCase validForest ->
-            toValidForestOutputDto validForest
-            |> ValidForestPODtoCase
-        | InvalidForestCase invalidForest ->
-            InvalidForestPODtoCase {
-                Forest = invalidForest.Forest
-                Error = errorTextToString invalidForest.Error
-            }           

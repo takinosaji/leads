@@ -15,7 +15,7 @@ open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Environment
 open Spectre.Console
 
-let private printCompletedForest (forestDto: ValidForestPODto) =
+let private printCompletedForest (forestDto: ForestPODto) =
     
     let table = Table()
     

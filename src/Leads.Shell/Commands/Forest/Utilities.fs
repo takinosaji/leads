@@ -8,7 +8,7 @@ open Leads.SecondaryPorts.Forest.DTO
 open Spectre.Console
 open FSharp.Json
 
-let private printValidForestTable tableTitle (validForests: ValidForestPODto list) =
+let private printValidForestTable tableTitle (validForests: ForestPODto list) =
     let table = Table()
 
     table.AddColumn("Name")
@@ -32,23 +32,5 @@ let private printValidForestTable tableTitle (validForests: ValidForestPODto lis
         
     AnsiConsole.Write(table);
 
-let printInvalidForestTable (invalidForests: InvalidForestOutputDto list) =
-    let table = Table()
-
-    table.AddColumn("Error")
-    table.AddColumn("Forest")
-    
-    table.Title <- TableTitle("Invalid Forests")
-    
-    List.iter
-        (fun dto ->
-            table.AddRow(
-                Json.serialize dto.Forest,
-                "[red]{dto.Error}[/]")
-            ())
-        invalidForests
-        
-    AnsiConsole.Write(table);
-
-let printValidForests tableTitle validForests =
+let printForests tableTitle validForests =
     printValidForestTable tableTitle validForests

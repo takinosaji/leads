@@ -4,8 +4,7 @@ open System
 open Leads.Core.Config
 open Leads.Core.Config.Services
 open Leads.Core.Forests.Forest.DTO
-open Leads.Core.Forests.ForestsOption.DTO
-open Leads.Core.Models
+open Leads.Core.Forests.Forests.DTO
 open Leads.SecondaryPorts.Config
 open Leads.SecondaryPorts.Forest
 open Leads.Utilities.ConstrainedTypes
@@ -49,12 +48,12 @@ let listForestsWorkflow: ListForestsWorkflow =
         }
         let! listForestResult = findForests findCriteria
         return listForestResult
-               |> Result.map ForestsOption.toPrimaryOutputDtoList                 
+               |> Result.map Forests.toOptionPODtoList                 
                |> Result.mapError errorTextToString     
     }
        
 // TODO: Write unit tests        
-type DescribeForestsWorkflow = string -> ForestStatuses -> Reader<FindForestEnvironment, Result<ValidForestsOptionPODto, string>>
+type DescribeForestsWorkflow = string -> ForestStatuses -> Reader<FindForestEnvironment, Result<ForestsOptionPODto, string>>
 let describeForestsWorkflow: DescribeForestsWorkflow =
     fun searchText targetStatuses -> reader {                   
         let findCriteria = {
@@ -64,14 +63,13 @@ let describeForestsWorkflow: DescribeForestsWorkflow =
         }
         
         let! listForestResult = findForests findCriteria
-        return listForestResult
-               |> Result.map ForestsOption.filterOutInvalid  
-               |> Result.map ForestsOption.toValidForestPODtoList                 
+        return listForestResult  
+               |> Result.map Forests.toOptionPODtoList                 
                |> Result.mapError errorTextToString   
     }
                 
 // TODO: Write unit tests
-type AddForestWorkflow = string -> Reader<AddForestEnvironment, Result<ValidForestPODto, string>>
+type AddForestWorkflow = string -> Reader<AddForestEnvironment, Result<ForestPODto, string>>
 let addForestWorkflow: AddForestWorkflow =
     fun name -> reader {
         let! environment = Reader.ask
@@ -94,7 +92,7 @@ let addForestWorkflow: AddForestWorkflow =
         } |> Result.mapError errorTextToString                     
     } 
 
-type CompleteForestWorkflow = string -> Reader<UpdateForestEnvironment, Result<ValidForestPODto, string>>
+type CompleteForestWorkflow = string -> Reader<UpdateForestEnvironment, Result<ForestPODto, string>>
 let completeForestWorkflow: CompleteForestWorkflow =
     fun forestHash -> reader {
         let! environment = Reader.ask
@@ -114,24 +112,22 @@ let completeForestWorkflow: CompleteForestWorkflow =
             let configDto = Configuration.toValidSODto config
             
             let! foundForests = findForestResult
-                                |> Result.map ForestsOption.filterOutInvalid
             return!
                 match foundForests with
-                | None ->
-                    Error (ErrorText "Active forest with Hash={forestHash} has not been found")
-                | Some [validForest] ->
+                | Some [forest] ->
                     let completedForest =
-                        { validForest with
+                        { Forest.value forest with
                             LastModified = DateTime.UtcNow
-                            Status = ForestStatus.createCompleted() }
+                            Status = ForestStatus.createCompleted() } |> Forest
                         
                     completedForest
                     |> Forest.toSIDto
                     |> environment.updateForest configDto
-                    |> Result.map (fun _ -> completedForest |> Forest.toPrimaryOutputDto)
+                    |> Result.map (fun _ -> completedForest |> Forest.toPODto)
                     |> Result.mapError stringToErrorText
                 | Some forests ->
-                    let names = String.Join(", ", forests |> List.map (fun f -> f.Name))
-                    Error (ErrorText $"Found multiple forests with Hash={forestHash}. Hash is supposed to be unique. Forest names are {names}.")
+                    Error (ErrorText $"Found multiple forests with Hash={forestHash}. Hash is supposed to be unique. Forest names are {Forests.extractNamesString forests}.")
+                | None ->
+                    Error (ErrorText "Active forest with Hash={forestHash} has not been found")
         } |> Result.mapError errorTextToString    
     }

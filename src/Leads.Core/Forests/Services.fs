@@ -36,9 +36,13 @@ let internal findForests: FindForests =
                 
             match unvalidatedForestsOption with
             | Some unvalidatedForests ->                
-                return unvalidatedForests
-                        |> List.map Forest.fromSecondaryOutputDto
-                        |> Some
-            | None -> return None            
+                let! forests =
+                    unvalidatedForests
+                    |> List.map Forest.fromSecondaryOutputDto                        
+                    |> Result.fromList
+                    
+                return Some forests
+            | None ->
+                return None            
         }    
     }
