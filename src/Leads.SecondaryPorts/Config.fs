@@ -22,3 +22,4 @@ open DTO
 
 type ConfigurationProvider = unit -> Result<ConfigSecondaryOutputDto, string>
 type ConfigurationValueApplier = string -> string -> Result<unit, string>
+type AllowedConfigKeysProvider = unit -> string list

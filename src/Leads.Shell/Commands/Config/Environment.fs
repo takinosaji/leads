@@ -11,9 +11,11 @@ let private configFilePath = $"{shellEnvironment.defaultWorkingDirPath}/config.j
 let private configSecondaryAdapters = createLocalJsonFileConfigAdapters configFilePath
 
 let getConfigEnvironment: GetConfigEnvironment = {
+        provideAllowedConfigKeys = configSecondaryAdapters.provideAllowedKeys
         provideConfig = configSecondaryAdapters.provideConfiguration
     }
 
 let setConfigValueEnvironment: SetConfigEnvironment = {
+        provideAllowedKeys = configSecondaryAdapters.provideAllowedKeys
         applyConfigValue = configSecondaryAdapters.applyConfigValue
     }

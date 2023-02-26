@@ -11,12 +11,14 @@ open Leads.Utilities.Dependencies
 open Leads.Core.Config
 
 type FindForestEnvironment = {
+    provideAllowedConfigKeys: AllowedConfigKeysProvider
     provideConfig: ConfigurationProvider
     findForests: ForestsFinder
 }
 
 let private toGetConfigEnvironment (forestEnvironment:FindForestEnvironment) = {
-    provideConfig =  forestEnvironment.provideConfig
+    provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
+    provideConfig = forestEnvironment.provideConfig
 }
 
 type internal FindForests = OrFindCriteria -> Reader<FindForestEnvironment, Result<ForestsOption, ErrorText>>

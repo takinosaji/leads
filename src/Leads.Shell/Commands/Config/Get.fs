@@ -29,7 +29,7 @@ let appendConfigGetSubCommand: SubCommandAppender =
         let getConfigSubCommand = Command("get", "The get command retrieves the specific configuration value by key")   
 
         let keyArg = createArgument<string> "key" "Config Key"
-        keyArg.AddCompletions(fun _ -> ConfigKey.AllowedConfigKeys |> Seq.ofList) |> ignore
+        keyArg.AddCompletions(fun _ -> Environment.getConfigEnvironment.provideAllowedConfigKeys() |> Seq.ofList) |> ignore
         
         getConfigSubCommand.AddArgument keyArg
                   

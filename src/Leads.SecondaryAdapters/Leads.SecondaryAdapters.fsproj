@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="FileBased\ConfigKeys.fs" />
         <Compile Include="FileBased\ConfigAdapters.fs" />
         <Compile Include="FileBased\ForestAdapters.fs" />
         <Folder Include="InMemoryBased" />

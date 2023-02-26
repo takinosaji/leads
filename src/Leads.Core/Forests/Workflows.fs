@@ -17,30 +17,36 @@ open Leads.Core.Forests.Services
 open Leads.SecondaryPorts.Forest.DTO
 
 type AddForestEnvironment = {
+    provideAllowedConfigKeys: AllowedConfigKeysProvider
     provideConfig: ConfigurationProvider
     findForests: ForestsFinder
     addForest: ForestAppender
 }
 let private addToGetConfigEnvironment (forestEnvironment:AddForestEnvironment): GetConfigEnvironment = {
+    provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
     provideConfig = forestEnvironment.provideConfig
 }
 
 type UpdateForestEnvironment = {
+    provideAllowedConfigKeys: AllowedConfigKeysProvider
     provideConfig: ConfigurationProvider
     findForests: ForestsFinder
     updateForest: ForestUpdater
 }
 let private updateToGetConfigEnvironment (forestEnvironment:UpdateForestEnvironment): GetConfigEnvironment = {
+    provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
     provideConfig = forestEnvironment.provideConfig
 }
 
 let updateToFindForestsEnvironment (forestEnvironment: UpdateForestEnvironment): FindForestEnvironment = {
+    provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
     provideConfig = forestEnvironment.provideConfig
     findForests = forestEnvironment.findForests
 }
 
 
 let addToFindForestsEnvironment (forestEnvironment: AddForestEnvironment): FindForestEnvironment = {
+    provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
     provideConfig = forestEnvironment.provideConfig
     findForests = forestEnvironment.findForests
 }
@@ -120,62 +126,6 @@ let addForestWorkflow: AddForestWorkflow =
                     Error (ErrorText $"The forests with Name {unvalidatedName} or hash {forestHash} already exist")
         } |> Result.mapError errorTextToString                     
     } 
-
-
-
-// type AddForestWorkflow = string -> Reader<AddForestEnvironment, Result<ForestPODto, string>>
-// let addForestWorkflow: AddForestWorkflow =
-//     fun unvalidatedName -> reader {
-//         let! environment = Reader.ask
-//         let! getConfigResult = getConfig()
-//                                 |> Reader.withEnv addToGetConfigEnvironment
-//                     
-//         return result {   
-//             let! validatedName = ForestName.create unvalidatedName
-//             
-//             match Forest.newForest validatedName with
-//             | Ok newForest ->
-//                 let forestValue = newForest |> Forest.value
-//                 let forestHash = Hash.value forestValue.Hash
-//                 
-//                 let! config = getConfigResult
-//                 let configDto = Configuration.toValidSODto config                    
-//                                 
-//                 let findForestsResult =
-//                     [{
-//                         Name = Any
-//                         Hash = Exact forestHash
-//                         Statuses = ForestStatuses.All |> ForestStatuses.toStatusesSecondaryDto };
-//                     {
-//                         Name = Exact unvalidatedName
-//                         Hash = Any
-//                         Statuses = ForestStatuses.All |> ForestStatuses.toStatusesSecondaryDto }]
-//                     |> findForests
-//                     |> Reader.withEnv addToFindForestsEnvironment
-//                     |> Reader.run environment                        
-//                 let! foundForests = findForestsResult
-//                 
-//                 return!
-//                     match foundForests with
-//                     | None ->                                    
-//                         newForest
-//                         |> Forest.toSIDto
-//                         |> environment.addForest configDto
-//                         |> Result.mapError stringToErrorText                  
-//                     | Some forests ->
-//                         Error (ErrorText $"The forests with Name {unvalidatedName} or hash {forestHash} already exist")
-//             | Error e -> Error e
-//         } |> Result.mapError errorTextToString                     
-//     } 
-//
-
-
-
-
-
-
-
-
 
 type CompleteForestWorkflow = string -> Reader<UpdateForestEnvironment, Result<ForestPODto, string>>
 let completeForestWorkflow: CompleteForestWorkflow =

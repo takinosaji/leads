@@ -4,6 +4,7 @@ open System
 
 open System.CommandLine
 
+open Leads.Core.Forests
 open Leads.Core.Forests.Forest.DTO
 open Leads.Core.Forests.Workflows
 open Leads.Utilities.Dependencies
@@ -16,7 +17,6 @@ open Leads.Shell.Commands.Forest.Environment
 open Spectre.Console
 
 let private printCompletedForest (forestDto: ForestPODto) =
-    
     let table = Table()
     
     table.Title <- TableTitle("Completed Forest")
@@ -29,7 +29,7 @@ let private printCompletedForest (forestDto: ForestPODto) =
     table.AddRow(nameof(forestDto.Status), forestDto.Status)
     table.AddRow(nameof(forestDto.Created), forestDto.Created.ToString())
     table.AddRow(nameof(forestDto.LastModified), forestDto.LastModified.ToString())
-           
+
     AnsiConsole.Write(table);
     
 let private handler forestHash =

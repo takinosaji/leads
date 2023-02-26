@@ -9,6 +9,7 @@ open Leads.Core.Config.ConfigValueDTO
 open Leads.Core.Config.Services
 
 type SetConfigEnvironment = {
+    provideAllowedKeys: AllowedConfigKeysProvider
     applyConfigValue: ConfigurationValueApplier
 }
 
@@ -24,19 +25,24 @@ let getConfigValueWorkflow: GetConfigValueWorkflow =
 // TODO: Write unit tests
 type SetConfigValueWorkflow = string -> string -> Reader<SetConfigEnvironment, Result<unit, string>>
 let setConfigValueWorkflow: SetConfigValueWorkflow =
-    fun keyToUpdateString newValueString -> reader {
-        let! services = Reader.ask
-
-        return result {
-            let! key = ConfigKey.create keyToUpdateString
-            let! value = ConfigValue.create newValueString
-            let! updateResult =
-                services.applyConfigValue (ConfigKey.value key) (ConfigValue.value value)
-                |> Result.mapError stringToErrorText
-            
-            return updateResult
-        } |> Result.mapError errorTextToString
-    }
+    fun keyToUpdate newValue -> reader {
+        let! environment = Reader.ask
+        
+        return
+            match List.contains <| keyToUpdate <| environment.provideAllowedKeys() with
+            | true ->
+                result {
+                    let! key = ConfigKey.create keyToUpdate
+                    let! value = ConfigValue.create newValue
+                    let! updateResult =
+                        environment.applyConfigValue (ConfigKey.value key) (ConfigValue.value value)
+                        |> Result.mapError stringToErrorText
+                    
+                    return updateResult
+                } |> Result.mapError errorTextToString
+            | false ->
+                Error $"Configuration key {keyToUpdate} is not allowed"  
+        } 
         
 // TODO: Write unit tests
 type ListConfigWorkflow = unit -> Reader<GetConfigEnvironment, Result<ConfigPrimaryDto, string>>
@@ -46,4 +52,4 @@ let listConfigWorkflow: ListConfigWorkflow =
         return config
             |> Result.map Configuration.toPrimaryDto
             |> Result.mapError errorTextToString   
-    }
+    }   

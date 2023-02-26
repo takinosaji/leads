@@ -3,13 +3,9 @@
 open Leads.Utilities.ConstrainedTypes
 
 type ConfigKey = private ConfigKey of key:string
-module ConfigKey =
-    let DefaultForestKey = "default.forest"
-    let WorkingDirKey = "working.dir"
-    let AllowedConfigKeys = [ DefaultForestKey; WorkingDirKey ]
-    
+module ConfigKey =   
     let create (keyString:string) =
-        createPredefinedString (nameof(ConfigKey)) ConfigKey (keyString.ToLower()) AllowedConfigKeys           
+        createLimitedString (nameof(ConfigKey)) ConfigKey 15 (keyString.ToLower())            
     let value (ConfigKey key) = key
 
 

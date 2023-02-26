@@ -1,6 +1,5 @@
 ﻿namespace Leads.Core.Forests
 
-open System
 open Leads.Utilities.ConstrainedTypes
 
 type ForestStatus = private ForestStatus of string
@@ -21,14 +20,8 @@ module ForestStatus =
        
     let value (ForestStatus status) = status 
     
-    let internal createActive() =
-        let (Ok status) = create ActiveForestStatus
-        status
+    let internal createActive() = ForestStatus ActiveForestStatus
         
-    let internal createArchived() =
-        let (Ok status) = create ArchivedForestStatus
-        status
+    let internal createArchived() = ForestStatus ArchivedForestStatus
                 
-    let internal createCompleted() =
-        let (Ok status) = create CompletedForestStatus
-        status
+    let internal createCompleted() = ForestStatus CompletedForestStatus

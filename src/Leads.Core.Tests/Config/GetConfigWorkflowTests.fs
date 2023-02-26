@@ -26,6 +26,7 @@ let ``When requesting the existing key expect return value`` requestedKey expect
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow requestedKey
     } |> Reader.run {
+        provideAllowedConfigKeys = fun () -> []
         provideConfig = stubConfigProvider
     })
     
@@ -35,6 +36,7 @@ let ``When requesting the existing key expect return value`` requestedKey expect
 [<Fact>]
 let ``When requesting the unknown key expect error message`` () =
     let unknownKey = "unknownKey"
+    let stubAllowedKeyProvider = fun () -> []
     let stubConfigProvider: ConfigurationProvider =
         fun _ ->
             Ok(Some fullConfiguration)
@@ -42,6 +44,7 @@ let ``When requesting the unknown key expect error message`` () =
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow unknownKey
     } |> Reader.run {
+        provideAllowedConfigKeys = stubAllowedKeyProvider
         provideConfig = stubConfigProvider
     })
     
@@ -51,6 +54,7 @@ let ``When requesting the unknown key expect error message`` () =
 [<Fact>]
 let ``When requesting the missing entry expect None`` () =
     let knownKey = "working.dir"
+    let stubAllowedKeyProvider = fun () -> []
     let stubConfigProvider: ConfigurationProvider =
         fun _ ->
             Ok(Some emptyConfiguration)
@@ -58,6 +62,7 @@ let ``When requesting the missing entry expect None`` () =
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow knownKey
     } |> Reader.run {
+        provideAllowedConfigKeys = stubAllowedKeyProvider
         provideConfig = stubConfigProvider
     })
     
@@ -67,6 +72,7 @@ let ``When requesting the missing entry expect None`` () =
 [<Fact>]
 let ``When requesting the known key and configuration file is missing expect None`` () =
     let knownKey = "working.dir"
+    let stubAllowedKeyProvider = fun () -> []
     let stubConfigProvider: ConfigurationProvider =
         fun _ ->
             Ok(None)
@@ -74,6 +80,7 @@ let ``When requesting the known key and configuration file is missing expect Non
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow knownKey
     } |> Reader.run {
+        provideAllowedConfigKeys = stubAllowedKeyProvider
         provideConfig = stubConfigProvider
     })
     
@@ -84,6 +91,7 @@ let ``When requesting the known key and configuration file is missing expect Non
 let ``When requesting the known key and configuration provider throws expect error message`` () =
     let knownKey = "working.dir"
     let errorMessage = "Any error message"
+    let stubAllowedKeyProvider = fun () -> []
     let stubConfigProvider: ConfigurationProvider =
         fun _ ->
             Error(errorMessage)
@@ -91,6 +99,7 @@ let ``When requesting the known key and configuration provider throws expect err
     let configValueOutput = (reader {        
         return! getConfigValueWorkflow knownKey
     } |> Reader.run {
+        provideAllowedConfigKeys = stubAllowedKeyProvider
         provideConfig = stubConfigProvider
     })
     

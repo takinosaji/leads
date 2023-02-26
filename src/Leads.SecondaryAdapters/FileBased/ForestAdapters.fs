@@ -8,12 +8,14 @@ open Leads.Utilities.Result
 open Leads.SecondaryPorts.Config.DTO
 open Leads.SecondaryPorts.Forest.DTO
 
+open Leads.SecondaryAdapters.FileBased.ConfigAdapters.AllowedKeys
+
 let private getForestFilePath
     (defaultWorkingDirPath: string)
     (validConfigurationDto: ValidConfigSIDto) = 
     let workingDirPath = ValidConfigSIDto.findOrDefault
                                  validConfigurationDto
-                                 ConfigKeys.WorkingDirKey
+                                 WorkingDirKey
                                  defaultWorkingDirPath
     Path.Combine(workingDirPath, "forests.json")  
 

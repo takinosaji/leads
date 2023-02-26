@@ -3,6 +3,11 @@
 open System.IO
 open FSharp.Json
 
+module AllowedKeys = 
+    let DefaultForestKey = "default.forest"
+    let WorkingDirKey = "working.dir"
+open AllowedKeys
+
 // TODO: write unit tests
 let private provideConfiguration =
     fun filePath ->
@@ -44,5 +49,6 @@ let createLocalJsonFileConfigAdapters configFilePath =
     {|
        provideConfiguration = fun (_:unit) -> provideConfiguration configFilePath
        applyConfigValue = fun key value -> applyConfigValue configFilePath key value
+       provideAllowedKeys = fun () -> [DefaultForestKey; WorkingDirKey]  
     |}
             
