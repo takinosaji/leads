@@ -10,7 +10,7 @@
     <ItemGroup>
       <Compile Include="Types.fs" />
       <Compile Include="Utilities.fs" />
-      <Compile Include="Environment.fs" />
+      <Compile Include="ShellEnvironment.fs" />
       <Compile Include="Commands\Config\Environment.fs" />
       <Compile Include="Commands\Config\Get.fs" />
       <Compile Include="Commands\Config\Set.fs" />
@@ -22,6 +22,8 @@
       <Compile Include="Commands\Forest\Describe.fs" />
       <Compile Include="Commands\Forest\Add.fs" />
       <Compile Include="Commands\Forest\Complete.fs" />
+      <Compile Include="Commands\Forest\Archive.fs" />
+      <Compile Include="Commands\Forest\Use.fs" />
       <Compile Include="Commands\Forest\Appender.fs" />
       <Compile Include="Program.fs" />
     </ItemGroup>

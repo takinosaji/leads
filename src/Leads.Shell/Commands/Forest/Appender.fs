@@ -7,6 +7,8 @@ open Leads.Shell.Commands.Forest.List
 open Leads.Shell.Commands.Forest.Add
 open Leads.Shell.Commands.Forest.Describe
 open Leads.Shell.Commands.Forest.Complete
+open Leads.Shell.Commands.Forest.Archive
+open Leads.Shell.Commands.Forest.Use
 
 let appendForestCommands: RootCommandAppender =
     fun cmd ->   
@@ -18,6 +20,8 @@ let appendForestCommands: RootCommandAppender =
             |> appendForestAddSubCommand
             |> appendForestDescribeSubCommand
             |> appendForestCompleteSubCommand
+            |> appendForestArchiveSubCommand
+            |> appendForestUseSubCommand
             |> cmd.AddCommand
         
         cmd

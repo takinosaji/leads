@@ -1,7 +1,6 @@
 ﻿module Leads.Core.Tests.Config.GetConfigWorkflowTests
 
 open Leads.SecondaryPorts.Config
-open Leads.Utilities.ConstrainedTypes
 open Leads.Utilities.Dependencies
 open Leads.Core.Config.Workflows
 open Leads.Core.Config.Services

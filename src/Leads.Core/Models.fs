@@ -3,7 +3,6 @@
 open System
 
 open Leads.Utilities.ConstrainedTypes
-open Leads.Utilities.Result
 
 type Hash = private Hash of string 
 module Hash =

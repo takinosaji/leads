@@ -13,9 +13,9 @@ open Leads.Shell.Utilities
 open Leads.Shell.Commands.Forest.Utilities
 open Leads.Shell.Commands.Forest.Environment
 
-let private handler searchText allOption completedOption archivedOption =
+let private handler searchText allOption activeOption completedOption archivedOption =
     reader {
-        let statuses = ForestStatuses.composeStatuses allOption completedOption archivedOption
+        let statuses = ForestStatuses.composeStatuses allOption activeOption completedOption archivedOption
         
         let! findForestsResult = describeForestsWorkflow searchText statuses
         
@@ -37,17 +37,20 @@ let appendForestDescribeSubCommand: SubCommandAppender =
             createArgument<string> "searchText" "Provide the complete or partial forest hash or name"           
         let allOption =
             createOptionWithAlias<bool> "all" "A" "Include all forests in the search" false  
+        let activeOption =
+            createOption<bool>  "active" "Include only completed forests in the search" false
         let completedOption =
             createOption<bool>  "completed" "Include only completed forests in the search" false  
         let archivedOption =
-            createOption<bool>  "archived" "Include only archived forests in the search" false
+            createOptionWithAlias<bool>  "archived" "r" "Include only archived forests in the search" false
         
         describeForestSubCommand.AddArgument searchTextArgument
         describeForestSubCommand.AddOption allOption
+        describeForestSubCommand.AddOption activeOption
         describeForestSubCommand.AddOption completedOption
         describeForestSubCommand.AddOption archivedOption
         
-        describeForestSubCommand.SetHandler(handler, searchTextArgument, allOption, completedOption, archivedOption)
+        describeForestSubCommand.SetHandler(handler, searchTextArgument, allOption, activeOption, completedOption, archivedOption)
         
         cmd.AddCommand describeForestSubCommand
         

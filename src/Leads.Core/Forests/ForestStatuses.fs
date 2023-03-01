@@ -11,15 +11,22 @@ type ForestStatuses =
     
 module ForestStatuses = 
     let composeStatuses =
-        fun allForests includeCompletedForests includeArchivedForests ->
-        match allForests, includeCompletedForests, includeArchivedForests with
-        | true, _, _ -> ForestStatuses.All
-        | false, true, true -> ForestStatuses.Completed ||| ForestStatuses.Archived
-        | false, true, false -> ForestStatuses.Completed
-        | false, false, true -> ForestStatuses.Archived
+        fun allForests includeActiveOption includeCompletedForests includeArchivedForests ->
+        match allForests, includeActiveOption, includeCompletedForests, includeArchivedForests with
+        | true, _, _, _
+        | false, true, true, true -> ForestStatuses.All
+        
+        | false, true, true, false -> ForestStatuses.Active ||| ForestStatuses.Completed        
+        | false, false, true, true -> ForestStatuses.Completed ||| ForestStatuses.Archived    
+        | false, true, false, true -> ForestStatuses.Active ||| ForestStatuses.Archived
+        
+        | false, false, true, false -> ForestStatuses.Completed
+        | false, false, false, true -> ForestStatuses.Archived
+        
+        | false, true, false, false
         | _ -> ForestStatuses.Active
                   
-    let internal toStatusesSecondaryDto (forestStatuses: ForestStatuses) =
+    let internal toSIDto (forestStatuses: ForestStatuses) =
         let appendStatusIfFlagFound allFlags targetFlag valueToAdd accumulator =
             if allFlags &&& targetFlag = targetFlag then
                 List.append accumulator [valueToAdd]

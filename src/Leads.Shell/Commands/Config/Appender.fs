@@ -1,6 +1,5 @@
 ﻿module Leads.Shell.Commands.Config.Appender
 
-open System.CommandLine
 open Leads.Shell
 open Leads.Shell.Utilities
 

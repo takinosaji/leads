@@ -15,9 +15,9 @@ open Leads.Shell.Commands.Forest.Utilities
 open Leads.Shell.Commands.Forest.Environment
         
 let private handler =
-    fun allOption completedOption archivedOption ->
+    fun allOption activeOption completedOption archivedOption ->
     reader {
-        let statuses = ForestStatuses.composeStatuses allOption completedOption archivedOption
+        let statuses = ForestStatuses.composeStatuses allOption activeOption completedOption archivedOption
         
         let! forestsListResult = listForestsWorkflow statuses
         
@@ -37,16 +37,19 @@ let appendForestListSubCommand: SubCommandAppender =
             createCommand "list" "The get command retrieves the existing forests"
         let allOption =
             createOptionWithAlias<bool> "all" "A" "Show all forests" false  
+        let activeOption =
+            createOption<bool>  "active" "Include only completed forests in the search" false
         let completedOption =
-            createOption<bool>  "completed" "Show only completed forests if additional options are not provided" false  
+            createOption<bool>  "completed" "Include only completed forests in the search" false  
         let archivedOption =
-            createOption<bool>  "archived" "Show only archived forests if additional options are not provided" false    
+            createOptionWithAlias<bool>  "archived" "r" "Include only archived forests in the search" false
         
         listForestsSubCommand.AddOption allOption
+        listForestsSubCommand.AddOption activeOption
         listForestsSubCommand.AddOption completedOption
         listForestsSubCommand.AddOption archivedOption
         
-        listForestsSubCommand.SetHandler(handler, allOption, completedOption, archivedOption)
+        listForestsSubCommand.SetHandler(handler, allOption, activeOption, completedOption, archivedOption)
         
         cmd.AddCommand listForestsSubCommand
         

@@ -59,7 +59,7 @@ let listForestsWorkflow: ListForestsWorkflow =
             [{
                 Name = Any
                 Hash = Any
-                Statuses = statuses |> ForestStatuses.toStatusesSecondaryDto
+                Statuses = statuses |> ForestStatuses.toSIDto
             }] |> findForests
             
         return listForestResult
@@ -73,10 +73,14 @@ let describeForestsWorkflow: DescribeForestsWorkflow =
     fun searchText targetStatuses -> reader {                   
         let! listForestResult =
             [{
-                Name = Contains searchText
+                Name = Any
                 Hash = Contains searchText
-                Statuses = targetStatuses |> ForestStatuses.toStatusesSecondaryDto
-            }] |> findForests
+                Statuses = targetStatuses |> ForestStatuses.toSIDto };
+            {
+                Name = Contains searchText
+                Hash = Any
+                Statuses = targetStatuses |> ForestStatuses.toSIDto }]
+            |> findForests
             
         return listForestResult  
                |> Result.map Forests.toOptionPODtoList                 
@@ -105,11 +109,11 @@ let addForestWorkflow: AddForestWorkflow =
                 [{
                     Name = Any
                     Hash = Exact forestHash
-                    Statuses = ForestStatuses.All |> ForestStatuses.toStatusesSecondaryDto };
+                    Statuses = ForestStatuses.All |> ForestStatuses.toSIDto };
                 {
                     Name = Exact unvalidatedName
                     Hash = Any
-                    Statuses = ForestStatuses.All |> ForestStatuses.toStatusesSecondaryDto }]
+                    Statuses = ForestStatuses.All |> ForestStatuses.toSIDto }]
                 |> findForests
                 |> Reader.withEnv addToFindForestsEnvironment
                 |> Reader.run environment                        
@@ -127,22 +131,24 @@ let addForestWorkflow: AddForestWorkflow =
         } |> Result.mapError errorTextToString                     
     } 
 
-type CompleteForestWorkflow = string -> Reader<UpdateForestEnvironment, Result<ForestPODto, string>>
-let completeForestWorkflow: CompleteForestWorkflow =
-    fun forestHash -> reader {
+type ChangeForestStatusWorkflow = string -> string -> string -> Reader<UpdateForestEnvironment, Result<ForestPODto, string>>
+let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
+    fun forestHashToFind forestStatusToFind newForestStatus -> reader {
         let! environment = Reader.ask
-        let! getConfigResult = getConfig()
-                                |> Reader.withEnv updateToGetConfigEnvironment
                                       
         return result {
-            let! config = getConfigResult
+            let! validatedStatus = ForestStatus.create newForestStatus
+            let! validatedStatusToFind = ForestStatus.create forestStatusToFind
+            
+            let! config = getConfig()
+                          |> Reader.run (environment |> updateToGetConfigEnvironment)                          
             let configDto = Configuration.toValidSODto config
             
             let findForestResult =
                 [{
                     Name = Any
-                    Hash = Exact forestHash
-                    Statuses = ForestStatuses.Active |> ForestStatuses.toStatusesSecondaryDto }]
+                    Hash = Exact forestHashToFind
+                    Statuses = [ForestStatus.value validatedStatusToFind] }]
                 |> findForests 
                 |> Reader.withEnv updateToFindForestsEnvironment
                 |> Reader.run environment
@@ -154,7 +160,7 @@ let completeForestWorkflow: CompleteForestWorkflow =
                     let completedForest =
                         { Forest.value forest with
                             LastModified = DateTime.UtcNow
-                            Status = ForestStatus.createCompleted() } |> Forest
+                            Status = validatedStatus } |> Forest
                         
                     completedForest
                     |> Forest.toSIDto
@@ -162,8 +168,8 @@ let completeForestWorkflow: CompleteForestWorkflow =
                     |> Result.map (fun _ -> completedForest |> Forest.toPODto)
                     |> Result.mapError stringToErrorText
                 | Some forests ->
-                    Error (ErrorText $"Found multiple forests with Hash {forestHash}. Hash is supposed to be unique. Forest names are {Forests.extractNamesString forests}.")
+                    Error (ErrorText $"Found multiple forests with Hash {forestHashToFind}. Hash is supposed to be unique. Forest names are {Forests.extractNamesString forests}.")
                 | None ->
-                    Error (ErrorText $"Active forest with Hash {forestHash} has not been found")
+                    Error (ErrorText $"Forest with Hash {forestHashToFind} and Status {forestStatusToFind} has not been found")
         } |> Result.mapError errorTextToString    
     }

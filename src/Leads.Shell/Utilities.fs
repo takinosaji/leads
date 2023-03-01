@@ -8,6 +8,12 @@ let createCommand name description =
     command.AddAlias($"{name[0]}")   
     
     command
+    
+let createCommandWithAlias name alias description =
+    let command = Command(name, description)
+    command.AddAlias(alias)   
+    
+    command
 
 let createOption<'a> (name:string) description isRequired =
     let option = Option<'a>($"--{name}", description)

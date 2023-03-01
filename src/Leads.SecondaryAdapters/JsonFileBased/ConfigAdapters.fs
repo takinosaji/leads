@@ -1,4 +1,4 @@
-﻿module Leads.SecondaryAdapters.FileBased.ConfigAdapters
+﻿module Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters
 
 open System.IO
 open FSharp.Json

@@ -1,4 +1,4 @@
-﻿module Leads.SecondaryAdapters.FileBased.ForestAdapters
+﻿module Leads.SecondaryAdapters.JsonFileBased.ForestAdapters
 
 open System.IO
 open FSharp.Json
@@ -8,7 +8,7 @@ open Leads.Utilities.Result
 open Leads.SecondaryPorts.Config.DTO
 open Leads.SecondaryPorts.Forest.DTO
 
-open Leads.SecondaryAdapters.FileBased.ConfigAdapters.AllowedKeys
+open Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters.AllowedKeys
 
 let private getForestFilePath
     (defaultWorkingDirPath: string)

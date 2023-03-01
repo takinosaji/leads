@@ -6,8 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="FileBased\ConfigAdapters.fs" />
-        <Compile Include="FileBased\ForestAdapters.fs" />
+        <Compile Include="JsonFileBased\ConfigAdapters.fs" />
+        <Compile Include="JsonFileBased\ForestAdapters.fs" />
         <Folder Include="InMemoryBased" />
     </ItemGroup>
 

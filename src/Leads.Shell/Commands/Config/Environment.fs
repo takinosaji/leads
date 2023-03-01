@@ -3,11 +3,11 @@
 open Leads.Core.Config.Services
 open Leads.Core.Config.Workflows
 
-open Leads.SecondaryAdapters.FileBased.ConfigAdapters
+open Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters
 
-open Leads.Shell.Environment
+open Leads.Shell.ShellEnvironment
 
-let private configFilePath = $"{shellEnvironment.defaultWorkingDirPath}/config.json";
+let private configFilePath = $"{variables.defaultWorkingDirPath}/config.json";
 let private configSecondaryAdapters = createLocalJsonFileConfigAdapters configFilePath
 
 let getConfigEnvironment: GetConfigEnvironment = {
