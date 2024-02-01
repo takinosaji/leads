@@ -5,6 +5,7 @@ open System
 open System.CommandLine
 
 open Leads.Core.Forests.Workflows
+open Leads.SecondaryPorts.Forest
 open Leads.Utilities.Dependencies
 
 open Leads.Shell
@@ -13,7 +14,7 @@ open Leads.Shell.Commands.Forest.Environment
 open Leads.Shell.Commands.Forest.Utilities
 
 let private handler forestHash =
-    let archiveForestResult = changeForestStatusWorkflow forestHash "active" "archived"
+    let archiveForestResult = changeForestStatusWorkflow forestHash ForestStatus.Active ForestStatus.Archived
                                |> Reader.run updateForestEnvironment
 
     match archiveForestResult with
@@ -27,7 +28,7 @@ let appendForestArchiveSubCommand: SubCommandAppender =
         let archiveForestSubCommand =
             createCommandWithAlias "archive" "r" "The archive command completes existing active forest"
         let hashArgument =
-            createArgument<string> "hash" "Provide the complete or partial forest hash or name"   
+            createArgument<string> "hash" "Provide the complete forest hash"   
         
         archiveForestSubCommand.AddArgument hashArgument
         

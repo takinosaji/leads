@@ -23,7 +23,7 @@ let printForests tableTitle validForests =
             table.AddRow(
                 dto.Name,
                 dto.Hash,
-                dto.Status,
+                dto.Status.ToString(),
                 dto.LastModified.ToString(),
                 dto.Created.ToString())
             ())
@@ -57,7 +57,7 @@ let printForestsWithColoredText tableTitle coloredSnippets validForests =
             table.AddRow(
                 dto.Name |> injectColors coloredSnippets,
                 dto.Hash |> injectColors coloredSnippets,
-                dto.Status,
+                dto.Status.ToString(),
                 dto.LastModified.ToString(),
                 dto.Created.ToString())
             ())
@@ -75,7 +75,7 @@ let printSingleForest tableTitle (forestDto: ForestPODto) =
     
     table.AddRow(nameof(forestDto.Hash), forestDto.Hash)
     table.AddRow(nameof(forestDto.Name), forestDto.Name)
-    table.AddRow(nameof(forestDto.Status), forestDto.Status)
+    table.AddRow(nameof(forestDto.Status), forestDto.Status.ToString())
     table.AddRow(nameof(forestDto.Created), forestDto.Created.ToString())
     table.AddRow(nameof(forestDto.LastModified), forestDto.LastModified.ToString())
 

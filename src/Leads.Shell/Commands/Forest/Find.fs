@@ -1,4 +1,4 @@
-﻿module Leads.Shell.Commands.Forest.Describe
+﻿module Leads.Shell.Commands.Forest.Find
 
 open System
 open System.CommandLine
@@ -29,10 +29,10 @@ let private handler searchText allOption activeOption completedOption archivedOp
             errorText |> writeColoredLine ConsoleColor.Red
     } |> Reader.run findForestEnvironment
     
-let appendForestDescribeSubCommand: SubCommandAppender =
+let appendForestFindSubCommand: SubCommandAppender =
     fun cmd ->        
-        let describeForestSubCommand =
-            createCommand "describe" "The describe command searches forests by name or hash"
+        let findForestSubCommand =
+            createCommand "find" "The find command searches forests by name or hash"
         let searchTextArgument =
             createArgument<string> "searchText" "Provide the complete or partial forest hash or name"           
         let allOption =
@@ -44,14 +44,14 @@ let appendForestDescribeSubCommand: SubCommandAppender =
         let archivedOption =
             createOptionWithAlias<bool>  "archived" "r" "Include only archived forests in the search" false
         
-        describeForestSubCommand.AddArgument searchTextArgument
-        describeForestSubCommand.AddOption allOption
-        describeForestSubCommand.AddOption activeOption
-        describeForestSubCommand.AddOption completedOption
-        describeForestSubCommand.AddOption archivedOption
+        findForestSubCommand.AddArgument searchTextArgument
+        findForestSubCommand.AddOption allOption
+        findForestSubCommand.AddOption activeOption
+        findForestSubCommand.AddOption completedOption
+        findForestSubCommand.AddOption archivedOption
         
-        describeForestSubCommand.SetHandler(handler, searchTextArgument, allOption, activeOption, completedOption, archivedOption)
+        findForestSubCommand.SetHandler(handler, searchTextArgument, allOption, activeOption, completedOption, archivedOption)
         
-        cmd.AddCommand describeForestSubCommand
+        cmd.AddCommand findForestSubCommand
         
         cmd      

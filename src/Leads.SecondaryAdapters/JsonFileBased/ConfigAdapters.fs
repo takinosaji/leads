@@ -1,12 +1,9 @@
 ﻿module Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters
 
+open Leads.SecondaryAdapters.JsonFileBased.Utilities.AllowedKeys
+
 open System.IO
 open FSharp.Json
-
-module AllowedKeys = 
-    let DefaultForestKey = "default.forest"
-    let WorkingDirKey = "working.dir"
-open AllowedKeys
 
 // TODO: write unit tests
 let private provideConfiguration =

@@ -6,8 +6,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="JsonFileBased\Utilities.fs" />
         <Compile Include="JsonFileBased\ConfigAdapters.fs" />
         <Compile Include="JsonFileBased\ForestAdapters.fs" />
+        <Compile Include="JsonFileBased\TrailAdapters.fs" />
         <Folder Include="InMemoryBased" />
     </ItemGroup>
 

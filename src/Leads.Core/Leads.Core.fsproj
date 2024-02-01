@@ -12,15 +12,15 @@
         <Compile Include="Config\Configuration.fs" />
         <Compile Include="Config\Services.fs" />
         <Compile Include="Config\Workflows.fs" />
+        <Compile Include="Leads\Lead.fs" />
+        <Compile Include="Trails\TrailTheme.fs" />
+        <Compile Include="Trails\Trail.fs" />
         <Compile Include="Forests\ForestName.fs" />
-        <Compile Include="Forests\ForestStatus.fs" />
         <Compile Include="Forests\ForestStatuses.fs" />
         <Compile Include="Forests\Forest.fs" />
         <Compile Include="Forests\Forests.fs" />
         <Compile Include="Forests\Services.fs" />
         <Compile Include="Forests\Workflows.fs" />
-        <Compile Include="Leads.fs" />
-        <Compile Include="Trails.fs" />
     </ItemGroup>
 
     <ItemGroup>

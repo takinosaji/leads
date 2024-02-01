@@ -1,6 +1,7 @@
 ﻿namespace Leads.Core.Forests
 
 open System
+open Leads.SecondaryPorts.Forest
 
 [<Flags>]
 type ForestStatuses =
@@ -32,16 +33,12 @@ module ForestStatuses =
                 List.append accumulator [valueToAdd]
             else
                 accumulator
-        
-        let active = ForestStatus.createActive() |> ForestStatus.value
-        let completed = ForestStatus.createCompleted() |> ForestStatus.value
-        let archived = ForestStatus.createArchived() |> ForestStatus.value
-        
+                
         match forestStatuses with
         | ForestStatuses.All ->
-            [ active; completed; archived ]
+            [ ForestStatus.Active; ForestStatus.Completed; ForestStatus.Archived ]
         | _ ->
-            List.empty<string>
-            |> appendStatusIfFlagFound forestStatuses ForestStatuses.Active active
-            |> appendStatusIfFlagFound forestStatuses ForestStatuses.Completed completed
-            |> appendStatusIfFlagFound forestStatuses ForestStatuses.Archived archived
+            List.empty<ForestStatus>
+            |> appendStatusIfFlagFound forestStatuses ForestStatuses.Active ForestStatus.Active
+            |> appendStatusIfFlagFound forestStatuses ForestStatuses.Completed ForestStatus.Completed
+            |> appendStatusIfFlagFound forestStatuses ForestStatuses.Archived ForestStatus.Archived

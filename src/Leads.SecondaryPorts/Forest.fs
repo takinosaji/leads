@@ -3,6 +3,11 @@
 open System
 open Leads.SecondaryPorts.Config.DTO
 
+type ForestStatus =
+    | Active
+    | Completed
+    | Archived
+
 module DTO =       
     type TextCriteria =
         | Any
@@ -12,12 +17,11 @@ module DTO =
     type AndFindCriteria = {
         Name: TextCriteria
         Hash: TextCriteria
-        Statuses: string list
+        Statuses: ForestStatus list
     }
     
-    type OrFindCriteria = AndFindCriteria list
-    
-    type ForestSIDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: string }
+    type OrFindCriteria = AndFindCriteria list    
+    type ForestSIDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: ForestStatus }
     type ForestSODto = ForestSIDto
     
     type ForestsSecondaryInputDto = ForestSIDto list option
@@ -28,3 +32,4 @@ type ForestAppender = ValidConfigSIDto -> ForestSIDto -> Result<ForestSODto, str
 type ForestRetriever = ValidConfigSIDto -> string -> Result<ForestSODto option, string>
 type ForestsFinder = ValidConfigSIDto -> OrFindCriteria -> Result<ForestSODto list option, string>
 type ForestUpdater = ValidConfigSIDto -> ForestSIDto -> Result<unit, string>
+type ForestDeleter = ValidConfigSIDto -> ForestSIDto -> Result<unit, string>

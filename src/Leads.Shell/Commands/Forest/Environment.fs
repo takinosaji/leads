@@ -30,3 +30,9 @@ let updateForestEnvironment: UpdateForestEnvironment = {
     updateForest = forestSecondaryAdapters.updateForest
 }
 
+let deleteForestEnvironment: DeleteForestEnvironment = {
+    provideAllowedConfigKeys = getConfigEnvironment.provideAllowedConfigKeys
+    provideConfig = findForestEnvironment.provideConfig
+    findForests = forestSecondaryAdapters.findForests
+    deleteForest = forestSecondaryAdapters.deleteForest
+}

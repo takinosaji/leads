@@ -4,7 +4,9 @@ open System
 
 open System.CommandLine
 
+open Leads.Core.Forests
 open Leads.Core.Forests.Workflows
+open Leads.SecondaryPorts.Forest
 open Leads.Utilities.Dependencies
 
 open Leads.Shell
@@ -13,7 +15,7 @@ open Leads.Shell.Commands.Forest.Environment
 open Leads.Shell.Commands.Forest.Utilities
 
 let private handler forestHash =
-    let completeForestResult = changeForestStatusWorkflow forestHash "active" "completed"
+    let completeForestResult = changeForestStatusWorkflow forestHash ForestStatus.Active ForestStatus.Completed
                                |> Reader.run updateForestEnvironment
 
     match completeForestResult with
@@ -27,7 +29,7 @@ let appendForestCompleteSubCommand: SubCommandAppender =
         let completeForestSubCommand =
             createCommand "complete" "The complete command completes existing active forest"
         let hashArgument =
-            createArgument<string> "hash" "Provide the complete or partial forest hash or name"   
+            createArgument<string> "hash" "Provide the complete forest hash"   
         
         completeForestSubCommand.AddArgument hashArgument
         

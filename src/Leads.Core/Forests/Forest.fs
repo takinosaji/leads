@@ -2,6 +2,7 @@
 
 open System
 
+open Leads.SecondaryPorts.Forest
 open Leads.Utilities.Result
 
 open Leads.Core.Models   
@@ -34,12 +35,11 @@ module Forest =
     let internal newForest (forestName: ForestName) = result {
         let! hash = Hash.newRandom()
         let timeStamp = DateTime.UtcNow
-        let status = ForestStatus.createActive()
         
         return Forest {
             Hash = hash
             Name = forestName
-            Status = status
+            Status = ForestStatus.Active
             Created = timeStamp
             LastModified = timeStamp
         }
@@ -47,14 +47,13 @@ module Forest =
 
     let internal fromSecondaryOutputDto (forestDto: ForestSODto) =
         result {
-            let! forestStatus = ForestStatus.create forestDto.Status 
             let! forestHash = Hash.create forestDto.Hash
             let! forestName = ForestName.create forestDto.Name          
            
             return Forest {
                 Hash = forestHash
                 Name = forestName
-                Status = forestStatus
+                Status = forestDto.Status
                 Created = forestDto.Created
                 LastModified = forestDto.LastModified 
             }
@@ -67,7 +66,7 @@ module Forest =
            Name = ForestName.value forestData.Name
            Created = forestData.Created
            LastModified = forestData.LastModified
-           Status = ForestStatus.value forestData.Status
+           Status = forestData.Status
         }                
     
     let internal toPODto forest: ForestPODto =
@@ -77,5 +76,5 @@ module Forest =
             Name = ForestName.value forestData.Name
             Created = forestData.Created
             LastModified = forestData.LastModified
-            Status = ForestStatus.value forestData.Status
+            Status = forestData.Status
         }

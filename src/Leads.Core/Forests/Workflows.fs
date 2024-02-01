@@ -33,17 +33,34 @@ type UpdateForestEnvironment = {
     findForests: ForestsFinder
     updateForest: ForestUpdater
 }
+
+type DeleteForestEnvironment = {
+    provideAllowedConfigKeys: AllowedConfigKeysProvider
+    provideConfig: ConfigurationProvider
+    findForests: ForestsFinder
+    deleteForest: ForestDeleter
+}
+
 let private updateToGetConfigEnvironment (forestEnvironment:UpdateForestEnvironment): GetConfigEnvironment = {
     provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
     provideConfig = forestEnvironment.provideConfig
 }
 
+let private deleteToGetConfigEnvironment (forestEnvironment:DeleteForestEnvironment): GetConfigEnvironment = {
+    provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
+    provideConfig = forestEnvironment.provideConfig
+}
 let updateToFindForestsEnvironment (forestEnvironment: UpdateForestEnvironment): FindForestEnvironment = {
     provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
     provideConfig = forestEnvironment.provideConfig
     findForests = forestEnvironment.findForests
 }
 
+let deleteToFindForestsEnvironment (forestEnvironment: DeleteForestEnvironment): FindForestEnvironment = {
+    provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
+    provideConfig = forestEnvironment.provideConfig
+    findForests = forestEnvironment.findForests
+}
 
 let addToFindForestsEnvironment (forestEnvironment: AddForestEnvironment): FindForestEnvironment = {
     provideAllowedConfigKeys = forestEnvironment.provideAllowedConfigKeys
@@ -131,15 +148,12 @@ let addForestWorkflow: AddForestWorkflow =
         } |> Result.mapError errorTextToString                     
     } 
 
-type ChangeForestStatusWorkflow = string -> string -> string -> Reader<UpdateForestEnvironment, Result<ForestPODto, string>>
+type ChangeForestStatusWorkflow = string -> ForestStatus -> ForestStatus -> Reader<UpdateForestEnvironment, Result<ForestPODto, string>>
 let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
-    fun forestHashToFind forestStatusToFind newForestStatus -> reader {
+    fun forestHash forestStatusToFind newForestStatus -> reader {
         let! environment = Reader.ask
                                       
-        return result {
-            let! validatedStatus = ForestStatus.create newForestStatus
-            let! validatedStatusToFind = ForestStatus.create forestStatusToFind
-            
+        return result {            
             let! config = getConfig()
                           |> Reader.run (environment |> updateToGetConfigEnvironment)                          
             let configDto = Configuration.toValidSODto config
@@ -147,8 +161,8 @@ let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
             let findForestResult =
                 [{
                     Name = Any
-                    Hash = Exact forestHashToFind
-                    Statuses = [ForestStatus.value validatedStatusToFind] }]
+                    Hash = Exact forestHash
+                    Statuses = [forestStatusToFind] }]
                 |> findForests 
                 |> Reader.withEnv updateToFindForestsEnvironment
                 |> Reader.run environment
@@ -160,7 +174,7 @@ let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
                     let completedForest =
                         { Forest.value forest with
                             LastModified = DateTime.UtcNow
-                            Status = validatedStatus } |> Forest
+                            Status = newForestStatus } |> Forest
                         
                     completedForest
                     |> Forest.toSIDto
@@ -168,8 +182,43 @@ let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
                     |> Result.map (fun _ -> completedForest |> Forest.toPODto)
                     |> Result.mapError stringToErrorText
                 | Some forests ->
-                    Error (ErrorText $"Found multiple forests with Hash {forestHashToFind}. Hash is supposed to be unique. Forest names are {Forests.extractNamesString forests}.")
+                    Error (ErrorText $"Found multiple forests with Hash {forestHash}. Hash is supposed to be unique. Forest names are {Forests.extractNamesString forests}.")
                 | None ->
-                    Error (ErrorText $"Forest with Hash {forestHashToFind} and Status {forestStatusToFind} has not been found")
+                    Error (ErrorText $"Forest with Hash {forestHash} and Status {forestStatusToFind} has not been found")
+        } |> Result.mapError errorTextToString    
+    }
+    
+type DeleteForestWorkflow = string -> Reader<DeleteForestEnvironment, Result<ForestPODto, string>>
+let deleteForestWorkflow: DeleteForestWorkflow =
+    fun forestHash -> reader {
+        let! environment = Reader.ask
+                                      
+        return result {            
+            let! config = getConfig()
+                          |> Reader.run (environment |> deleteToGetConfigEnvironment)                          
+            let configDto = Configuration.toValidSODto config
+            
+            let findForestResult =
+                [{
+                    Name = Any
+                    Hash = Exact forestHash
+                    Statuses = [ForestStatus.Active; ForestStatus.Archived; ForestStatus.Completed] }]
+                |> findForests 
+                |> Reader.withEnv deleteToFindForestsEnvironment
+                |> Reader.run environment
+            
+            let! foundForests = findForestResult
+            return!
+                match foundForests with
+                | Some [forest] ->                        
+                    forest
+                    |> Forest.toSIDto
+                    |> environment.deleteForest configDto
+                    |> Result.map (fun _ -> forest |> Forest.toPODto)
+                    |> Result.mapError stringToErrorText
+                | Some forests ->
+                    Error (ErrorText $"Found multiple forests with Hash {forestHash}. Hash is supposed to be unique. Forest names are {Forests.extractNamesString forests}.")
+                | None ->
+                    Error (ErrorText $"Forest with Hash {forestHash} has not been found")
         } |> Result.mapError errorTextToString    
     }

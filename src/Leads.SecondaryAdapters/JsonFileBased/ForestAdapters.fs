@@ -5,19 +5,11 @@ open FSharp.Json
 
 open Leads.Utilities.Result
 
-open Leads.SecondaryPorts.Config.DTO
 open Leads.SecondaryPorts.Forest.DTO
 
-open Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters.AllowedKeys
+open Leads.SecondaryAdapters.JsonFileBased.Utilities
 
-let private getForestFilePath
-    (defaultWorkingDirPath: string)
-    (validConfigurationDto: ValidConfigSIDto) = 
-    let workingDirPath = ValidConfigSIDto.findOrDefault
-                                 validConfigurationDto
-                                 WorkingDirKey
-                                 defaultWorkingDirPath
-    Path.Combine(workingDirPath, "forests.json")  
+let private forestFileName = "forests.json"
 
 let private listForests
     (forestsFilePath: string)    
@@ -60,8 +52,10 @@ let private forestFieldPredicate (fieldResolver: ForestSODto -> string) textCrit
     | Exact textToSearch ->
         fieldValue.ToLower() = textToSearch.ToLower()
 let private findForests
-    (forestsFilePath: string)
+    (workingDirPath: string)
     (orFindCriteria: OrFindCriteria) =
+        let forestsFilePath = Path.Combine(workingDirPath, forestFileName)
+        
         result {
             let! forestOption = listForests forestsFilePath 
             return
@@ -85,6 +79,17 @@ let private findForests
                     None
         }
 
+let private ensureForestFolderCreated workingDirPath forestHash =
+    try    
+        let folderPath = Path.Combine(workingDirPath, forestHash)
+        match Directory.Exists folderPath with
+        | false ->
+            Directory.CreateDirectory(folderPath) |> ignore
+            Ok ()
+        | true -> Ok ()
+    with excp ->
+        Error(excp.Message)
+
 let private persistForests
     (forestsFilePath: string)
     (forestsDto: ForestSIDto list) =    
@@ -96,8 +101,10 @@ let private persistForests
         Error(excp.Message)
 
 let private addForest
-    (forestsFilePath: string)
+    (workingDirPath: string)
     (forestToAdd: ForestSIDto) =
+        let forestsFilePath = Path.Combine(workingDirPath, forestFileName)
+        
         result {
             let! forestsOption = listForests forestsFilePath
             let! _ =
@@ -107,19 +114,29 @@ let private addForest
                     | Some foundForest ->
                         Error $"The forest with Hash {foundForest.Hash} already exists"
                     | None ->
-                        List.append forests [forestToAdd] 
+                        forestToAdd.Hash
+                        |> ensureForestFolderCreated workingDirPath
+                        
+                        [forestToAdd]                        
+                        |> List.append forests  
                         |> persistForests forestsFilePath
                 | None ->
-                    persistForests forestsFilePath [forestToAdd]
+                    forestToAdd.Hash
+                    |> ensureForestFolderCreated workingDirPath
+                    
+                    [forestToAdd]
+                    |> persistForests forestsFilePath
                         
             return forestToAdd
         }
         
 let updateForest
-    (forestsFilePath: string)
+    (workingDirPath: string)
     (forestToUpdate: ForestSIDto) =
     result {
+        let forestsFilePath = Path.Combine(workingDirPath, forestFileName)
         let! forestsOption = listForests forestsFilePath
+        
         return!
             match forestsOption with
             | Some forests ->
@@ -132,16 +149,47 @@ let updateForest
             | None ->
                 Error $"Forest with Hash {forestToUpdate.Hash} has not been found"                
     }
+  
+let private ensureForestFolderDeleted workingDirPath forestHash =
+    try    
+        let folderPath = Path.Combine(workingDirPath, forestHash)
+        match Directory.Exists folderPath with
+        | true ->
+            Directory.Delete(folderPath)
+            Ok ()
+        | false -> Ok ()
+    with excp ->
+        Error(excp.Message)
+        
+let deleteForest
+    (workingDirPath: string)
+    (forestToDelete: ForestSIDto) =
+    result {
+        let forestsFilePath = Path.Combine(workingDirPath, forestFileName)
+        let! forestsOption = listForests forestsFilePath
+        
+        return!
+            match forestsOption with
+            | Some forests ->
+                forests
+                |> List.where (fun li -> li.Hash <> forestToDelete.Hash) 
+                |> persistForests forestsFilePath
+                |> ignore
+                
+                forestToDelete.Hash
+                |> ensureForestFolderDeleted workingDirPath
+            | None ->
+                Error $"Forest with Hash {forestToDelete.Hash} has not been found"                
+    }
        
 let createLocalJsonFileForestAdapters defaultWorkingDirPath =
     {|
-        // getForest = fun validConfigurationDto forestNameOrHash ->
-        //     getForestByNameOrHash <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestNameOrHash
         addForest = fun validConfigurationDto forestDto ->
-           addForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto           
+           addForest <| getWorkingDirPath defaultWorkingDirPath validConfigurationDto <| forestDto           
         findForests = fun validConfigurationDto searchCriteriaDto ->
-           findForests <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| searchCriteriaDto
+           findForests <| getWorkingDirPath defaultWorkingDirPath validConfigurationDto <| searchCriteriaDto
         updateForest = fun validConfigurationDto forestDto ->
-           updateForest <| getForestFilePath defaultWorkingDirPath validConfigurationDto <| forestDto
-           
+           updateForest <| getWorkingDirPath defaultWorkingDirPath validConfigurationDto <| forestDto
+        deleteForest = fun validConfigurationDto forestDto ->
+           deleteForest <| getWorkingDirPath defaultWorkingDirPath validConfigurationDto <| forestDto
     |}
