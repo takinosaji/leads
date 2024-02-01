@@ -1,9 +1,22 @@
 ﻿module Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters
 
-open Leads.SecondaryAdapters.JsonFileBased.Utilities.AllowedKeys
-
 open System.IO
 open FSharp.Json
+
+open Leads.SecondaryPorts.Config.DTO
+
+module AllowedKeys = 
+    let DefaultForestKey = "default.forest"
+    let WorkingDirKey = "working.dir"
+open AllowedKeys
+
+let internal getWorkingDirPath
+    (defaultWorkingDirPath: string)
+    (validConfigurationDto: ValidConfigSIDto) = 
+    ValidConfigSIDto.findOrDefault
+        validConfigurationDto
+        WorkingDirKey
+        defaultWorkingDirPath
 
 // TODO: write unit tests
 let private provideConfiguration =

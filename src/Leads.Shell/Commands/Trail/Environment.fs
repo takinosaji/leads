@@ -10,8 +10,8 @@ open Leads.Shell.Commands.Config.Environment
 
 let private trailSecondaryAdapters = createLocalJsonFileTrailAdapters variables.defaultWorkingDirPath
 
-let findForestEnvironment: FindForestEnvironment = {
+let addTrailEnvironment: AddTrailEnvironment = {
     provideAllowedConfigKeys = getConfigEnvironment.provideAllowedConfigKeys
     provideConfig = getConfigEnvironment.provideConfig
-    findForests = trailSecondaryAdapters.findForests
+    addTrail = trailSecondaryAdapters.addTrail
 }

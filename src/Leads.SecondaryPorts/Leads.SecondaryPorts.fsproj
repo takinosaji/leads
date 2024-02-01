@@ -9,7 +9,6 @@
     <ItemGroup>
         <Compile Include="Config.fs" />
         <Compile Include="Forest.fs" />
-        <Compile Include="Trail.fs" />
     </ItemGroup>
 
 </Project>

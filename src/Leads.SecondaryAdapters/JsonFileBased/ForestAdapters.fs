@@ -7,7 +7,7 @@ open Leads.Utilities.Result
 
 open Leads.SecondaryPorts.Forest.DTO
 
-open Leads.SecondaryAdapters.JsonFileBased.Utilities
+open Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters
 
 let private forestFileName = "forests.json"
 
@@ -29,20 +29,7 @@ let private listForests
                     with excp ->
                         Error(excp.Message)
                 )
-            
-// let private getForestByNameOrHash
-//     (forestsFilePath: string)
-//     (forestNameOrHash: string)
-//     : Result<ForestSODto option, string> =
-//         result {
-//             let! forestOption = listForests forestsFilePath
-//             match forestOption with
-//             | Some forests ->
-//                 return List.tryFind (fun li -> li.Name = forestNameOrHash || li.Hash = forestNameOrHash) forests
-//             | None ->
-//                 return None
-//         }
-      
+                  
 let private forestFieldPredicate (fieldResolver: ForestSODto -> string) textCriteria forest =
     let fieldValue = fieldResolver forest
     match textCriteria with

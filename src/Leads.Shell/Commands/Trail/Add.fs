@@ -28,7 +28,7 @@ let private printAddedTrail (trailDto: TrailPODto) =
     AnsiConsole.Write(table);
     
 let private handler name =
-    let addTrailResult = addTrailtWorkflow name
+    let addTrailResult = addTrailWorkflow name
                           |> Reader.run addTrailEnvironment
     
     match addTrailResult with
@@ -42,7 +42,7 @@ let appendTrailAddSubCommand: SubCommandAppender =
         let addForestSubCommand =
             createCommand "add" "The add command creates the new trail"
         let nameArgument =
-            createArgument<string> "name" "Set the unique forest name"   
+            createArgument<string> "name" "Set the unique trail theme"   
         
         addForestSubCommand.AddArgument nameArgument
         

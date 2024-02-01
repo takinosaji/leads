@@ -32,7 +32,7 @@ let private handler searchText allOption activeOption completedOption archivedOp
 let appendForestFindSubCommand: SubCommandAppender =
     fun cmd ->        
         let findForestSubCommand =
-            createCommand "find" "The find command searches forests by name or hash"
+            createCommandWithAlias "find" "fi" "The find command searches forests by name or hash"
         let searchTextArgument =
             createArgument<string> "searchText" "Provide the complete or partial forest hash or name"           
         let allOption =

@@ -19,7 +19,7 @@ let appendForestCommands: RootCommandAppender =
         forestCommand
             |> appendForestListSubCommand
             |> appendForestAddSubCommand
-            //|> appendForestFindSubCommand
+            |> appendForestFindSubCommand
             //|> appendForestDescribeSubCommand
             |> appendForestCompleteSubCommand
             |> appendForestArchiveSubCommand
