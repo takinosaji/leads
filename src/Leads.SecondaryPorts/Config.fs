@@ -1,7 +1,7 @@
 ﻿namespace Leads.SecondaryPorts.Config
 
 module DTO = 
-    type ConfigSecondaryOutputDto = Map<string, string> Option
+    type ConfigSODto = Map<string, string> Option
     
     type ValidConfigSIDto = (string * string) list option 
     module ValidConfigSIDto =
@@ -20,6 +20,6 @@ module DTO =
             | None -> ``default``               
 open DTO    
 
-type ConfigurationProvider = unit -> Result<ConfigSecondaryOutputDto, string>
+type ConfigurationProvider = unit -> Result<ConfigSODto, string>
 type ConfigurationValueApplier = string -> string -> Result<unit, string>
 type AllowedConfigKeysProvider = unit -> string list

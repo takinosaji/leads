@@ -10,10 +10,12 @@
         <Compile Include="JsonFileBased\ForestAdapters.fs" />
         <Compile Include="JsonFileBased\TrailAdapters.fs" />
         <Folder Include="InMemoryBased" />
+        <Compile Include="SQLiteBased\ConfigAdapters.fs" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="FSharp.Json" Version="0.4.1" />
+      <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
     </ItemGroup>
 
     <ItemGroup>

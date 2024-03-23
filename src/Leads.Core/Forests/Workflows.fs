@@ -119,7 +119,8 @@ let addForestWorkflow: AddForestWorkflow =
             let getConfigResult = getConfig()
                                     |> Reader.withEnv addToGetConfigEnvironment
                                     |> Reader.run environment   
-            let! config = getConfigResult             
+            let! config = getConfigResult
+            let configDto = Configuration.toValidSIDto config                    
                             
             let findForestsResult =
                 [{
@@ -140,7 +141,7 @@ let addForestWorkflow: AddForestWorkflow =
                 | None ->                                    
                     newForest
                     |> Forest.toSIDto
-                    |> environment.addForest config
+                    |> environment.addForest configDto
                     |> Result.mapError stringToErrorText                  
                 | Some forests ->
                     Error (ErrorText $"The forests with Name {unvalidatedName} or hash {forestHash} already exist")
@@ -155,6 +156,7 @@ let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
         return result {            
             let! config = getConfig()
                           |> Reader.run (environment |> updateToGetConfigEnvironment)                          
+            let configDto = Configuration.toValidSIDto config
             
             let findForestResult =
                 [{
@@ -176,7 +178,7 @@ let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
                         
                     completedForest
                     |> Forest.toSIDto
-                    |> environment.updateForest config
+                    |> environment.updateForest configDto
                     |> Result.map (fun _ -> completedForest |> Forest.toPODto)
                     |> Result.mapError stringToErrorText
                 | Some forests ->
@@ -194,6 +196,7 @@ let deleteForestWorkflow: DeleteForestWorkflow =
         return result {            
             let! config = getConfig()
                           |> Reader.run (environment |> deleteToGetConfigEnvironment)                          
+            let configDto = Configuration.toValidSIDto config
             
             let findForestResult =
                 [{
@@ -210,7 +213,7 @@ let deleteForestWorkflow: DeleteForestWorkflow =
                 | Some [forest] ->                        
                     forest
                     |> Forest.toSIDto
-                    |> environment.deleteForest config
+                    |> environment.deleteForest configDto
                     |> Result.map (fun _ -> forest |> Forest.toPODto)
                     |> Result.mapError stringToErrorText
                 | Some forests ->
