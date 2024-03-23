@@ -16,6 +16,6 @@ let getConfigEnvironment: GetConfigEnvironment = {
     }
 
 let setConfigValueEnvironment: SetConfigEnvironment = {
-        provideAllowedKeys = configSecondaryAdapters.provideAllowedKeys
+        provideAllowedConfigKeys = configSecondaryAdapters.provideAllowedKeys
         applyConfigValue = configSecondaryAdapters.applyConfigValue
     }

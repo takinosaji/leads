@@ -6,7 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Config\GetConfigWorkflowTests.fs" />
+        <Compile Include="Config\GetConfigValueWorkflowTests.fs" />
+        <Compile Include="Config\SetConfigValueWorkflowTests.fs" />
     </ItemGroup>
 
     <ItemGroup>

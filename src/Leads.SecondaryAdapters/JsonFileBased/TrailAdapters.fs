@@ -10,12 +10,12 @@ open Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters.AllowedKeys
 let private getTrailFolderPath
     (defaultWorkingDirPath: string)
     (validConfigurationDto: ValidConfigSIDto)
-    streamHash = 
+    forestHash = 
     let workingDirPath = ValidConfigSIDto.findOrDefault
                             validConfigurationDto
                             WorkingDirKey
                             defaultWorkingDirPath
-    Path.Combine(workingDirPath, streamHash)
+    Path.Combine(workingDirPath, forestHash)
     
 
 let private addTrail
@@ -24,32 +24,32 @@ let private addTrail
         result {
             return trailToAdd
         }
-        // let forestsFilePath = Path.Combine(workingDirPath, forestFileName)
-        //
-        // result {
-        //     let! forestsOption = listForests forestsFilePath
-        //     let! _ =
-        //         match forestsOption with
-        //         | Some forests ->
-        //             match List.tryFind (fun li -> li.Hash = forestToAdd.Hash) forests with
-        //             | Some foundForest ->
-        //                 Error $"The forest with Hash {foundForest.Hash} already exists"
-        //             | None ->
-        //                 forestToAdd.Hash
-        //                 |> ensureForestFolderCreated workingDirPath
-        //                 
-        //                 [forestToAdd]                        
-        //                 |> List.append forests  
-        //                 |> persistForests forestsFilePath
-        //         | None ->
-        //             forestToAdd.Hash
-        //             |> ensureForestFolderCreated workingDirPath
-        //             
-        //             [forestToAdd]
-        //             |> persistForests forestsFilePath
-        //                 
-        //     return forestToAdd
-        // }    
+        let forestsFilePath = getTrailFolderPath
+        
+        result {
+            let! forestsOption = listForests forestsFilePath
+            let! _ =
+                match forestsOption with
+                | Some forests ->
+                    match List.tryFind (fun li -> li.Hash = forestToAdd.Hash) forests with
+                    | Some foundForest ->
+                        Error $"The forest with Hash {foundForest.Hash} already exists"
+                    | None ->
+                        forestToAdd.Hash
+                        |> ensureForestFolderCreated workingDirPath
+                        
+                        [forestToAdd]                        
+                        |> List.append forests  
+                        |> persistForests forestsFilePath
+                | None ->
+                    forestToAdd.Hash
+                    |> ensureForestFolderCreated workingDirPath
+                    
+                    [forestToAdd]
+                    |> persistForests forestsFilePath
+                        
+            return forestToAdd
+        }    
     
 let createLocalJsonFileTrailAdapters defaultWorkingDirPath =
     {|

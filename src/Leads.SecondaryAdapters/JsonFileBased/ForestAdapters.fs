@@ -103,6 +103,7 @@ let private addForest
                     | None ->
                         forestToAdd.Hash
                         |> ensureForestFolderCreated workingDirPath
+                        |> ignore
                         
                         [forestToAdd]                        
                         |> List.append forests  
@@ -110,6 +111,7 @@ let private addForest
                 | None ->
                     forestToAdd.Hash
                     |> ensureForestFolderCreated workingDirPath
+                    |> ignore
                     
                     [forestToAdd]
                     |> persistForests forestsFilePath

@@ -113,14 +113,14 @@ let addForestWorkflow: AddForestWorkflow =
         return result {   
             let! validatedName = ForestName.create unvalidatedName
             let! newForest = Forest.newForest validatedName        
-            let forestValue = newForest |> Forest.value
-            let forestHash = Hash.value forestValue.Hash
+            let forestData = newForest |> Forest.value
+            let forestHash = Hash.value forestData.Hash
 
             let getConfigResult = getConfig()
                                     |> Reader.withEnv addToGetConfigEnvironment
                                     |> Reader.run environment   
             let! config = getConfigResult
-            let configDto = Configuration.toValidSODto config                    
+            let configDto = Configuration.toValidSIDto config                    
                             
             let findForestsResult =
                 [{
@@ -156,7 +156,7 @@ let changeForestStatusWorkflow: ChangeForestStatusWorkflow =
         return result {            
             let! config = getConfig()
                           |> Reader.run (environment |> updateToGetConfigEnvironment)                          
-            let configDto = Configuration.toValidSODto config
+            let configDto = Configuration.toValidSIDto config
             
             let findForestResult =
                 [{
@@ -196,7 +196,7 @@ let deleteForestWorkflow: DeleteForestWorkflow =
         return result {            
             let! config = getConfig()
                           |> Reader.run (environment |> deleteToGetConfigEnvironment)                          
-            let configDto = Configuration.toValidSODto config
+            let configDto = Configuration.toValidSIDto config
             
             let findForestResult =
                 [{

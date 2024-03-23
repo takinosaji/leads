@@ -9,7 +9,7 @@ open Leads.Core.Config.ConfigValueDTO
 open Leads.Core.Config.Services
 
 type SetConfigEnvironment = {
-    provideAllowedKeys: AllowedConfigKeysProvider
+    provideAllowedConfigKeys: AllowedConfigKeysProvider
     applyConfigValue: ConfigurationValueApplier
 }
 
@@ -29,7 +29,7 @@ let setConfigValueWorkflow: SetConfigValueWorkflow =
         let! environment = Reader.ask
         
         return
-            match List.contains <| keyToUpdate <| environment.provideAllowedKeys() with
+            match List.contains <| keyToUpdate <| environment.provideAllowedConfigKeys() with
             | true ->
                 result {
                     let! key = ConfigKey.create keyToUpdate

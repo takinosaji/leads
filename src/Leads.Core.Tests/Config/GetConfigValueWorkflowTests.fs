@@ -1,4 +1,4 @@
-﻿module Leads.Core.Tests.Config.GetConfigWorkflowTests
+﻿module Leads.Core.Tests.Config.GetConfigValueWorkflowTests
 
 open Leads.SecondaryPorts.Config
 open Leads.Utilities.Dependencies
