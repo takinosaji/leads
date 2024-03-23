@@ -57,8 +57,8 @@ let private applyConfigValue =
       
 let createLocalJsonFileConfigAdapters configFilePath =
     {|
-       provideConfiguration = fun (_:unit) -> provideConfiguration configFilePath
+       provideConfiguration = fun _ -> provideConfiguration configFilePath
        applyConfigValue = fun key value -> applyConfigValue configFilePath key value
-       provideAllowedKeys = fun () -> [DefaultForestKey; WorkingDirKey]  
+       provideAllowedKeys = fun _ -> [DefaultForestKey; WorkingDirKey]  
     |}
             

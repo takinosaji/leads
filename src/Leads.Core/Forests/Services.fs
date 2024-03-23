@@ -29,11 +29,10 @@ let internal findForests: FindForests =
                                     |> Reader.withEnv toGetConfigEnvironment
         return result {
             let! config = getConfigResult
-            let configDto = config |> Configuration.toValidSIDto
             
             let! unvalidatedForestsOption =
                 orFindCriteria
-                |> environment.findForests configDto 
+                |> environment.findForests config 
                 |> Result.mapError stringToErrorText
                 
             match unvalidatedForestsOption with
