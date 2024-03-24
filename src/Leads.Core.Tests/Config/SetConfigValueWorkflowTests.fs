@@ -36,7 +36,7 @@ let ``When setting the value for an unknown key expect error message`` () =
     errorText =! $"Configuration key {unknownKey} is not allowed"
 
 [<Fact>]
-let ``When setting the value and configuration provider throws expect error message`` () =
+let ``When setting the value to known key and configuration provider throws expect error message`` () =
     let knownKey = "working.dir"
     let newValue = "newPath"
     let errorMessage = "Any error message"

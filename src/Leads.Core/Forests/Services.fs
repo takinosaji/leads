@@ -40,7 +40,7 @@ let internal findForests: FindForests =
             | Some unvalidatedForests ->                
                 let! forests =
                     unvalidatedForests
-                    |> List.map Forest.fromSecondaryOutputDto                        
+                    |> List.map Forest.fromSODto                        
                     |> Result.fromList
                     
                 return Some forests

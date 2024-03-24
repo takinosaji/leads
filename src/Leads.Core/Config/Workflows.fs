@@ -50,6 +50,6 @@ let listConfigWorkflow: ListConfigWorkflow =
     fun () -> reader {
         let! config = getConfig()
         return config
-            |> Result.map Configuration.toPrimaryDto
+            |> Result.map Configuration.toPODto
             |> Result.mapError errorTextToString   
     }   

@@ -45,7 +45,7 @@ module Forest =
         }
     }
 
-    let internal fromSecondaryOutputDto (forestDto: ForestSODto) =
+    let internal fromSODto (forestDto: ForestSODto) =
         result {
             let! forestHash = Hash.create forestDto.Hash
             let! forestName = ForestName.create forestDto.Name          

@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -10,7 +11,7 @@
         <Compile Include="JsonFileBased\ForestAdapters.fs" />
         <Compile Include="JsonFileBased\TrailAdapters.fs" />
         <Folder Include="InMemoryBased" />
-        <Compile Include="SQLiteBased\ConfigAdapters.fs" />
+        <Compile Include="SQLiteBased\ForestAdapters.fs" />
     </ItemGroup>
 
     <ItemGroup>

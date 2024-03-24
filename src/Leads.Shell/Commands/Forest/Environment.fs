@@ -8,7 +8,7 @@ open Leads.SecondaryAdapters.JsonFileBased.ForestAdapters
 open Leads.Shell.ShellEnvironment
 open Leads.Shell.Commands.Config.Environment
 
-let private forestSecondaryAdapters = createLocalJsonFileForestAdapters variables.defaultWorkingDirPath
+let private forestSecondaryAdapters = createLocalJsonFileForestAdapters variables.appDirPath
 
 let findForestEnvironment: FindForestEnvironment = {
     provideAllowedConfigKeys = getConfigEnvironment.provideAllowedConfigKeys

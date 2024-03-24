@@ -24,7 +24,7 @@ let internal getConfigValue: GetConfigValue =
                         environment.provideConfig() |> Result.mapError stringToErrorText
                     
                     let! value = unvalidatedConfiguration
-                                 |> Configuration.create
+                                 |> Configuration.fromSODto
                                  |> Configuration.keyValue key
                     return value
                 }
@@ -40,6 +40,6 @@ let internal getConfig: GetConfig =
         return result {     
             let! unvalidatedConfiguration = services.provideConfig() |> Result.mapError stringToErrorText
             return unvalidatedConfiguration
-                |> Configuration.create       
+                |> Configuration.fromSODto       
         }    
     }

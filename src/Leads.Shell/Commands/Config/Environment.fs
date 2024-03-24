@@ -3,12 +3,11 @@
 open Leads.Core.Config.Services
 open Leads.Core.Config.Workflows
 
-open Leads.SecondaryAdapters.SQLiteBased.ConfigAdapters
+open Leads.SecondaryAdapters.JsonFileBased.ConfigAdapters
 
 open Leads.Shell.ShellEnvironment
 
-let private configFilePath = $"{variables.defaultWorkingDirPath}/config.json";
-let private configSecondaryAdapters = createLocalSQLiteConfigAdapters configFilePath
+let private configSecondaryAdapters = createLocalJsonFileConfigAdapters variables.appDirPath
 
 let getConfigEnvironment: GetConfigEnvironment = {
         provideAllowedConfigKeys = configSecondaryAdapters.provideAllowedKeys

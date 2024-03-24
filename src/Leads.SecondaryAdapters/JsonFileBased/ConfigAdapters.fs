@@ -11,12 +11,12 @@ module AllowedKeys =
 open AllowedKeys
 
 let internal getWorkingDirPath
-    (defaultWorkingDirPath: string)
+    (appDirPath: string)
     (validConfigurationDto: ValidConfigSIDto) = 
     ValidConfigSIDto.findOrDefault
         validConfigurationDto
         WorkingDirKey
-        defaultWorkingDirPath
+        appDirPath
 
 // TODO: write unit tests
 let private provideConfiguration =
@@ -54,11 +54,13 @@ let private applyConfigValue =
             with excp ->
                 Error(excp.Message)       
         | Error errorText -> Error errorText
-      
-let createLocalJsonFileConfigAdapters configFilePath =
+
+let createLocalJsonFileConfigAdapters appDirPath =
+    let configFilePath = $"{appDirPath}/config.json"
+    
     {|
-       provideConfiguration = fun _ -> provideConfiguration configFilePath
+       provideConfiguration = fun () -> provideConfiguration configFilePath
        applyConfigValue = fun key value -> applyConfigValue configFilePath key value
-       provideAllowedKeys = fun _ -> [DefaultForestKey; WorkingDirKey]  
+       provideAllowedKeys = fun () -> [DefaultForestKey; WorkingDirKey]  
     |}
             

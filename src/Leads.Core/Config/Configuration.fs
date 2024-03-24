@@ -37,7 +37,7 @@ type Configuration = private Configuration of ConfigEntry list option
 
 module Configuration =           
     type ConfigurationFactory = ConfigSODto -> Configuration
-    let create: ConfigurationFactory = function
+    let fromSODto: ConfigurationFactory = function
         | Some stringMap ->
             stringMap
             |> Map.toList
@@ -54,6 +54,8 @@ module Configuration =
                     InvalidValue { Key = key; ValueString = snd textEntry; Error = valueError })
             |> Some
             |> Configuration
+            
+            put logic
         | None -> None
                   |> Configuration
     
@@ -75,7 +77,7 @@ module Configuration =
                 | None -> Ok None
         | None -> Ok None
         
-    let toPrimaryDto (configuration: Configuration) :ConfigPrimaryDto =        
+    let toPODto (configuration: Configuration) :ConfigPrimaryDto =        
         match value configuration with
         | Some configEntries ->
             configEntries
