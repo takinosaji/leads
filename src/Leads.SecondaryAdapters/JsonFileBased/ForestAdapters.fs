@@ -52,8 +52,8 @@ let private findForests
                         orFindCriteria
                         |> List.map (fun andCriteria ->                              
                             forests                        
-                            |> List.filter (forestFieldPredicate (fun f -> f.Name) andCriteria.Name) 
-                            |> List.filter (forestFieldPredicate (fun f -> f.Hash) andCriteria.Hash)            
+                            |> List.filter (forestFieldPredicate (_.Name) andCriteria.Name) 
+                            |> List.filter (forestFieldPredicate (_.Hash) andCriteria.Hash)            
                             |> List.filter (fun li -> List.contains li.Status andCriteria.Statuses)
                         )
                         |> List.concat

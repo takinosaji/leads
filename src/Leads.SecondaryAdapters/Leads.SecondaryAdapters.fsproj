@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -12,11 +12,16 @@
         <Compile Include="JsonFileBased\TrailAdapters.fs" />
         <Folder Include="InMemoryBased" />
         <Compile Include="SQLiteBased\ForestAdapters.fs" />
+        <Compile Include="SQLiteBased\DatabaseInitialization\MigrationRunner.fs" />
+        <Compile Include="SQLiteBased\DatabaseInitialization\InitialMigration.fs" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentMigrator" Version="5.2.0" />
+      <PackageReference Include="FluentMigrator.Runner" Version="5.2.0" />
+      <PackageReference Include="FluentMigrator.Runner.SQLite" Version="5.2.0" />
       <PackageReference Include="FSharp.Json" Version="0.4.1" />
-      <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+      <PackageReference Include="Fumble" Version="1.0.3" />
     </ItemGroup>
 
     <ItemGroup>

@@ -26,8 +26,8 @@ let private printAddedForest (forestDto: ForestPODto) =
     table.AddRow(nameof(forestDto.Hash), forestDto.Hash)
     table.AddRow(nameof(forestDto.Name), forestDto.Name)
     table.AddRow(nameof(forestDto.Status), forestDto.Status.ToString())
-    table.AddRow(nameof(forestDto.Created), forestDto.Created.ToString())
-    table.AddRow(nameof(forestDto.LastModified), forestDto.LastModified.ToString())
+    table.AddRow(nameof(forestDto.CreatedAt), forestDto.CreatedAt.ToString())
+    table.AddRow(nameof(forestDto.UpdatedAt), forestDto.UpdatedAt.ToString())
            
     AnsiConsole.Write(table);
     

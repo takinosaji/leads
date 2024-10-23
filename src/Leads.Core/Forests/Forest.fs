@@ -54,8 +54,8 @@ module Forest =
                 Hash = forestHash
                 Name = forestName
                 Status = forestDto.Status
-                Created = forestDto.Created
-                LastModified = forestDto.LastModified 
+                Created = forestDto.CreatedAt
+                LastModified = forestDto.UpdatedAt 
             }
         }
             
@@ -64,8 +64,8 @@ module Forest =
         {
            Hash = Hash.value forestData.Hash
            Name = ForestName.value forestData.Name
-           Created = forestData.Created
-           LastModified = forestData.LastModified
+           CreatedAt = forestData.Created
+           UpdatedAt = forestData.LastModified
            Status = forestData.Status
         }                
     
@@ -74,7 +74,7 @@ module Forest =
         {
             Hash = Hash.value forestData.Hash
             Name = ForestName.value forestData.Name
-            Created = forestData.Created
-            LastModified = forestData.LastModified
+            CreatedAt = forestData.Created
+            UpdatedAt = forestData.LastModified
             Status = forestData.Status
         }

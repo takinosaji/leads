@@ -21,11 +21,11 @@ module DTO =
     }
     
     type OrFindCriteria = AndFindCriteria list    
-    type ForestSIDto = { Hash: string; Name: string; Created: DateTime; LastModified: DateTime; Status: ForestStatus }
-    type ForestSODto = ForestSIDto
+    type ForestSIDto = { Hash: string; Name: string; CreatedAt: DateTime; UpdatedAt: DateTime; Status: ForestStatus }
+    type ForestSODto = { Hash: string; Name: string; CreatedAt: DateTime; UpdatedAt: DateTime; Status: string }
     
-    type ForestsSecondaryInputDto = ForestSIDto list option
-    type ForestsSecondaryOutputDto = ForestSODto list option    
+    type ForestsSIDto = ForestSIDto list option
+    type ForestsSODto = ForestSODto list option    
 open DTO
 
 type ForestAppender = ValidConfigSIDto -> ForestSIDto -> Result<ForestSODto, string>

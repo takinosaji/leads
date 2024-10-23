@@ -54,8 +54,6 @@ module Configuration =
                     InvalidValue { Key = key; ValueString = snd textEntry; Error = valueError })
             |> Some
             |> Configuration
-            
-            put logic
         | None -> None
                   |> Configuration
     

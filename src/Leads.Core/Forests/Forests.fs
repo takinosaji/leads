@@ -23,7 +23,7 @@ module Forests =
             
     let extractNamesString forests =
         let forestData = List.map (fun f -> Forest.value f) forests
-        String.Join(", ", forestData |> List.map (fun f -> f.Name))
+        String.Join(", ", forestData |> List.map (_.Name))
             
     let toOptionPODtoList (forests: ForestsOption): ForestsOptionPODto =
         match forests with
