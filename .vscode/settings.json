@@ -1,0 +1,11 @@
+{
+    "terminal.integrated.env.windows": {
+      "PYTHONPATH": "${workspaceFolder}\\app;${env:PYTHONPATH}"
+    },
+    "terminal.integrated.env.linux": {
+      "PYTHONPATH": "${workspaceFolder}/app:${env:PYTHONPATH}"
+    },
+    "terminal.integrated.env.osx": {
+      "PYTHONPATH": "${workspaceFolder}/app:${env:PYTHONPATH}"
+    }
+  }

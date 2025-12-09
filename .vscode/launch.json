@@ -1,0 +1,62 @@
+{
+    "configurations": [
+        {
+            "name": "Run install-all-dependencies script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/local-dev/scripts/install-all-dependencies.py",
+            "args": ["${workspaceFolder}/app"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run update-all-dependencies script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/local-dev/scripts/update-all-dependencies.py",
+            "args": ["${workspaceFolder}/app"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run delete-all-locks script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/local-dev/scripts/delete-all-locks.py",
+            "args": ["${workspaceFolder}/app"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run cli_primary_adapter as module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "leads.cli",
+            "console": "integratedTerminal",
+            "env": {
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "run cli_primary_adapter as script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/app/leads/cli/__main__.py",
+            "console": "integratedTerminal",
+            "env": {
+            }
+        },
+        {
+            "name": "run all tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "${workspaceFolder}/app/test_leads"
+            ],
+            "console": "integratedTerminal",
+            "purpose": ["debug-test"],
+            "justMyCode": true
+        }
+    ]
+}
