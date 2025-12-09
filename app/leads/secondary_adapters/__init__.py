@@ -2,6 +2,6 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 
 # Import submodules
 
-from app.leads.cli import
+from . import (structlog)
 
-__all__ = []
+__all__ = ['structlog']

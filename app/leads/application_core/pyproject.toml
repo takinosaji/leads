@@ -1,19 +1,20 @@
 [tool.poetry]
-name = "leads-cli"
+name = "leads-application-core"
 version = "0.0.0"
-description = "CLI Primary Adapter for Leads"
+description = "Leads Application Core"
 authors = ["Kostiantyn Chomakov <kostiantyn.chomakov@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
 
 packages = [
-    { include = "leads/cli", from = "../../" },
+    { include = "leads/application_core", from = "../../" },
 ]
 
 exclude = [
     "*.lock",
     "*.toml",
-    "README.md"
+    "README.md",
+    "./secondary_ports",
 ]
 
 classifiers = [
@@ -24,20 +25,14 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.14"
-python-decouple = "^3.8"
-pydantic ="^2.11.9"
-structlog = "^25.4.0"
-click = "^8.3.0"
-partial-injector = "^2.3.5"
-spinq = "^1.1.0"
 returns = "^0.26.0"
-sversion = "^2.2.0"
-leads-application-core = { path = "../application_core", develop = true }
-leads-secondary-adapters = { path = "../secondary_adapters", develop = true }
-
+structlog = "^25.5.0"
+pydantic = "^2.12.5"
+spinq = "^1.1.0"
+leads-application-core-secondary-ports = { path = "./secondary_ports", develop = true }
 
 [project]
-name = "leads-cli"
+name = "leads-application-core"
 
 [project.urls]
 homepage = "https://github.com/takinosaji/leads"

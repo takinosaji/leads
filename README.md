@@ -1,5 +1,5 @@
 <!-- omit in toc -->
-# leads
+# Leads
 
 _*[leads]*_
 
@@ -21,7 +21,7 @@ Table of Contents
   - [6.5. Selecting virtual environment python interpreter in your IDE](#65-selecting-virtual-environment-python-interpreter-in-your-ide)
   - [6.6. Installing project dependencies](#66-installing-project-dependencies)
   - [6.7. Running CLI Primary Adapter from IDE](#67-running-cli-primary-adapter-from-ide)
-  - [6.8. DOT-THRNS-HRNS-CLI Configuration](#68-dot-thrns-hrns-cli-configuration)
+  - [6.8. DOT-THRNS-HRNS-CLI Configuration](#68-leads-configuration)
 - [7. Further Reading](#7-further-reading)
 
 ## 1. Introduction
@@ -29,6 +29,6 @@ Table of Contents
 
 ## 7. Further Reading
 
-Explore the README files of every package that comprises the application to get more information about leads:
+Explore the README files of every package that comprises the application to get more information about Leads:
 
 1. [CLI](/app/leads/cli/README.md)

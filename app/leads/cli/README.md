@@ -1,3 +1,3 @@
-# CLI Primary Adapter for leads
+# CLI Primary Adapter for Leads
 
-This package contains CLI Primary Adapter for leads.
+This package contains CLI Primary Adapter for Leads.

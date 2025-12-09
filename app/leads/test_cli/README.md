@@ -1,3 +1,3 @@
-# CLI Primary Adapter Tests leads
+# Tests for Leads CLI Primary Adapter
 
-This package contains Unit and Integration Tests for leads CLI Primary Adapter.
+This package contains Unit and Integration Tests for Leads CLI Primary Adapter.
