@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "leads-cli-tests"
+version = "0.0.0"
+description = "CLI Primary Adapter Tests for leads"
+authors = ["Kostiantyn Chomakov <kostiantyn.chomakov@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+packages = [
+    { include = "leads/test_cli", from = "../../" },
+]
+
+exclude = [
+    "*.lock",
+    "*.toml",
+    "README.md",
+    "./secondary_ports",
+]
+
+classifiers = [
+    'Programming Language :: Python :: 3',
+    "License :: OSI Approved :: Apache Software License",
+    'Operating System :: OS Independent'
+]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+structlog = "^25.4.0"
+pytest = "^8.4.2"
+pytest-asyncio = "^1.2.0"
+Faker = "^37.8.0"
+spinq = "^1.1.0"
+dot-thrns-hrns-cli-primary-adapter = { path = "../cli", develop = true }
+
+[project]
+name = "leads-cli-tests"
+
+[project.urls]
+homepage = "https://github.com/takinosaji/leads"
+repository = "https://github.com/takinosajscriptsi/leads"
+documentation = "https://github.com/takinosaji/leads"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+namespace_packages = true

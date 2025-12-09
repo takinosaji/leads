@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "leads-cli"
+version = "0.0.0"
+description = "CLI Primary Adapter for leads"
+authors = ["Kostiantyn Chomakov <kostiantyn.chomakov@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+packages = [
+    { include = "leads/cli", from = "../../" },
+]
+
+exclude = [
+    "*.lock",
+    "*.toml",
+    "README.md"
+]
+
+classifiers = [
+    'Programming Language :: Python :: 3',
+    "License :: OSI Approved :: Apache Software License",
+    'Operating System :: OS Independent'
+]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+python-decouple = "^3.8"
+pydantic ="^2.11.9"
+structlog = "^25.4.0"
+click = "^8.3.0"
+partial-injector = "^2.3.5"
+spinq = "^1.1.0"
+sversion = "^2.2.0"
+leads-cli-application-core = { path = "../application_core", develop = true }
+leads-cli-secondary-adapters = { path = "../secondary_adapters", develop = true }
+
+
+[project]
+name = "leads-cli"
+
+[project.urls]
+homepage = "https://github.com/takinosaji/leads"
+repository = "https://github.com/takinosajscriptsi/leads"
+documentation = "https://github.com/takinosaji/leads"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+namespace_packages = true
