@@ -7,7 +7,7 @@ license = "Apache-2.0"
 readme = "README.md"
 
 packages = [
-    { include = "leads/test_cli", from = "../../" },
+    { include = "test_leads/test_cli", from = "../../" },
 ]
 
 exclude = [
@@ -30,7 +30,7 @@ pytest = "^9.0.2"
 pytest-asyncio = "^1.3.0"
 Faker = "^37.8.0"
 spinq = "^1.1.0"
-leads-cli = { path = "../cli", develop = true }
+leads-cli = { path = "../../leads/cli", develop = true }
 
 [project]
 name = "leads-cli-tests"

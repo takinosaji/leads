@@ -2,7 +2,7 @@ import traceback
 from typing import Callable
 
 from pydantic import BaseModel, ConfigDict, ValidationError
-from pydantic.alias_generators import to_camel, to_pascal
+from pydantic.alias_generators import to_camel
 
 
 type ModelValidationError = dict[str, str]
@@ -13,9 +13,7 @@ model_config = ConfigDict(arbitrary_types_allowed=True,
                           alias_generator=to_camel,
                           populate_by_name=True)
 
-pascal_model_config = ConfigDict(**{**model_config, 'alias_generator': to_pascal})
 extensible_model_config = ConfigDict(**{**model_config, 'extra': 'allow'})
-extensible_pascal_model_config = ConfigDict(**{**pascal_model_config, 'extra': 'allow'})
 
 
 class PydanticValidationError(BaseModel):
