@@ -28,6 +28,15 @@
             "justMyCode": true
         },
         {
+            "name": "Run fix-all-locks script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/local-dev/scripts/fix-all-locks.py",
+            "args": ["${workspaceFolder}/app"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Run cli_primary_adapter as module",
             "type": "debugpy",
             "request": "launch",

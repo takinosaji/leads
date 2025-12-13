@@ -17,7 +17,7 @@ name = "leads-application-core-secondary-ports"
 version = "0.0.0"
 description = "Leads Application Core Secondary Ports"
 optional = false
-python-versions = "^3.14"
+python-versions = ">=3.14,<3.15"
 groups = ["main"]
 files = []
 develop = true
@@ -258,5 +258,5 @@ typing-extensions = ">=4.12.0"
 
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.14"
-content-hash = "7e3d9f3bae48a9b177606ef00f8c2be2fe57e04881b293b31e76342330921771"
+python-versions = ">=3.14,<3.15"
+content-hash = "163db8208bde4f30c1e92a43626c9855196d5741334b0214bd800d2ae4f85e14"

@@ -3,9 +3,7 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 # Import submodules
 
 from . import (pydantic_models,
-               correlation,
-               config)
+               correlation)
 
 __all__ = ['pydantic_models',
-           'correlation',
-           'config']
+           'correlation']

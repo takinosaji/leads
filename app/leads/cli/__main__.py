@@ -1,14 +1,7 @@
-import click
-
 from leads.cli.dependency_injection.container import get_container
-from leads.cli.main import main
-
-
-@click.command()
-def cli_handler():
-    container = get_container()
-    injected_main = container.resolve(main)
-    injected_main()
+from leads.cli.prompt_toolkit_cli.cli_builder import build_injected_cli
 
 if __name__ == '__main__':
-    cli_handler()
+    container = get_container()
+    injected_cli = build_injected_cli(container)
+    injected_cli()
