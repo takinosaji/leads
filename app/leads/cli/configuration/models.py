@@ -18,7 +18,7 @@ class CliMinLogLevel(BaseModel):
 class RuntimeConfiguration(BaseModel):
     model_config = model_config
 
-    min_log_level: CliMinLogLevel
+    min_log_level: str = Field(...)
 
 
 class ContextConfiguration(BaseModel):

@@ -5,7 +5,6 @@ from typing import Callable
 from .logging import get_default_logger
 
 from leads.cli.configuration.models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
-from .min_log_level import resolve_min_log_level_or_default
 
 
 type ConfigurationFactory = Callable[[], CliConfiguration]
@@ -49,7 +48,7 @@ def __create_default_configuration(filepath: Path) -> Path:
             active_forest=None
         ),
         runtime_configuration=RuntimeConfiguration(
-            min_log_level=resolve_min_log_level_or_default('INFO')
+            min_log_level='INFO'
         )
     )
 

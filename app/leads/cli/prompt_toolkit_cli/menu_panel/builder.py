@@ -5,13 +5,13 @@ from typing import Callable
 from prompt_toolkit.layout import Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 
-from leads.cli.prompt_toolkit_cli.cli_state import CLI_TABS, CliState
+from ..cli_state import CLI_TABS, CliState
 
 
 MENU_PANEL_WIDTH = 30
 
 
-def _build_menu_control(state: CliState, app_getter: Callable[[], object]) -> FormattedTextControl:
+def __build_menu_control(state: CliState, app_getter: Callable[[], object]) -> FormattedTextControl:
     def get_fragments():
         fragments = []
         # Inner width for the whole box content (without the border chars).
@@ -20,7 +20,10 @@ def _build_menu_control(state: CliState, app_getter: Callable[[], object]) -> Fo
         label_width = inner_width - len(" ") - len("▸ ") - len(" ")
         for i, item in enumerate(CLI_TABS):
             is_selected = i == state.selected_index
-            style = "class:menu-selected" if is_selected else "class:menu-item"
+            if is_selected:
+                style = "class:menu-selected-active" if state.focus_index == 0 else "class:menu-selected-inactive"
+            else:
+                style = "class:menu-item"
             prefix = "▸ " if is_selected else "  "
 
             # Left-align the label text within the label_width.
@@ -39,12 +42,11 @@ def _build_menu_control(state: CliState, app_getter: Callable[[], object]) -> Fo
     return FormattedTextControl(get_fragments)
 
 
-def build(state: CliState, app_getter: Callable[[], object] | None = None) -> Window:
-    """Build and return the menu panel Window for the TUI."""
+def build_menu_panel(state: CliState, app_getter: Callable[[], object] | None = None) -> Window:
     if app_getter is None:
         app_getter = lambda: None
 
-    menu_control = _build_menu_control(state, app_getter)
+    menu_control = __build_menu_control(state, app_getter)
 
     menu_window = Window(
         content=menu_control,
