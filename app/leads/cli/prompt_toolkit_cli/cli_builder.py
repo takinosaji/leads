@@ -12,7 +12,7 @@ from .title_panel.builder import build_title_panel
 from .command_panel.builder import build_command_panel
 from .notification_panel.builder import build_notification_panel
 from .cli_styles import build_style
-from .models import CliMode
+from .models import CliMode, CliPanels
 
 
 def build_injected_cli(container: Container):
@@ -22,6 +22,7 @@ def build_injected_cli(container: Container):
     menu_panel = build_menu_panel(state)
 
     content_container = DynamicContainer(lambda: build_content_panel(state, container))
+    #state.focusable_controls[CliPanels.CONTENT_CONTAINER] = content_container
 
     state_panel = build_state_panel(state)
 
@@ -59,6 +60,7 @@ def build_injected_cli(container: Container):
     )
 
     layout = Layout(root_container)
+    state.focus_menu_panel(layout)
 
     style = build_style()
 

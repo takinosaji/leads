@@ -9,9 +9,7 @@ from leads.cli.prompt_toolkit_cli.cli_state import CliState
 def build_forests_panel(state: CliState, container: Container) -> Frame:
     def get_text():
         lines = [
-            ("class:content-title", "Forests\n"),
-            ("", "\n"),
-            ("class:content-text", state.content_text + "\n"),
+
         ]
         return lines
 

@@ -1,9 +1,8 @@
 from typing import Optional
 
-from partial_injector.partial_container import Container
+from prompt_toolkit.layout import DynamicContainer
 
-from .models import CliMode, CliTab
-
+from .models import CliMode, CliTab, CliPanels
 
 CLI_TABS = [
     CliTab.CONFIGURATION,
@@ -16,10 +15,19 @@ class ConfigurationState:
         self.selected_content_index = selected_content_index
         self.items_length = item_length
 
+class MenuState:
+    def __init__(self, selected_index):
+        self.selected_index = selected_index
+
+    @property
+    def selected_item(self) -> CliTab:
+        return CLI_TABS[self.selected_index]
+
 class CliState:
     def __init__(self):
+        self.focusable_controls:dict = {}
+        self.focused_control = ...
 
-        self.selected_index: int = 0
         self.current_forest_name: str = "Demo Forest"
         self.current_forest_id: str = "forest-001"
         self.current_trail_name: str = "Demo Trail"
@@ -31,7 +39,8 @@ class CliState:
         self.mode: CliMode = CliMode.NAVIGATION
         self.command_buffer: str = ""
 
-        self.focus_index: int = 0
+        self.menu_state: MenuState = MenuState(
+            selected_index=0)
 
         self.configuration_state: ConfigurationState = ConfigurationState(
             selected_content_index=0,
@@ -39,26 +48,28 @@ class CliState:
 
         self.edit_buffer: str = ""
 
-    @property
-    def selected_item(self) -> CliTab:
-        return CLI_TABS[self.selected_index]
+    def focus_menu_panel(self, layout):
+        layout.focus(self.focusable_controls[CliPanels.MENU])
+        self.focused_control = self.focusable_controls[CliPanels.MENU]
 
-    @property
-    def content_text(self) -> str:
-        if self.selected_item is CliTab.CONFIGURATION:
-            return "Configuration panel (placeholder)."
-        if self.selected_item is CliTab.FORESTS:
-            return "Forests panel (placeholder)."
-        if self.selected_item is CliTab.TRAILS:
-            return "Trails panel (placeholder)."
-        return ""
 
-    @property
-    def footer_text(self) -> str:
-        return (
-            f" Forest: {self.current_forest_name} ({self.current_forest_id}) "
-            f"| Trail: {self.current_trail_name} ({self.current_trail_id}) "
-        )
+    def focus_command_panel(self, layout):
+        layout.focus(self.focusable_controls[CliPanels.COMMAND])
+        self.focused_control = self.focusable_controls[CliPanels.COMMAND]
+
+
+    def focus_next_control(self, layout):
+        values = list(self.focusable_controls.values())
+        current_index = values.index(self.focused_control)
+        next_index = (current_index + 1) % len(values)
+        next_control = values[next_index]
+
+        layout.focus(next_control)
+
+        #layout.focus(next_control if not isinstance(next_control, DynamicContainer) else next_control.get_children()[0].get_children()[0].content.get_children()[3])
+
+
+        self.focused_control = next_control
 
     @property
     def command_line_text(self) -> str:

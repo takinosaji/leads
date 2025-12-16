@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from partial_injector.partial_container import Container
 from prompt_toolkit.widgets import Frame
 
@@ -12,11 +10,11 @@ from ..models import CliTab
 
 
 def build_content_panel(state: CliState, container: Container) -> Frame:
-    if state.selected_item is CliTab.CONFIGURATION:
+    if state.menu_state.selected_item == CliTab.CONFIGURATION:
         return build_configuration_panel(state, container)
-    if state.selected_item is CliTab.FORESTS:
+    if state.menu_state.selected_item == CliTab.FORESTS:
         return build_forests_panel(state, container)
-    if state.selected_item is CliTab.TRAILS:
+    if state.menu_state.selected_item == CliTab.TRAILS:
         return build_trails_panel(state, container)
 
     return build_configuration_panel(state, container)

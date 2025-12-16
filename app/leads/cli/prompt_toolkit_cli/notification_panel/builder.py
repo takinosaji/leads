@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from prompt_toolkit.layout import Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 
