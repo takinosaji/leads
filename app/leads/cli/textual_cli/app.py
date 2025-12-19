@@ -105,15 +105,9 @@ class CliAppScreen(Screen):
 
 
 class CliApp(App):
-    def __int__(self, container: Container):
-        super().__init__()
-
-        self.container: Container
-
     def on_mount(self) -> None:
         self.push_screen(CliAppScreen())
 
 
 def build_injected_cli(container: Container):
-    app = CliApp(container=container)
     return app.run
