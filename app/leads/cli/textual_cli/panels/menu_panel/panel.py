@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from textual.app import ComposeResult
 from textual.reactive import reactive
@@ -10,7 +8,7 @@ from textual.message import Message
 
 from leads.cli.textual_cli.models import CliTab
 
-# Match prompt_toolkit menu width
+
 MENU_PANEL_WIDTH = 30
 
 
@@ -28,8 +26,6 @@ DEFAULT_ITEMS: list[MenuItemData] = [
 
 
 class MenuSelectionChanged(Message):
-    """Message emitted when the selected menu index changes."""
-
     def __init__(self, index: int, label: str, tab: CliTab) -> None:
         super().__init__()
         self.index = index
@@ -38,36 +34,31 @@ class MenuSelectionChanged(Message):
 
 
 class MenuItem(Static):
-    """One menu item with real border and padding controlled by CSS.
-
-    The selected state is represented by the "-selected" class.
-    """
-
     DEFAULT_CSS = """
     MenuItem {
         width: 1fr;
-        height: 3;
-        border: round #268bd2;
+        height: 3;  
         padding: 0 1;
-        background: #202020;
-        color: #ffffff;
         content-align: center middle;
+        background: #2a2a2a;
+        color: #b0b0b0;
+        text-style: none;
         text-align: center;
+        border: round #3a3a3a;
     }
 
+    MenuPanel:focus MenuItem,
+    MenuPanel:focus-within MenuItem {
+        background: #000000;
+    }
+    
     MenuItem.-selected {
         background: #303030;
         color: #ffd787;
         text-style: bold;
         border: round #5f87af;
     }
-
-    MenuPanel:focus MenuItem.-selected {
-        background: #1e90ff;
-        color: #ffffff;
-        text-style: bold;
-        border: round #87d7ff;
-    }
+    
     """
 
     def __init__(self, label: str, selected: bool = False) -> None:
@@ -76,21 +67,20 @@ class MenuItem(Static):
 
 
 class MenuPanel(Vertical):
-    """Menu panel that mirrors the prompt_toolkit menu look using CSS borders.
-
-    - Width matches toolkit (30 cols).
-    - Background and colors reflect toolkit styles.
-    - Selection is styled via CSS; keyboard navigation updates selection.
-    """
-
     DEFAULT_CSS = f"""
     MenuPanel {{
         width: {MENU_PANEL_WIDTH};
+        height: 1fr;
         background: #202020;
         color: #d0d0d0;
         padding: 0 0;
         overflow-y: hidden;
         border: none;
+    }}
+
+    MenuPanel:focus,
+    MenuPanel:focus-within {{
+        background: #000000;
     }}
     """
 
@@ -118,9 +108,9 @@ class MenuPanel(Vertical):
         self.watch_selected_index(self.selected_index)
 
     def on_key(self, event: Key) -> None:
-        if event.key in ("down", "j"):
+        if event.key == "down":
             self.selected_index = (self.selected_index + 1) % len(self._widgets)
             event.stop()
-        elif event.key in ("up", "k"):
+        elif event.key == "up":
             self.selected_index = (self.selected_index - 1) % len(self._widgets)
             event.stop()

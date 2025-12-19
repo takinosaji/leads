@@ -1,42 +1,9 @@
-from __future__ import annotations
-
 from textual.app import ComposeResult
 from textual.containers import Container
-from textual.widgets import Static
 
 from leads.cli.textual_cli.models import CliTab
-
-
-class _BaseView(Container):
-    DEFAULT_CSS = """
-    _BaseView {
-        width: 1fr;
-        height: 1fr;
-        content-align: center middle;
-    }
-    """
-
-    def __init__(self, title: str, *, id: str | None = None) -> None:
-        super().__init__(id=id, classes="content-tab")
-        self._title = title
-
-    def compose(self) -> ComposeResult:
-        yield Static(self._title)
-
-
-class ConfigurationTab(_BaseView):
-    def __init__(self) -> None:
-        super().__init__("Configuration", id="configuration-tab")
-
-
-class ForestsTab(_BaseView):
-    def __init__(self) -> None:
-        super().__init__("Forests", id="forests-tab")
-
-
-class TrailsTab(_BaseView):
-    def __init__(self) -> None:
-        super().__init__("Trails", id="trails-tab")
+from leads.cli.textual_cli.panels.content_panel.base_view import BaseView
+from leads.cli.textual_cli.panels.content_panel.configuration_tab.tab import ConfigurationTab
 
 
 class ContentPanel(Container):
@@ -44,9 +11,14 @@ class ContentPanel(Container):
     ContentPanel {
         width: 1fr;
         height: 1fr;
-        background: #000000;
+        background: #202020;
         border: round #268bd2;
-        padding: 1 1;
+        padding: 0 0;
+    }
+
+    ContentPanel:focus,
+    ContentPanel:focus-within {
+        background: #000000;
     }
 
     ContentPanel > .hidden {
@@ -61,8 +33,9 @@ class ContentPanel(Container):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.__views: dict[CliTab, _BaseView] = {}
+        self.__views: dict[CliTab, BaseView] = {}
         self.__active_tab: CliTab = CliTab.CONFIGURATION
+        self.can_focus = True
 
     def __apply_active(self, tab: CliTab) -> None:
         if not self.__views:
@@ -77,8 +50,9 @@ class ContentPanel(Container):
 
     def compose(self) -> ComposeResult:
         cfg = ConfigurationTab()
-        frs = ForestsTab()
-        trl = TrailsTab()
+
+        frs = BaseView("Forests", id="forests-tab")
+        trl = BaseView("Trails", id="trails-tab")
         self.__views = {
             CliTab.CONFIGURATION: cfg,
             CliTab.FORESTS: frs,
@@ -91,7 +65,12 @@ class ContentPanel(Container):
         yield frs
         yield trl
 
-    def set_active(self, label: CliTab | str) -> None:
-        if label == self.__active_tab:
+    def set_active(self, tab: CliTab | str) -> None:
+        if tab == self.__active_tab:
             return
-        self.__apply_active(label)
+        self.__apply_active(tab)
+
+    def on_focus(self, event) -> None:
+        active_view = self.__views.get(self.__active_tab)
+        if active_view and hasattr(active_view, 'focus'):
+            active_view.focus()

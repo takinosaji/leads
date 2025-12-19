@@ -1,27 +1,25 @@
-from __future__ import annotations
-
 from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.message import Message
 from textual.widgets import Static, Input
 from textual.containers import Container
 from textual.events import Key
+from typing import Literal
 
 
 class CommandSubmitted(Message):
-    """Message emitted when user submits a command string."""
-
     def __init__(self, text: str) -> None:
         super().__init__()
         self.text = text
 
 
+class CommandPanelClosed(Message):
+    def __init__(self, reason: Literal["escape", "submit", "tab", "unknown"]) -> None:
+        super().__init__()
+        self.reason = reason
+
+
 class CommandPanel(Container):
-    """Bottom command panel with label and bordered input.
-
-    Appears with ':'; Enter submits; Escape hides.
-    """
-
     DEFAULT_CSS = """
     CommandPanel {
         dock: bottom;
@@ -80,18 +78,22 @@ class CommandPanel(Container):
         self.input.value = ""
         self.input.focus()
 
-    def hide(self) -> None:
+    def hide(self, reason: Literal["escape", "submit", "tab", "unknown"] = "unknown") -> None:
         self.add_class("hidden")
+        self.post_message(CommandPanelClosed(reason))
 
     def on_key(self, event: Key) -> None:
         if event.key == "escape":
-            self.hide()
+            self.hide(reason="escape")
+            event.stop()
+        elif event.key == "tab":
+            self.hide(reason="tab")
             event.stop()
 
-    def on_input_submitted(self, event: Input.Submitted) -> None:  # type: ignore[attr-defined]
+    def on_input_submitted(self, event: Input.Submitted) -> None:
         text = (event.value or "").strip()
 
         self.post_message(CommandSubmitted(text))
         if text == "q":
             self.app.exit()
-        self.hide()
+        self.hide(reason="submit")
