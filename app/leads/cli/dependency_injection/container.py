@@ -1,17 +1,18 @@
 from partial_injector.partial_container import Container, FromContainer
 from structlog import BoundLogger
 
-from leads.cli.configuration.factory import create_configuration
-from leads.cli.configuration.logging import create_configured_logger
-from leads.cli.configuration.models import CliConfiguration
+from leads.cli.configuration.factory import load_cli_configuration, CliConfigurationLoader, CliConfigurationSaver, \
+    save_cli_configuration
+from leads.cli.logging import create_configured_logger
 
 
 def get_container():
     container = Container()
 
     # CLI
-    container.register_factory(create_configuration, key=CliConfiguration)
-    container.register_factory(create_configured_logger, args=[FromContainer(CliConfiguration)], key=BoundLogger)
+    container.register_instance(save_cli_configuration, key=CliConfigurationSaver)
+    container.register_instance(load_cli_configuration, key=CliConfigurationLoader)
+    container.register_factory(create_configured_logger, args=[FromContainer(CliConfigurationLoader)], key=BoundLogger)
 
     # Application Core
 

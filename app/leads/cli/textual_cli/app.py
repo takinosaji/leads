@@ -41,8 +41,10 @@ class AppFocusState:
 
 
 class CliAppScreen(Screen):
-    def __init__(self):
+    def __init__(self, container: Container):
         super().__init__()
+
+        self.container = container
 
         self.header_panel = HeaderPanel(id="header")
         self.menu_panel = MenuPanel([
@@ -50,7 +52,7 @@ class CliAppScreen(Screen):
             MenuItemData("Forests", CliTab.FORESTS),
             MenuItemData("Trails", CliTab.TRAILS),
         ])
-        self.content_panel = ContentPanel(id="content")
+        self.content_panel = ContentPanel(container, id="content")
         self.command_panel = CommandPanel()
 
         self.focus_state = AppFocusState()
@@ -105,9 +107,14 @@ class CliAppScreen(Screen):
 
 
 class CliApp(App):
+    def __init__(self, container: Container):
+        super().__init__()
+        self.container = container
+
     def on_mount(self) -> None:
-        self.push_screen(CliAppScreen())
+        self.push_screen(CliAppScreen(self.container))
 
 
 def build_injected_cli(container: Container):
+    app = CliApp(container)
     return app.run

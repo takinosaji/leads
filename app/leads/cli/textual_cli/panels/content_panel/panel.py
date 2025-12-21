@@ -31,8 +31,11 @@ class ContentPanel(Container):
     }
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, container: Container, **kwargs) -> None:
         super().__init__(**kwargs)
+
+        self.container = container
+
         self.__views: dict[CliTab, BaseView] = {}
         self.__active_tab: CliTab = CliTab.CONFIGURATION
         self.can_focus = True
@@ -49,7 +52,7 @@ class ContentPanel(Container):
                 view.add_class("hidden")
 
     def compose(self) -> ComposeResult:
-        cfg = ConfigurationTab()
+        cfg = ConfigurationTab(self.container)
 
         frs = BaseView("Forests", id="forests-tab")
         trl = BaseView("Trails", id="trails-tab")

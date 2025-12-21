@@ -53,10 +53,15 @@ class MenuItem(Static):
     }
     
     MenuItem.-selected {
-        background: #303030;
+        background: #2a2a2a;
         color: #ffd787;
         text-style: bold;
         border: round #5f87af;
+    }
+
+    MenuPanel:focus MenuItem.-selected,
+    MenuPanel:focus-within MenuItem.-selected {
+        background: #303030;
     }
     
     """

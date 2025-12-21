@@ -1,21 +1,34 @@
 import os
+from marshal import loads
+
 import yaml
 from pathlib import Path
 from typing import Callable
-from .logging import get_default_logger
+
+from returns.result import Result, safe
+
+from .logging import get_default_logger, LogLevel
 
 from leads.cli.configuration.models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
 
 
-type ConfigurationFactory = Callable[[], CliConfiguration]
+type CliConfigurationLoader = Callable[[], Result[CliConfiguration]]
+type CliConfigurationSaver = Callable[[CliConfiguration], Result]
 
 
-def __create_configuration() -> CliConfiguration:
+@safe
+def __create_cli_configuration(dep_save_cli_configuration: CliConfigurationSaver) -> CliConfiguration:
     logger = get_default_logger()
 
     file_path = __get_config_file_path()
     if not os.path.exists(file_path):
-        __create_default_configuration(file_path)
+        dep_save_cli_configuration(CliConfiguration(context_configuration=ContextConfiguration(
+                                                        active_forest=None
+                                                    ),
+                                                    runtime_configuration=RuntimeConfiguration(
+                                                        min_log_level=LogLevel.INFO
+                                                    )
+        ))
 
     try:
         with open(file_path, "r", encoding="utf-8") as fh:
@@ -31,7 +44,7 @@ def __create_configuration() -> CliConfiguration:
         raise
 
     return configuration
-create_configuration: ConfigurationFactory = __create_configuration
+load_cli_configuration: CliConfigurationLoader = __create_cli_configuration
 
 
 def __get_config_file_path() -> Path:
@@ -39,21 +52,12 @@ def __get_config_file_path() -> Path:
     return home / ".leads" / "config.yaml"
 
 
-def __create_default_configuration(filepath: Path) -> Path:
-    config_path = Path(filepath)
+@safe
+def __save_cli_configuration(configuration: CliConfiguration):
+    config_path = __get_config_file_path()
     config_path.parent.mkdir(parents=True, exist_ok=True)
-
-    default_configuration = CliConfiguration(
-        context_configuration=ContextConfiguration(
-            active_forest=None
-        ),
-        runtime_configuration=RuntimeConfiguration(
-            min_log_level='INFO'
-        )
-    )
-
-    configuration_text = yaml.safe_dump(default_configuration.model_dump())
-
+    configuration_text = yaml.safe_dump(configuration.model_dump())
     config_path.write_text(configuration_text, encoding="utf-8")
 
-    return config_path
+    return None
+save_cli_configuration: CliConfigurationSaver = __save_cli_configuration

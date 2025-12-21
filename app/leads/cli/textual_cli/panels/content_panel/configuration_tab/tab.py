@@ -1,12 +1,18 @@
+from typing import Optional
+
+from partial_injector.partial_container import Container
+from returns.result import safe
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Static, Input
 from textual import events
 
+from leads.cli.configuration.factory import CliConfigurationLoader
 from leads.cli.textual_cli.panels.content_panel.base_view import BaseView
 
 
 type ConfigurationFocusState = InitializedFocusState | None
+
 
 class InitializedFocusState:
     def __init__(self, index, total_rows: int) -> None:
@@ -38,6 +44,10 @@ class EditingState:
         self.value = ""
         self.parent.recompose_on_mount()
 
+    @staticmethod
+    def apply(widget, value):
+        widget.post_message(Input.Submitted(widget, value))
+
 
 class ConfigurationTab(BaseView):
     DEFAULT_CSS = """
@@ -60,7 +70,7 @@ class ConfigurationTab(BaseView):
     }
 
     ConfigurationTab > .table > .row > .cell-key {
-        width: 24;
+        width: 40;
         padding: 0 1;
         color: #ffffff;
         background: #202020;
@@ -75,21 +85,26 @@ class ConfigurationTab(BaseView):
         border: none;
     }
 
-
-
     ConfigurationTab > .table > .row.-selected > .cell-key,
     ConfigurationTab > .table > .row.-selected > .cell-value {
-        background: #1e90ff;
-        color: #ffffff;
+        background: #303030;
+        color: #ffd787;
         text-style: bold;
+    }
+    
+    ConfigurationTab:focus-within .table > .row > .cell-key,
+    ConfigurationTab:focus-within .table > .row > .cell-value,
+    ConfigurationTab:focus .table > .row > .cell-key,
+    ConfigurationTab:focus .table > .row > .cell-value {
+        background: #000000;
     }
 
     ConfigurationTab:focus-within .table > .row.-selected > .cell-key,
     ConfigurationTab:focus-within .table > .row.-selected > .cell-value,
     ConfigurationTab:focus .table > .row.-selected > .cell-key,
     ConfigurationTab:focus .table > .row.-selected > .cell-value {
-        background: #000000;
-        color: #ffaa00;
+        background: #202020;
+        color: #ffd787;
     }
 
     ConfigurationTab > .table > .header {
@@ -116,31 +131,53 @@ class ConfigurationTab(BaseView):
     }
     """
 
-    def __init__(self) -> None:
+    def __init__(self, container: Container) -> None:
         super().__init__("Configuration", id="configuration-tab")
+
+        self.container = container
+
+        self.data: Optional[dict] = None
 
         self._rows: list[Horizontal] = []
         self.can_focus = True
         self.focus_state = None
         self.editing_state = EditingState(self)
-        self.data = [
-            ("env", "development"),
-            ("theme", "solarized-dark"),
-            ("theme2", "solarized-dark2")
-        ]
 
     def compose(self) -> ComposeResult:
-        with Vertical(classes="table"):
-            with Horizontal(classes="header"):
-                yield Static("Key", classes="cell-key")
-                yield Static("Value", classes="cell-value")
-            for idx, (k, v) in enumerate(self.data):
-                with Horizontal(classes="row"):
-                    yield Static(k, classes="cell-key")
-                    if self.editing_state.row_index == idx:
-                        yield EditableInput(self.editing_state, value=self.editing_state.value or v, classes="cell-value", id=f"edit-input-{idx}")
-                    else:
-                        yield Static(v, classes="cell-value")
+        @safe
+        def load_configuration(cli_configuration):
+            self.data = {
+                'runtime_configuration.min_log_level': cli_configuration.runtime_configuration.min_log_level.name,
+                'context_configuration.active_forest': cli_configuration.context_configuration.active_forest or ""
+            }
+            return self.data
+
+        @safe
+        def compose_configuration_layout(data: dict):
+            with Vertical(classes="table"):
+                with Horizontal(classes="header"):
+                    yield Static("Key", classes="cell-key")
+                    yield Static("Value", classes="cell-value")
+                for idx, (k, v) in enumerate(data.items()):
+                    with Horizontal(classes="row"):
+                        yield Static(k, classes="cell-key")
+                        if self.editing_state.row_index == idx:
+                            yield EditableInput(self.editing_state, value=self.editing_state.value or v,
+                                                classes="cell-value", id=f"edit-input-{idx}")
+                        else:
+                            yield Static(v, classes="cell-value")
+
+        @safe
+        def compose_error_layout(error: Exception):
+            yield Static(f"Error loading configuration: {str(error)}", classes="error-message")
+
+        return (
+            self.container.resolve(CliConfigurationLoader)()
+            .bind(load_configuration)
+            .bind(compose_configuration_layout)
+            .lash(compose_error_layout)
+            .unwrap()
+        )
 
     def recompose_on_mount(self):
         self.refresh(recompose=True)
@@ -149,7 +186,7 @@ class ConfigurationTab(BaseView):
     def on_mount(self) -> None:
         self._rows = list(self.query(Horizontal).filter(".row"))
         self.focus_state = InitializedFocusState(self.focus_state.index if self.focus_state else 0,
-                                                 total_rows=len(self.data))
+                                                 total_rows=len(self._rows))
         self.apply_selection()
 
     def apply_selection(self) -> None:
@@ -167,18 +204,15 @@ class ConfigurationTab(BaseView):
                 self.apply_selection()
             case "i":
                 idx = self.focus_state.index
-                self.editing_state.start(idx, self.data[idx][1])
+                self.editing_state.start(idx, list(self.data.values())[idx])
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         if self.editing_state.row_index is not None:
-            idx = self.editing_state.row_index
-            new_value = event.value
-            self.on_value_edited(idx, new_value)
-            self.editing_state.cancel()
+            self.__save_configuration_data(event.value)
 
-    def on_value_edited(self, idx: int, new_value: str) -> None:
-        key = self.data[idx][0]
-        self.data[idx] = (key, new_value)
+    def __save_configuration_data(self, new_value) -> None:
+        #self.editing_state.row_index
+        self.recompose_on_mount()
 
 
 class EditableInput(Input):
@@ -199,6 +233,5 @@ class EditableInput(Input):
             case "tab":
                 self.editing_state.cancel()
             case "enter":
-                self.editing_state.cancel()
-                self.post_message(Input.Submitted(self, self.value))
+                self.editing_state.apply(self, self.value)
                 event.stop()

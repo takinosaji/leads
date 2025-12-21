@@ -1,24 +1,22 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from leads.application_core.secondary_ports.pydantic_models import model_config
-
-type CliMinLogLevelValue = int
-type CliMinLogLevelKey = str
-
-
-class CliMinLogLevel(BaseModel):
-    model_config = model_config
-
-    key: CliMinLogLevelKey
-    value: CliMinLogLevelValue
+from leads.cli.configuration.logging import LogLevel
 
 
 class RuntimeConfiguration(BaseModel):
     model_config = model_config
 
-    min_log_level: str = Field(...)
+    min_log_level: LogLevel = Field(...)
+
+    @field_validator("min_log_level", mode="before")
+    def parse_color(cls, v):
+        if isinstance(v, str) and v in LogLevel.__members__:
+            return LogLevel[v]
+        return v
+
 
 
 class ContextConfiguration(BaseModel):
