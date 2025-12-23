@@ -2,14 +2,14 @@
 
 [[package]]
 name = "spinq"
-version = "1.1.0"
+version = "1.4.0"
 description = "Simple LINQ in Python"
 optional = false
 python-versions = "<4.0,>=3.13"
 groups = ["main"]
 files = [
-    {file = "spinq-1.1.0-py3-none-any.whl", hash = "sha256:2dc1e4ae2784f62a48df27a06613c924590a8fd5126f053476c05ed8440a9c30"},
-    {file = "spinq-1.1.0.tar.gz", hash = "sha256:dca6ca13ad512f022c764ebb1ebad3ab989e7d7be3d5b775b8b3060d7ca0c147"},
+    {file = "spinq-1.4.0-py3-none-any.whl", hash = "sha256:bb9f25d0ec089e3535f19576669905b7a840ee64396b61ba2e29a423d56a50fc"},
+    {file = "spinq-1.4.0.tar.gz", hash = "sha256:c1acb9a74911c0392d2c1c7c69cbfedcddd8afe8f080176ad771cd274a0e6604"},
 ]
 
 [[package]]
@@ -27,4 +27,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<3.15"
-content-hash = "8193c554f6eb2e8426747f55fd0f2d35ef9268a1ed932cb5fef49e074f0c7467"
+content-hash = "176512de6dee5b7d657f1a018b7eed88f5cd6a0a9200e199cb60785c9f82ce5a"

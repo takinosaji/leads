@@ -66,7 +66,7 @@ develop = true
 leads-application-core-secondary-ports = {path = "secondary_ports", develop = true}
 pydantic = "^2.12.5"
 returns = "^0.26.0"
-spinq = "^1.1.0"
+spinq = "^1.4.0"
 structlog = "^25.5.0"
 
 [package.source]
@@ -84,7 +84,7 @@ files = []
 develop = true
 
 [package.dependencies]
-spinq = "^1.1.0"
+spinq = "^1.4.0"
 structlog = "^25.4.0"
 
 [package.source]
@@ -105,7 +105,7 @@ develop = true
 leads-application-core-secondary-ports = {path = "../application_core/secondary_ports", develop = true}
 pydantic = "^2.12.5"
 returns = "^0.26.0"
-spinq = "^1.1.0"
+spinq = "^1.4.0"
 structlog = "^25.5.0"
 
 [package.source]
@@ -651,14 +651,14 @@ type = ["importlib_metadata (>=7.0.2) ; python_version < \"3.10\"", "jaraco.deve
 
 [[package]]
 name = "spinq"
-version = "1.1.0"
+version = "1.4.0"
 description = "Simple LINQ in Python"
 optional = false
 python-versions = "<4.0,>=3.13"
 groups = ["main"]
 files = [
-    {file = "spinq-1.1.0-py3-none-any.whl", hash = "sha256:2dc1e4ae2784f62a48df27a06613c924590a8fd5126f053476c05ed8440a9c30"},
-    {file = "spinq-1.1.0.tar.gz", hash = "sha256:dca6ca13ad512f022c764ebb1ebad3ab989e7d7be3d5b775b8b3060d7ca0c147"},
+    {file = "spinq-1.4.0-py3-none-any.whl", hash = "sha256:bb9f25d0ec089e3535f19576669905b7a840ee64396b61ba2e29a423d56a50fc"},
+    {file = "spinq-1.4.0.tar.gz", hash = "sha256:c1acb9a74911c0392d2c1c7c69cbfedcddd8afe8f080176ad771cd274a0e6604"},
 ]
 
 [[package]]
@@ -675,14 +675,14 @@ files = [
 
 [[package]]
 name = "textual"
-version = "6.10.0"
+version = "6.11.0"
 description = "Modern Text User Interface framework"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "textual-6.10.0-py3-none-any.whl", hash = "sha256:b33ffe37bc5f33e76cbe5a2018b4e9e5704f89bb3db0dbf04319261e0369bd3b"},
-    {file = "textual-6.10.0.tar.gz", hash = "sha256:87f52a21fe7527e472c1f1cf01faff95673c8378690b0e1b755ec93a0484dae9"},
+    {file = "textual-6.11.0-py3-none-any.whl", hash = "sha256:9e663b73ed37123a9b13c16a0c85e09ef917a4cfded97814361ed5cccfa40f89"},
+    {file = "textual-6.11.0.tar.gz", hash = "sha256:08237ebda0cfbbfd1a4e2fd3039882b35894a73994f6f0fcc12c5b0d78acf3cc"},
 ]
 
 [package.dependencies]
@@ -741,4 +741,4 @@ test = ["coverage", "pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<3.15"
-content-hash = "975dfab54a562d38e5401caad659867d0c1e7cd889f9e5f5e1ef2bd251ddcb62"
+content-hash = "41e35f22d108482f3749176fa138eb5f58c52c6915a0441c3eabeecf8d8ffd97"

@@ -9,6 +9,7 @@ from leads.cli.textual_cli.panels.header_panel.panel import HeaderPanel
 from leads.cli.textual_cli.panels.menu_panel.panel import MenuPanel, MenuSelectionChanged, MenuItemData
 from leads.cli.textual_cli.panels.content_panel.panel import ContentPanel
 from leads.cli.textual_cli.panels.command_panel.panel import CommandPanel, CommandSubmitted, CommandPanelClosed
+from leads.cli.textual_cli.panels.notification_panel.panel import NotificationPanel
 from leads.cli.textual_cli.models import CliTab
 
 
@@ -53,7 +54,8 @@ class CliAppScreen(Screen):
             MenuItemData("Trails", CliTab.TRAILS),
         ])
         self.content_panel = ContentPanel(container, id="content")
-        self.command_panel = CommandPanel()
+        self.command_panel = CommandPanel(id="command")
+        self.notification_panel = NotificationPanel(id="notifications")
 
         self.focus_state = AppFocusState()
 
@@ -65,6 +67,7 @@ class CliAppScreen(Screen):
             yield self.content_panel
 
         yield self.command_panel
+        yield self.notification_panel
 
     def _is_command_panel_visible(self) -> bool:
         return not self.command_panel.has_class("hidden")

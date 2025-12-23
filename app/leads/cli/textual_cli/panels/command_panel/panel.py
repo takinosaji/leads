@@ -61,8 +61,8 @@ class CommandPanel(Container):
     }
     """
 
-    def __init__(self) -> None:
-        super().__init__(id="command-panel")
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.input = Input(placeholder="", id="command-input")
 
     def compose(self) -> ComposeResult:

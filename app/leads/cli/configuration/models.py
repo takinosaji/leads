@@ -12,10 +12,10 @@ class RuntimeConfiguration(BaseModel):
     min_log_level: LogLevel = Field(...)
 
     @field_validator("min_log_level", mode="before")
-    def parse_color(cls, v):
-        if isinstance(v, str) and v in LogLevel.__members__:
-            return LogLevel[v]
-        return v
+    def parse_log_level(cls, value):
+        if isinstance(value, str) and value in LogLevel.__members__:
+            return LogLevel[value]
+        return value
 
 
 

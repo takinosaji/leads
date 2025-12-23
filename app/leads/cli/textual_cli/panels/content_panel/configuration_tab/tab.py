@@ -1,17 +1,34 @@
-from typing import Optional
-
 from partial_injector.partial_container import Container
 from returns.result import safe
+from spinq import dicts
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Static, Input
 from textual import events
 
 from leads.cli.configuration.factory import CliConfigurationLoader
-from leads.cli.textual_cli.panels.content_panel.base_view import BaseView
+from leads.cli.textual_cli.models import FlatConfiguration
+from leads.cli.textual_cli.panels.base_view import BaseView
 
 
-type ConfigurationFocusState = InitializedFocusState | None
+class ConfigurationViewModel:
+    def __init__(self, container: Container,
+                 view: ConfigurationTab):
+        self.container = container
+        self.data: FlatConfiguration | None = None
+        self.focus_state: InitializedFocusState | None = None
+        self.edit_state: EditingState = EditingState(view)
+
+    @safe
+    def load_configuration(self):
+        if self.data is None:
+            self.data = (self.container.resolve(CliConfigurationLoader)()
+                                    .bind(lambda conf: FlatConfiguration(conf)))
+        return self.data
+
+    @safe
+    def save_configuration(self):
+        pass
 
 
 class InitializedFocusState:
@@ -32,21 +49,26 @@ class EditingState:
     def __init__(self, parent):
         self.parent = parent
         self.row_index: int | None = None
-        self.value: str = ""
+        self.key: str | None = None
+        self.value: str | None = None
 
-    def start(self, idx: int, value: str):
+    def start(self, idx: int, key: str, value: str):
         self.row_index = idx
+        self.key = key
         self.value = value
         self.parent.recompose_on_mount()
 
-    def cancel(self):
+    def end(self):
         self.row_index = None
-        self.value = ""
+        self.key = None
+        self.value = None
         self.parent.recompose_on_mount()
 
-    @staticmethod
-    def apply(widget, value):
-        widget.post_message(Input.Submitted(widget, value))
+    def apply(self, value):
+        key, _ = dicts.get_key_value_by_index_(self.parent.view_model.data.__dict__, self.row_index)
+        setattr(self.parent.view_model.data, key, value)
+        self.parent.recompose_on_mount()
+        self.end()
 
 
 class ConfigurationTab(BaseView):
@@ -136,33 +158,23 @@ class ConfigurationTab(BaseView):
 
         self.container = container
 
-        self.data: Optional[dict] = None
+        self.view_model = ConfigurationViewModel(container, self)
 
         self._rows: list[Horizontal] = []
         self.can_focus = True
-        self.focus_state = None
-        self.editing_state = EditingState(self)
 
     def compose(self) -> ComposeResult:
-        @safe
-        def load_configuration(cli_configuration):
-            self.data = {
-                'runtime_configuration.min_log_level': cli_configuration.runtime_configuration.min_log_level.name,
-                'context_configuration.active_forest': cli_configuration.context_configuration.active_forest or ""
-            }
-            return self.data
-
         @safe
         def compose_configuration_layout(data: dict):
             with Vertical(classes="table"):
                 with Horizontal(classes="header"):
                     yield Static("Key", classes="cell-key")
                     yield Static("Value", classes="cell-value")
-                for idx, (k, v) in enumerate(data.items()):
+                for idx, (k, v) in enumerate(data.__dict__.items()):
                     with Horizontal(classes="row"):
                         yield Static(k, classes="cell-key")
-                        if self.editing_state.row_index == idx:
-                            yield EditableInput(self.editing_state, value=self.editing_state.value or v,
+                        if self.view_model.edit_state.row_index == idx:
+                            yield EditableInput(self.view_model.edit_state, value=self.view_model.edit_state.value or v,
                                                 classes="cell-value", id=f"edit-input-{idx}")
                         else:
                             yield Static(v, classes="cell-value")
@@ -172,8 +184,7 @@ class ConfigurationTab(BaseView):
             yield Static(f"Error loading configuration: {str(error)}", classes="error-message")
 
         return (
-            self.container.resolve(CliConfigurationLoader)()
-            .bind(load_configuration)
+            self.view_model.load_configuration()
             .bind(compose_configuration_layout)
             .lash(compose_error_layout)
             .unwrap()
@@ -185,34 +196,27 @@ class ConfigurationTab(BaseView):
 
     def on_mount(self) -> None:
         self._rows = list(self.query(Horizontal).filter(".row"))
-        self.focus_state = InitializedFocusState(self.focus_state.index if self.focus_state else 0,
+        self.view_model.focus_state = InitializedFocusState(self.view_model.focus_state.index if self.view_model.focus_state else 0,
                                                  total_rows=len(self._rows))
         self.apply_selection()
 
     def apply_selection(self) -> None:
         for i, row in enumerate(self._rows):
-            row.set_class(i == self.focus_state.index, "-selected")
+            row.set_class(i == self.view_model.focus_state.index, "-selected")
 
     def on_key(self, event) -> None:
         key = getattr(event, "key", None)
         match key:
             case "down":
-                self.focus_state.move_next()
+                self.view_model.focus_state.move_next()
                 self.apply_selection()
             case "up":
-                self.focus_state.move_prev()
+                self.view_model.focus_state.move_prev()
                 self.apply_selection()
             case "i":
-                idx = self.focus_state.index
-                self.editing_state.start(idx, list(self.data.values())[idx])
-
-    def on_input_submitted(self, event: Input.Submitted) -> None:
-        if self.editing_state.row_index is not None:
-            self.__save_configuration_data(event.value)
-
-    def __save_configuration_data(self, new_value) -> None:
-        #self.editing_state.row_index
-        self.recompose_on_mount()
+                idx = self.view_model.focus_state.index
+                key, value = dicts.get_key_value_by_index_(self.view_model.data.__dict__, idx)
+                self.view_model.edit_state.start(idx, key, value)
 
 
 class EditableInput(Input):
@@ -228,10 +232,10 @@ class EditableInput(Input):
     def on_key(self, event: events.Key) -> None:
         match event.key:
             case "escape":
-                self.editing_state.cancel()
+                self.editing_state.end()
                 event.stop()
             case "tab":
-                self.editing_state.cancel()
+                self.editing_state.end()
             case "enter":
-                self.editing_state.apply(self, self.value)
+                self.editing_state.apply(self.value)
                 event.stop()

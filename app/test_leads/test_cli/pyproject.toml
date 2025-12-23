@@ -29,7 +29,7 @@ structlog = "^25.5.0"
 pytest = "^9.0.2"
 pytest-asyncio = "^1.3.0"
 Faker = "^37.8.0"
-spinq = "^1.1.0"
+spinq = "^1.4.0"
 leads-cli = { path = "../../leads/cli", develop = true }
 
 [project]

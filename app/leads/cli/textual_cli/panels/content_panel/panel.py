@@ -2,7 +2,7 @@ from textual.app import ComposeResult
 from textual.containers import Container
 
 from leads.cli.textual_cli.models import CliTab
-from leads.cli.textual_cli.panels.content_panel.base_view import BaseView
+from leads.cli.textual_cli.panels.base_view import BaseView
 from leads.cli.textual_cli.panels.content_panel.configuration_tab.tab import ConfigurationTab
 
 
