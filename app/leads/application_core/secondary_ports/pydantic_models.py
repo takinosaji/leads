@@ -11,7 +11,8 @@ type ValidationErrorExtractor = Callable[[ValidationError], PydanticValidationEr
 
 model_config = ConfigDict(arbitrary_types_allowed=True,
                           alias_generator=to_camel,
-                          populate_by_name=True)
+                          populate_by_name=True,
+                          validate_assignment=True)
 
 extensible_model_config = ConfigDict(**{**model_config, 'extra': 'allow'})
 

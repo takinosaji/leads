@@ -5,6 +5,7 @@ from textual.containers import Horizontal
 from textual.events import Key
 from textual.widget import Widget
 
+from leads.cli.textual_cli.panels.app_view_model import AppViewModel
 from leads.cli.textual_cli.panels.header_panel.panel import HeaderPanel
 from leads.cli.textual_cli.panels.menu_panel.panel import MenuPanel, MenuSelectionChanged, MenuItemData
 from leads.cli.textual_cli.panels.content_panel.panel import ContentPanel
@@ -53,9 +54,12 @@ class CliAppScreen(Screen):
             MenuItemData("Forests", CliTab.FORESTS),
             MenuItemData("Trails", CliTab.TRAILS),
         ])
-        self.content_panel = ContentPanel(container, id="content")
-        self.command_panel = CommandPanel(id="command")
         self.notification_panel = NotificationPanel(id="notifications")
+        self.command_panel = CommandPanel(id="command")
+
+        self.app_view_model = AppViewModel(self.notification_panel.view_model)
+
+        self.content_panel = ContentPanel(self.container, self.app_view_model, id="content")
 
         self.focus_state = AppFocusState()
 

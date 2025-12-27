@@ -50,6 +50,7 @@ class MenuItem(Static):
     MenuPanel:focus MenuItem,
     MenuPanel:focus-within MenuItem {
         background: #000000;
+        color: #ffffff;
     }
     
     MenuItem.-selected {
@@ -62,6 +63,7 @@ class MenuItem(Static):
     MenuPanel:focus MenuItem.-selected,
     MenuPanel:focus-within MenuItem.-selected {
         background: #303030;
+        color: #ffd787;
     }
     
     """

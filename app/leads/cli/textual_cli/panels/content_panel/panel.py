@@ -2,6 +2,7 @@ from textual.app import ComposeResult
 from textual.containers import Container
 
 from leads.cli.textual_cli.models import CliTab
+from leads.cli.textual_cli.panels.app_view_model import AppViewModel
 from leads.cli.textual_cli.panels.base_view import BaseView
 from leads.cli.textual_cli.panels.content_panel.configuration_tab.tab import ConfigurationTab
 
@@ -31,10 +32,14 @@ class ContentPanel(Container):
     }
     """
 
-    def __init__(self, container: Container, **kwargs) -> None:
+    def __init__(self,
+                 container: Container,
+                 app_view_model: AppViewModel,
+                 **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.container = container
+        self.app_view_model: AppViewModel = app_view_model
 
         self.__views: dict[CliTab, BaseView] = {}
         self.__active_tab: CliTab = CliTab.CONFIGURATION
@@ -52,7 +57,7 @@ class ContentPanel(Container):
                 view.add_class("hidden")
 
     def compose(self) -> ComposeResult:
-        cfg = ConfigurationTab(self.container)
+        cfg = ConfigurationTab(self.container, self.app_view_model)
 
         frs = BaseView("Forests", id="forests-tab")
         trl = BaseView("Trails", id="trails-tab")

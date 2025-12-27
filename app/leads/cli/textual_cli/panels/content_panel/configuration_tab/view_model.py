@@ -1,0 +1,91 @@
+from typing import Callable
+
+from partial_injector.partial_container import Container
+from returns.result import safe, Result
+from spinq import dicts
+
+from leads.cli.configuration.factory import CliConfigurationLoader
+from leads.cli.textual_cli.models import FlatConfiguration
+from leads.cli.textual_cli.panels.notification_panel.view_model import NotificationItem, NotificationViewModel
+
+
+class InitializedFocusState:
+    def __init__(self, index, total_rows: int) -> None:
+        self.total_rows = total_rows
+        self.index = index
+
+    def move_next(self) -> None:
+        if self.total_rows:
+            self.index = (self.index + 1) % self.total_rows
+
+    def move_prev(self) -> None:
+        if self.total_rows:
+            self.index = (self.index - 1) % self.total_rows
+
+
+class EditingState:
+    def __init__(self,
+                 view_model: ConfigurationViewModel,
+                 changed: Callable[[], None]):
+        self._view_model: ConfigurationViewModel = view_model
+        self._changed = changed
+        self.row_index: int | None = None
+        self.key: str | None = None
+        self.value: str | None = None
+
+    def start(self, idx: int, key: str, value: str):
+        self.row_index = idx
+        self.key = key
+        self.value = value
+        self._changed()
+
+    def end(self):
+        self.row_index = None
+        self.key = None
+        self.value = None
+        self._changed()
+
+    def apply(self, value):
+        key, _ = dicts.get_key_value_by_index_(self._view_model.data.__dict__, self.row_index)
+
+        try:
+            setattr(self._view_model.data, key, value)
+        except Exception as ex:
+            pass
+        self._changed()
+        self.end()
+
+
+class ConfigurationViewModel:
+    def __init__(self,
+                 container: Container,
+                 notification_view_model: NotificationViewModel,
+                 notify_view: Callable[[], None]):
+        self.container: Container = container
+        self.notification_view_model: NotificationViewModel = notification_view_model
+        self._notify_view = notify_view
+        self.data: FlatConfiguration | None = None
+        self.focus_state: InitializedFocusState | None = None
+        self.edit_state: EditingState = EditingState(self, self._changed)
+
+    def _changed(self):
+        if self._notify_view:
+            self._notify_view()
+
+    @safe
+    def load_configuration(self):
+        if self.data is None:
+            self.data = (
+                self.container.resolve(CliConfigurationLoader)()
+                .bind(lambda conf: FlatConfiguration(
+                    min_log_level=conf.runtime_configuration.min_log_level.name,
+                    active_forest=conf.context_configuration.active_forest or "")
+                )
+            )
+        return self.data
+
+    @safe
+    def save_configuration(self):
+        pass
+
+

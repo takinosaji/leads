@@ -1,61 +1,114 @@
-from __future__ import annotations
-
 from textual.app import ComposeResult
-from textual.containers import Container, Vertical
+from textual.containers import Container, Vertical, Horizontal
 from textual.widgets import Static
+
+from .view_model import NotificationViewModel, NotificationItem
 
 
 class NotificationPanel(Container):
-    """Notification panel showing multiple notifications, each in its own box.
-
-    The panel is intended to be non-focusable and conditionally shown/hidden
-    via its public methods based on the internal notifications state.
-    """
-
     DEFAULT_CSS = """
     NotificationPanel {
         width: 1fr;
-        height: auto;
-        dock: bottom;
-        padding: 0 1;
-        background: #202020;
+        height: 5;
+        max-height: 5;
+        padding: 0 0;
+        background: #000000;
         color: #ffffff;
+        border: heavy $primary;
+        overflow-y: auto;
     }
 
     NotificationPanel.hidden {
         display: none;
     }
 
-    NotificationPanel > .notifications-container {
+    NotificationPanel > .row {
+        width: 1fr;
+        height: auto;
+        layout: horizontal;
+        align-vertical: top;
+    }
+
+    NotificationPanel > .row > .label {
+        width: 30;
+        padding: 0 0;
+        text-style: bold;
+        background: #000000;
+        color: #ffffff;
+    }
+
+    NotificationPanel > .row > .notifications-container {
         width: 1fr;
         height: auto;
         layout: vertical;
         padding: 0 0;
+        background: #000000;
+        color: #ffffff;
     }
 
-    NotificationPanel > .notifications-container > .notification-box {
+    NotificationPanel > .row > .notifications-container > .notification-row {
+        width: 1fr;
+        height: auto;
+        layout: horizontal;
+    }
+
+    NotificationPanel > .row > .notifications-container > .notification-row > .type-label {
+        width: 8;
+        padding: 0 1;
+        text-style: bold;
+    }
+
+    NotificationPanel > .row > .notifications-container > .notification-row > .notification-row > .notification-box {
         width: 1fr;
         height: auto;
         padding: 0 1;
         margin-top: 0;
         margin-bottom: 0;
-        border: round #268bd2;
-        background: #202020;
-        color: #ffffff;
+        border: none;
         content-align: left top;
+    }
+
+    NotificationPanel > .row > .notifications-container > .notification-row.-error {
+        background: #660000;
+        color: #ffcccc;
+    }
+
+    NotificationPanel > .row > .notifications-container > .notification-row.-info {
+        background: #003300;
+        color: #aaffaa;
     }
     """
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+
         self.can_focus = False
-        self._notifications: list[str] = []
+        self.view_model = NotificationViewModel(self._on_view_model_changed)
+
+    def _on_view_model_changed(self) -> None:
+        if self.view_model.notifications:
+            self.remove_class("hidden")
+        else:
+            self.add_class("hidden")
+
+        self.refresh(recompose=True)
 
     def compose(self) -> ComposeResult:
-        with Vertical(classes="notifications-container"):
-            for message in self._notifications:
-                yield Static(message, classes="notification-box")
+        with Horizontal(classes="row"):
+            yield Static("Notifications:", classes="label")
+            with Vertical(classes="notifications-container"):
+                for item in self.view_model.notifications:
+                    row_class = "notification-row -error" if item.is_error else "notification-row -info"
+                    with Horizontal(classes=row_class):
+                        yield Static("ERROR:" if item.is_error else "INFO:", classes="type-label")
+                        yield Static(item.message, classes="notification-box")
 
     def on_mount(self) -> None:
-        if not self._notifications:
+        if not self.view_model.notifications:
             self.add_class("hidden")
+
+    def add_notification(self, item: NotificationItem) -> None:
+        self.view_model.add_notification(item)
+
+    def clear_notifications(self) -> None:
+        self.view_model.clear_notifications()

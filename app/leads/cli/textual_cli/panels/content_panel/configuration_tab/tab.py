@@ -1,3 +1,5 @@
+import traceback
+
 from partial_injector.partial_container import Container
 from returns.result import safe
 from spinq import dicts
@@ -6,69 +8,10 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Static, Input
 from textual import events
 
-from leads.cli.configuration.factory import CliConfigurationLoader
-from leads.cli.textual_cli.models import FlatConfiguration
+from leads.application_core.secondary_ports.exceptions import get_traceback
 from leads.cli.textual_cli.panels.base_view import BaseView
-
-
-class ConfigurationViewModel:
-    def __init__(self, container: Container,
-                 view: ConfigurationTab):
-        self.container = container
-        self.data: FlatConfiguration | None = None
-        self.focus_state: InitializedFocusState | None = None
-        self.edit_state: EditingState = EditingState(view)
-
-    @safe
-    def load_configuration(self):
-        if self.data is None:
-            self.data = (self.container.resolve(CliConfigurationLoader)()
-                                    .bind(lambda conf: FlatConfiguration(conf)))
-        return self.data
-
-    @safe
-    def save_configuration(self):
-        pass
-
-
-class InitializedFocusState:
-    def __init__(self, index, total_rows: int) -> None:
-        self.total_rows = total_rows
-        self.index = index
-
-    def move_next(self) -> None:
-        if self.total_rows:
-            self.index = (self.index + 1) % self.total_rows
-
-    def move_prev(self) -> None:
-        if self.total_rows:
-            self.index = (self.index - 1) % self.total_rows
-
-
-class EditingState:
-    def __init__(self, parent):
-        self.parent = parent
-        self.row_index: int | None = None
-        self.key: str | None = None
-        self.value: str | None = None
-
-    def start(self, idx: int, key: str, value: str):
-        self.row_index = idx
-        self.key = key
-        self.value = value
-        self.parent.recompose_on_mount()
-
-    def end(self):
-        self.row_index = None
-        self.key = None
-        self.value = None
-        self.parent.recompose_on_mount()
-
-    def apply(self, value):
-        key, _ = dicts.get_key_value_by_index_(self.parent.view_model.data.__dict__, self.row_index)
-        setattr(self.parent.view_model.data, key, value)
-        self.parent.recompose_on_mount()
-        self.end()
+from .view_model import ConfigurationViewModel, InitializedFocusState
+from ...app_view_model import AppViewModel
 
 
 class ConfigurationTab(BaseView):
@@ -94,7 +37,7 @@ class ConfigurationTab(BaseView):
     ConfigurationTab > .table > .row > .cell-key {
         width: 40;
         padding: 0 1;
-        color: #ffffff;
+        color: #b0b0b0;
         background: #202020;
         border: none;
     }
@@ -102,7 +45,7 @@ class ConfigurationTab(BaseView):
     ConfigurationTab > .table > .row > .cell-value {
         width: 1fr;
         padding: 0 1;
-        color: #c0c0c0;
+        color: #b0b0b0;
         background: #202020;
         border: none;
     }
@@ -119,6 +62,7 @@ class ConfigurationTab(BaseView):
     ConfigurationTab:focus .table > .row > .cell-key,
     ConfigurationTab:focus .table > .row > .cell-value {
         background: #000000;
+        color: #ffffff;
     }
 
     ConfigurationTab:focus-within .table > .row.-selected > .cell-key,
@@ -153,15 +97,24 @@ class ConfigurationTab(BaseView):
     }
     """
 
-    def __init__(self, container: Container) -> None:
+    def __init__(self,
+                 container: Container,
+                 app_view_model: AppViewModel) -> None:
         super().__init__("Configuration", id="configuration-tab")
 
         self.container = container
+        self.app_view_model = app_view_model
 
-        self.view_model = ConfigurationViewModel(container, self)
+        self.view_model = ConfigurationViewModel(self.container,
+                                                 self.app_view_model.notification_view_model,
+                                                 self._on_view_model_changed)
 
         self._rows: list[Horizontal] = []
         self.can_focus = True
+
+    def _on_view_model_changed(self):
+        self.refresh(recompose=True)
+        self.call_later(self.on_mount)
 
     def compose(self) -> ComposeResult:
         @safe
@@ -181,7 +134,7 @@ class ConfigurationTab(BaseView):
 
         @safe
         def compose_error_layout(error: Exception):
-            yield Static(f"Error loading configuration: {str(error)}", classes="error-message")
+            yield Static(f"Error loading configuration: {str(error)}\n{get_traceback(error)}", classes="error-message")
 
         return (
             self.view_model.load_configuration()
@@ -190,14 +143,10 @@ class ConfigurationTab(BaseView):
             .unwrap()
         )
 
-    def recompose_on_mount(self):
-        self.refresh(recompose=True)
-        self.call_later(self.on_mount)
-
     def on_mount(self) -> None:
         self._rows = list(self.query(Horizontal).filter(".row"))
         self.view_model.focus_state = InitializedFocusState(self.view_model.focus_state.index if self.view_model.focus_state else 0,
-                                                 total_rows=len(self._rows))
+                                                            total_rows=len(self._rows))
         self.apply_selection()
 
     def apply_selection(self) -> None:
