@@ -1,10 +1,13 @@
+import html
 from typing import Callable
 
 from partial_injector.partial_container import Container
-from returns.result import safe, Result
+from returns.result import safe
 from spinq import dicts
+from textual.markup import escape
 
 from leads.cli.configuration.factory import CliConfigurationLoader
+from leads.cli.configuration.models import CliConfiguration, ContextConfiguration, RuntimeConfiguration
 from leads.cli.textual_cli.models import FlatConfiguration
 from leads.cli.textual_cli.panels.notification_panel.view_model import NotificationItem, NotificationViewModel
 
@@ -78,7 +81,7 @@ class ConfigurationViewModel:
             self.data = (
                 self.container.resolve(CliConfigurationLoader)()
                 .bind(lambda conf: FlatConfiguration(
-                    min_log_level=conf.runtime_configuration.min_log_level.name,
+                    min_log_level=conf.runtime_configuration.min_log_level,
                     active_forest=conf.context_configuration.active_forest or "")
                 )
             )
@@ -86,6 +89,19 @@ class ConfigurationViewModel:
 
     @safe
     def save_configuration(self):
-        pass
+        self.notification_view_model.clear_notifications()
+
+        try:
+            cli_configuration = CliConfiguration(
+                context_configuration=ContextConfiguration(
+                    active_forest=self.data.active_forest
+                ),
+                runtime_configuration=RuntimeConfiguration(
+                    min_log_level=self.data.min_log_level
+                )
+            )
+        except Exception as error:
+            self.notification_view_model.add_notification(NotificationItem(escape(str(error)), True))
+
 
 

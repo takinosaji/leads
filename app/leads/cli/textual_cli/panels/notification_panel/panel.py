@@ -81,9 +81,12 @@ class NotificationPanel(Container):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-
         self.can_focus = False
         self.view_model = NotificationViewModel(self._on_view_model_changed)
+
+    def on_focus(self, event) -> None:
+        self.blur()
+        event.stop()
 
     def _on_view_model_changed(self) -> None:
         if self.view_model.notifications:

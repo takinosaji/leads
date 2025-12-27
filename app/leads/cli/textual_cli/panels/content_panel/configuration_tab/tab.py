@@ -162,10 +162,18 @@ class ConfigurationTab(BaseView):
             case "up":
                 self.view_model.focus_state.move_prev()
                 self.apply_selection()
-            case "i":
+            case i if i in ("i", "I"):
                 idx = self.view_model.focus_state.index
                 key, value = dicts.get_key_value_by_index_(self.view_model.data.__dict__, idx)
                 self.view_model.edit_state.start(idx, key, value)
+
+    def handle_command(self, text: str) -> bool:
+        match text:
+            case "w":
+                self.view_model.save_configuration()
+                return True
+            case _:
+                return False
 
 
 class EditableInput(Input):

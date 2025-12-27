@@ -94,6 +94,5 @@ class CommandPanel(Container):
         text = (event.value or "").strip()
 
         self.post_message(CommandSubmitted(text))
-        if text == "q":
-            self.app.exit()
+
         self.hide(reason="submit")

@@ -9,14 +9,15 @@ from leads.cli.configuration.logging import LogLevel
 class RuntimeConfiguration(BaseModel):
     model_config = model_config
 
-    min_log_level: LogLevel = Field(...)
+    min_log_level: str = Field(...)
 
     @field_validator("min_log_level", mode="before")
-    def parse_log_level(cls, value):
+    def parse_log_level(cls, value: str) -> str:
+        if isinstance(value, LogLevel):
+            return value.name
         if isinstance(value, str) and value in LogLevel.__members__:
-            return LogLevel[value]
-        return value
-
+            return value
+        raise ValueError(f"Invalid min_log_level '{value}'. Allowed: {', '.join(LogLevel.__members__.keys())}")
 
 
 class ContextConfiguration(BaseModel):
@@ -30,5 +31,4 @@ class CliConfiguration(BaseModel):
 
     context_configuration: ContextConfiguration
     runtime_configuration: RuntimeConfiguration
-
 

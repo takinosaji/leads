@@ -41,44 +41,44 @@ class ContentPanel(Container):
         self.container = container
         self.app_view_model: AppViewModel = app_view_model
 
-        self.__views: dict[CliTab, BaseView] = {}
-        self.__active_tab: CliTab = CliTab.CONFIGURATION
+        self.__tabs: dict[CliTab, BaseView] = {}
+        self.__active_tab_key: CliTab = CliTab.CONFIGURATION
         self.can_focus = True
 
-    def __apply_active(self, tab: CliTab) -> None:
-        if not self.__views:
-            self.__active_tab = tab
-            return
-        for name, view in self.__views.items():
-            if name == tab:
-                view.remove_class("hidden")
-                self.__active_tab = name
+    def set_active(self, tab_key_to_activate: CliTab) -> None:
+        self.__active_tab_key = tab_key_to_activate
+
+        for tab_key, tab_view in self.__tabs.items():
+            if tab_key == tab_key_to_activate:
+                tab_view.remove_class("hidden")
             else:
-                view.add_class("hidden")
+                tab_view.add_class("hidden")
 
     def compose(self) -> ComposeResult:
         cfg = ConfigurationTab(self.container, self.app_view_model)
 
         frs = BaseView("Forests", id="forests-tab")
         trl = BaseView("Trails", id="trails-tab")
-        self.__views = {
+        self.__tabs = {
             CliTab.CONFIGURATION: cfg,
             CliTab.FORESTS: frs,
             CliTab.TRAILS: trl,
         }
 
-        self.__apply_active(self.__active_tab)
+        self.set_active(self.__active_tab_key)
 
         yield cfg
         yield frs
         yield trl
 
-    def set_active(self, tab: CliTab | str) -> None:
-        if tab == self.__active_tab:
-            return
-        self.__apply_active(tab)
-
     def on_focus(self, event) -> None:
-        active_view = self.__views.get(self.__active_tab)
-        if active_view and hasattr(active_view, 'focus'):
-            active_view.focus()
+        active_tab = self.__tabs.get(self.__active_tab_key)
+        if active_tab and hasattr(active_tab, 'focus'):
+            active_tab.focus()
+
+    def send_command_to_active_tab(self, text: str) -> bool:
+        active_tab = self.__tabs.get(self.__active_tab_key)
+        if not active_tab:
+            return False
+
+        return active_tab.handle_command(text)

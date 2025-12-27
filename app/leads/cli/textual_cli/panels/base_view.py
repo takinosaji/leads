@@ -18,3 +18,6 @@ class BaseView(Container):
 
     def compose(self) -> ComposeResult:
         yield Static(self._title)
+
+    def handle_command(self, text: str) -> bool:
+        return False

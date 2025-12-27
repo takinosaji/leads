@@ -109,8 +109,21 @@ class CliAppScreen(Screen):
         else:
             self.focus_state.set_focus_at(self, self.focus_state.last_main_index)
 
+    def _handle_command_globally(self, text: str) -> None:
+        if text == "q":
+            self.app.exit()
+            return
+
     def on_command_submitted(self, message: CommandSubmitted) -> None:
-        pass
+        text = message.text
+        if not text:
+            return
+
+        handled_locally = self.content_panel.send_command_to_active_tab(text)
+        if handled_locally:
+            return
+
+        self._handle_command_globally(text)
 
 
 class CliApp(App):
