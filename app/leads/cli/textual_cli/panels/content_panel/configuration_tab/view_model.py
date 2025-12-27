@@ -1,4 +1,3 @@
-import html
 from typing import Callable
 
 from partial_injector.partial_container import Container
@@ -6,7 +5,7 @@ from returns.result import safe
 from spinq import dicts
 from textual.markup import escape
 
-from leads.cli.configuration.factory import CliConfigurationLoader
+from leads.cli.configuration.factory import CliConfigurationLoader, CliConfigurationSaver
 from leads.cli.configuration.models import CliConfiguration, ContextConfiguration, RuntimeConfiguration
 from leads.cli.textual_cli.models import FlatConfiguration
 from leads.cli.textual_cli.panels.notification_panel.view_model import NotificationItem, NotificationViewModel
@@ -66,14 +65,14 @@ class ConfigurationViewModel:
                  notify_view: Callable[[], None]):
         self.container: Container = container
         self.notification_view_model: NotificationViewModel = notification_view_model
-        self._notify_view = notify_view
+        self.__notify_view = notify_view
         self.data: FlatConfiguration | None = None
         self.focus_state: InitializedFocusState | None = None
-        self.edit_state: EditingState = EditingState(self, self._changed)
+        self.edit_state: EditingState = EditingState(self, self.__changed)
 
-    def _changed(self):
-        if self._notify_view:
-            self._notify_view()
+    def __changed(self):
+        if self.__notify_view:
+            self.__notify_view()
 
     @safe
     def load_configuration(self):
@@ -100,8 +99,14 @@ class ConfigurationViewModel:
                     min_log_level=self.data.min_log_level
                 )
             )
+
+            self.container.resolve(CliConfigurationSaver)(cli_configuration)
+            self.data = None
+            self.notification_view_model.add_notification("Configuration saved successfully.")
+            self.__changed()
         except Exception as error:
-            self.notification_view_model.add_notification(NotificationItem(escape(str(error)), True))
+            self.notification_view_model.add_notification(escape(str(error)), True)
+
 
 
 

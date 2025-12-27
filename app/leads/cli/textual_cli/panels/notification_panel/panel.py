@@ -109,9 +109,3 @@ class NotificationPanel(Container):
     def on_mount(self) -> None:
         if not self.view_model.notifications:
             self.add_class("hidden")
-
-    def add_notification(self, item: NotificationItem) -> None:
-        self.view_model.add_notification(item)
-
-    def clear_notifications(self) -> None:
-        self.view_model.clear_notifications()

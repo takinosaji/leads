@@ -81,7 +81,7 @@ class CliAppScreen(Screen):
         self.focus_state.set_focus_at(self, 0)
 
     def on_menu_selection_changed(self, message: MenuSelectionChanged) -> None:
-        self.content_panel.set_active(message.tab)
+        self.content_panel.activate(message.tab)
 
     def on_key(self, event: Key) -> None:
         match event.key:

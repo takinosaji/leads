@@ -21,3 +21,9 @@ class BaseView(Container):
 
     def handle_command(self, text: str) -> bool:
         return False
+
+    def activate(self):
+        return None
+
+    def deactivate(self):
+        return None

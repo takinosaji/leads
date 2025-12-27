@@ -80,7 +80,7 @@ class ConfigurationTab(BaseView):
         background: #333333;
     }
     ConfigurationTab > .table > .header > .cell-key {
-        width: 24;
+        width: 40;
         padding: 0 1;
         color: #00eaff;
         background: #333333;
@@ -102,32 +102,47 @@ class ConfigurationTab(BaseView):
                  app_view_model: AppViewModel) -> None:
         super().__init__("Configuration", id="configuration-tab")
 
-        self.container = container
-        self.app_view_model = app_view_model
+        self._container = container
+        self._app_view_model = app_view_model
 
-        self.view_model = ConfigurationViewModel(self.container,
-                                                 self.app_view_model.notification_view_model,
-                                                 self._on_view_model_changed)
+        self._view_model = ConfigurationViewModel(self._container,
+                                                  self._app_view_model.notification_view_model,
+                                                  self._on_view_model_changed)
 
         self._rows: list[Horizontal] = []
         self.can_focus = True
+        self._is_selected = False
 
     def _on_view_model_changed(self):
         self.refresh(recompose=True)
         self.call_later(self.on_mount)
 
+    def activate(self):
+        self._is_selected = True
+        self._on_view_model_changed()
+
+    def deactivate(self):
+        self._is_selected = False
+        self._view_model.data = None
+        self._view_model.focus_state = None
+        self._on_view_model_changed()
+
     def compose(self) -> ComposeResult:
+        if not self._is_selected:
+            yield Static("Configuration Tab (not selected)", classes="info-message")
+            return None
+
         @safe
         def compose_configuration_layout(data: dict):
             with Vertical(classes="table"):
                 with Horizontal(classes="header"):
-                    yield Static("Key", classes="cell-key")
-                    yield Static("Value", classes="cell-value")
+                    yield Static("KEY", classes="cell-key")
+                    yield Static("VALUE", classes="cell-value")
                 for idx, (k, v) in enumerate(data.__dict__.items()):
                     with Horizontal(classes="row"):
                         yield Static(k, classes="cell-key")
-                        if self.view_model.edit_state.row_index == idx:
-                            yield EditableInput(self.view_model.edit_state, value=self.view_model.edit_state.value or v,
+                        if self._view_model.edit_state.row_index == idx:
+                            yield EditableInput(self._view_model.edit_state, value=self._view_model.edit_state.value or v,
                                                 classes="cell-value", id=f"edit-input-{idx}")
                         else:
                             yield Static(v, classes="cell-value")
@@ -136,41 +151,46 @@ class ConfigurationTab(BaseView):
         def compose_error_layout(error: Exception):
             yield Static(f"Error loading configuration: {str(error)}\n{get_traceback(error)}", classes="error-message")
 
-        return (
-            self.view_model.load_configuration()
+        yield from (
+            self._view_model.load_configuration()
             .bind(compose_configuration_layout)
             .lash(compose_error_layout)
             .unwrap()
         )
+        return None
 
     def on_mount(self) -> None:
+        if not self._is_selected:
+            return None
+
         self._rows = list(self.query(Horizontal).filter(".row"))
-        self.view_model.focus_state = InitializedFocusState(self.view_model.focus_state.index if self.view_model.focus_state else 0,
-                                                            total_rows=len(self._rows))
+        self._view_model.focus_state = InitializedFocusState(self._view_model.focus_state.index if self._view_model.focus_state else 0,
+                                                             total_rows=len(self._rows))
         self.apply_selection()
+        return None
 
     def apply_selection(self) -> None:
         for i, row in enumerate(self._rows):
-            row.set_class(i == self.view_model.focus_state.index, "-selected")
+            row.set_class(i == self._view_model.focus_state.index, "-selected")
 
     def on_key(self, event) -> None:
         key = getattr(event, "key", None)
         match key:
             case "down":
-                self.view_model.focus_state.move_next()
+                self._view_model.focus_state.move_next()
                 self.apply_selection()
             case "up":
-                self.view_model.focus_state.move_prev()
+                self._view_model.focus_state.move_prev()
                 self.apply_selection()
             case i if i in ("i", "I"):
-                idx = self.view_model.focus_state.index
-                key, value = dicts.get_key_value_by_index_(self.view_model.data.__dict__, idx)
-                self.view_model.edit_state.start(idx, key, value)
+                idx = self._view_model.focus_state.index
+                key, value = dicts.get_key_value_by_index_(self._view_model.data.__dict__, idx)
+                self._view_model.edit_state.start(idx, key, value)
 
     def handle_command(self, text: str) -> bool:
         match text:
             case "w":
-                self.view_model.save_configuration()
+                self._view_model.save_configuration()
                 return True
             case _:
                 return False

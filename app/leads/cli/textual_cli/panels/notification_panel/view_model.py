@@ -24,8 +24,8 @@ class NotificationViewModel:
         return any(n.is_error for n in self.notifications)
 
     @safe
-    def add_notification(self, item: NotificationItem):
-        self.notifications.append(item)
+    def add_notification(self, message: str, is_error: bool = False):
+        self.notifications.append(NotificationItem(message, is_error))
         self._changed()
 
     @safe
