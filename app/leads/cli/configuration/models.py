@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field, field_validator
 
 from leads.application_core.secondary_ports.pydantic_models import model_config
-from leads.cli.configuration.logging import LogLevel
+from leads.cli.configuration.configuration_logging import LogLevel
 
 
 class RuntimeConfiguration(BaseModel):

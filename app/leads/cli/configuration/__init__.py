@@ -3,8 +3,8 @@ __author__ = "kostiantyn.chomakov@syngenta.com"
 # Import submodules
 from . import models
 from . import factory
-from . import logging
+from . import configuration_logging
 
 __all__ = ['models',
-           'logging',
+           'configuration_logging',
            'factory']

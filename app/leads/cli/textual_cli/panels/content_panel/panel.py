@@ -2,7 +2,7 @@ from textual.app import ComposeResult
 from textual.containers import Container
 
 from leads.cli.textual_cli.models import CliTab
-from leads.cli.textual_cli.panels.app_view_model import AppViewModel
+from leads.cli.textual_cli.app_view_model import AppViewModel
 from leads.cli.textual_cli.panels.base_view import BaseView
 from leads.cli.textual_cli.panels.content_panel.configuration_tab.tab import ConfigurationTab
 
@@ -68,8 +68,6 @@ class ContentPanel(Container):
             CliTab.FORESTS: frs,
             CliTab.TRAILS: trl,
         }
-
-        #self.set_active(self.__active_tab_key)
 
         yield cfg
         yield frs

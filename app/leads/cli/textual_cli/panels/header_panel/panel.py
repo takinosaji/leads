@@ -3,6 +3,7 @@ from textual.containers import Container as TContainer
 
 from leads.cli.textual_cli.panels.header_panel.state_panel.panel import StatePanel
 from leads.cli.textual_cli.panels.header_panel.title_panel.panel import TitlePanel
+from leads.cli.textual_cli.panels.header_panel.hotkeys_panel.panel import HotkeysPanel
 
 
 class HeaderPanel(TContainer):
@@ -15,7 +16,13 @@ class HeaderPanel(TContainer):
     }
     """
 
-    def compose(self) -> ComposeResult:
-        yield StatePanel()
-        yield TitlePanel()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._state_panel = StatePanel()
+        self._title_panel = TitlePanel()
+        self.hotkeys_panel = HotkeysPanel()
 
+    def compose(self) -> ComposeResult:
+        yield self._state_panel
+        yield self.hotkeys_panel
+        yield self._title_panel

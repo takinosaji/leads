@@ -3,43 +3,14 @@ from textual.app import App, ComposeResult
 from textual.screen import Screen
 from textual.containers import Horizontal
 from textual.events import Key
-from textual.widget import Widget
 
-from leads.cli.textual_cli.panels.app_view_model import AppViewModel
+from leads.cli.textual_cli.app_view_model import AppViewModel
 from leads.cli.textual_cli.panels.header_panel.panel import HeaderPanel
-from leads.cli.textual_cli.panels.menu_panel.panel import MenuPanel, MenuSelectionChanged, MenuItemData
+from leads.cli.textual_cli.panels.menu_panel.panel import MenuPanel, MenuSelectionChanged, MenuItem
 from leads.cli.textual_cli.panels.content_panel.panel import ContentPanel
 from leads.cli.textual_cli.panels.command_panel.panel import CommandPanel, CommandSubmitted, CommandPanelClosed
 from leads.cli.textual_cli.panels.notification_panel.panel import NotificationPanel
 from leads.cli.textual_cli.models import CliTab
-
-
-class AppFocusState:
-    def __init__(self) -> None:
-        self.focusable_widgets: list[Widget] = []
-        self.index: int = 0
-        self.last_main_index: int = 0
-
-    def build(self, *widgets: Widget) -> None:
-        self.focusable_widgets = [w for w in widgets if isinstance(w, Widget)]
-        self.index = min(self.index, max(0, len(self.focusable_widgets) - 1))
-
-    def set_focus_at(self, screen: Screen, index: int) -> None:
-        if not self.focusable_widgets:
-            return
-        index = index % len(self.focusable_widgets)
-        screen.set_focus(self.focusable_widgets[index])
-        self.index = index
-
-    def focus_next(self, screen: Screen) -> None:
-        if not self.focusable_widgets:
-            return
-        self.set_focus_at(screen, (self.index + 1) % len(self.focusable_widgets))
-
-    def sync_from_screen(self, screen: Screen) -> None:
-        current = screen.focused
-        if current in self.focusable_widgets:
-            self.index = self.focusable_widgets.index(current)
 
 
 class CliAppScreen(Screen):
@@ -50,18 +21,17 @@ class CliAppScreen(Screen):
 
         self.header_panel = HeaderPanel(id="header")
         self.menu_panel = MenuPanel([
-            MenuItemData("Configuration", CliTab.CONFIGURATION),
-            MenuItemData("Forests", CliTab.FORESTS),
-            MenuItemData("Trails", CliTab.TRAILS),
+            MenuItem("Configuration", CliTab.CONFIGURATION),
+            MenuItem("Forests", CliTab.FORESTS),
+            MenuItem("Trails", CliTab.TRAILS)
         ])
         self.notification_panel = NotificationPanel(id="notifications")
         self.command_panel = CommandPanel(id="command")
 
-        self.app_view_model = AppViewModel(self.notification_panel.view_model)
-
+        self.app_view_model = AppViewModel(self.notification_panel.view_model,
+                                           self.header_panel.hotkeys_panel.view_model)
         self.content_panel = ContentPanel(self.container, self.app_view_model, id="content")
-
-        self.focus_state = AppFocusState()
+        self._focus_subscription = None
 
     def compose(self) -> ComposeResult:
         yield self.header_panel
@@ -77,8 +47,10 @@ class CliAppScreen(Screen):
         return not self.command_panel.has_class("hidden")
 
     def on_mount(self) -> None:
-        self.focus_state.build(self.menu_panel, self.content_panel)
-        self.focus_state.set_focus_at(self, 0)
+        self.app_view_model.focus_state.build(self.menu_panel, self.content_panel)
+        self.app_view_model.focus_state.set_focus_at(self, 0)
+        self._focus_subscription = self.app_view_model.focus_state.index_subject.subscribe(
+            lambda idx: self.app_view_model.focus_state.set_focus_at(self, idx))
 
     def on_menu_selection_changed(self, message: MenuSelectionChanged) -> None:
         self.content_panel.activate(message.tab)
@@ -86,28 +58,26 @@ class CliAppScreen(Screen):
     def on_key(self, event: Key) -> None:
         match event.key:
             case "colon":
-                self.focus_state.sync_from_screen(self)
-                self.focus_state.last_main_index = self.focus_state.index
                 self.command_panel.show()
                 event.stop()
                 return
             case "tab":
-                if self._is_command_panel_visible():
+                if self._is_command_panel_visible(): # TODO: This is bullshit, refactor later
                     return
-                self.focus_state.focus_next(self)
+                self.app_view_model.focus_state.focus_next(self)
                 event.stop()
                 return
             case _:
                 pass
 
     def on_command_panel_closed(self, message: CommandPanelClosed) -> None:
-        if not self.focus_state.focusable_widgets:
+        if not self.app_view_model.focus_state.focusable_widgets:
             return
         if message.reason == "tab":
-            next_index = (self.focus_state.last_main_index + 1) % len(self.focus_state.focusable_widgets)
-            self.focus_state.set_focus_at(self, next_index)
+            next_index = (self.app_view_model.focus_state.index + 1) % len(self.app_view_model.focus_state.focusable_widgets)
+            self.app_view_model.focus_state.set_focus_at(self, next_index)
         else:
-            self.focus_state.set_focus_at(self, self.focus_state.last_main_index)
+            self.app_view_model.focus_state.set_focus_at(self, self.app_view_model.focus_state.index)
 
     def _handle_command_globally(self, text: str) -> None:
         if text == "q":
@@ -124,6 +94,10 @@ class CliAppScreen(Screen):
             return
 
         self._handle_command_globally(text)
+
+    def on_unmount(self) -> None:
+        if self._focus_subscription:
+            self._focus_subscription.dispose()
 
 
 class CliApp(App):

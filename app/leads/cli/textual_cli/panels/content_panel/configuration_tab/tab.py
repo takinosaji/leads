@@ -11,7 +11,8 @@ from textual import events
 from leads.application_core.secondary_ports.exceptions import get_traceback
 from leads.cli.textual_cli.panels.base_view import BaseView
 from .view_model import ConfigurationViewModel, InitializedFocusState
-from ...app_view_model import AppViewModel
+from ....app_view_model import AppViewModel
+from ...header_panel.hotkeys_panel.view_model import HotkeyItem
 
 
 class ConfigurationTab(BaseView):
@@ -104,14 +105,25 @@ class ConfigurationTab(BaseView):
 
         self._container = container
         self._app_view_model = app_view_model
-
-        self._view_model = ConfigurationViewModel(self._container,
-                                                  self._app_view_model.notification_view_model,
-                                                  self._on_view_model_changed)
-
+        self._view_model = ConfigurationViewModel(container, app_view_model.notification_view_model)
         self._rows: list[Horizontal] = []
         self.can_focus = True
         self._is_selected = False
+        self._subscription = self._view_model.subscribe(lambda _: self._on_view_model_changed())
+
+    def on_mount(self) -> None:
+        if not self._is_selected:
+            return None
+
+        self._rows = list(self.query(Horizontal).filter(".row"))
+        self._view_model.focus_state = InitializedFocusState(self._view_model.focus_state.index if self._view_model.focus_state else 0,
+                                                             total_rows=len(self._rows))
+        self.apply_selection()
+        return None
+
+    def on_unmount(self) -> None:
+        self._subscription.dispose()
+        self._subscription = None
 
     def _on_view_model_changed(self):
         self.refresh(recompose=True)
@@ -120,6 +132,10 @@ class ConfigurationTab(BaseView):
     def activate(self):
         self._is_selected = True
         self._on_view_model_changed()
+
+        self._app_view_model.hotkeys_view_model.set_hotkeys([
+            HotkeyItem("<Tab>", "Change Focus")
+        ])
 
     def deactivate(self):
         self._is_selected = False
@@ -157,16 +173,6 @@ class ConfigurationTab(BaseView):
             .lash(compose_error_layout)
             .unwrap()
         )
-        return None
-
-    def on_mount(self) -> None:
-        if not self._is_selected:
-            return None
-
-        self._rows = list(self.query(Horizontal).filter(".row"))
-        self._view_model.focus_state = InitializedFocusState(self._view_model.focus_state.index if self._view_model.focus_state else 0,
-                                                             total_rows=len(self._rows))
-        self.apply_selection()
         return None
 
     def apply_selection(self) -> None:

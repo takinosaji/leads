@@ -1,28 +1,14 @@
-from dataclasses import dataclass
 from textual.app import ComposeResult
-from textual.reactive import reactive
 from textual.containers import Vertical
 from textual.widgets import Static
 from textual.events import Key
 from textual.message import Message
 
 from leads.cli.textual_cli.models import CliTab
+from .view_model import MenuViewModel, MenuItem
 
 
 MENU_PANEL_WIDTH = 30
-
-
-@dataclass(frozen=True)
-class MenuItemData:
-    text: str
-    tab: CliTab
-
-
-DEFAULT_ITEMS: list[MenuItemData] = [
-    MenuItemData("Configuration", CliTab.CONFIGURATION),
-    MenuItemData("Forests", CliTab.FORESTS),
-    MenuItemData("Trails", CliTab.TRAILS),
-]
 
 
 class MenuSelectionChanged(Message):
@@ -33,9 +19,9 @@ class MenuSelectionChanged(Message):
         self.tab = tab
 
 
-class MenuItem(Static):
+class MenuItemPanel(Static):
     DEFAULT_CSS = """
-    MenuItem {
+    MenuItemPanel {
         width: 1fr;
         height: 3;  
         padding: 0 1;
@@ -47,21 +33,21 @@ class MenuItem(Static):
         border: round #3a3a3a;
     }
 
-    MenuPanel:focus MenuItem,
-    MenuPanel:focus-within MenuItem {
+    MenuPanel:focus MenuItemPanel,
+    MenuPanel:focus-within MenuItemPanel {
         background: #000000;
         color: #ffffff;
     }
     
-    MenuItem.-selected {
+    MenuItemPanel.-selected {
         background: #2a2a2a;
         color: #ffd787;
         text-style: bold;
         border: round #5f87af;
     }
 
-    MenuPanel:focus MenuItem.-selected,
-    MenuPanel:focus-within MenuItem.-selected {
+    MenuPanel:focus MenuItemPanel.-selected,
+    MenuPanel:focus-within MenuItemPanel.-selected {
         background: #303030;
         color: #ffd787;
     }
@@ -91,33 +77,38 @@ class MenuPanel(Vertical):
     }}
     """
 
-    selected_index: int = reactive(0)
-
-    def __init__(self, items: list[MenuItemData] | None = None) -> None:
+    def __init__(self, menu_items: list[MenuItem] | None = None) -> None:
         super().__init__(classes="menu-panel")
-        self.items: list[MenuItemData] = items or DEFAULT_ITEMS
-        self._widgets: list[MenuItem] = []
+        self.view_model = MenuViewModel(menu_items)
+        self._widgets: list[MenuItemPanel] = []
         self.can_focus = True
+        self._selected_index_subscription = None
 
     def compose(self) -> ComposeResult:
-        for i, item in enumerate(self.items):
-            w = MenuItem(item.text, selected=(i == self.selected_index))
+        for i, item in enumerate(self.view_model.menu_items):
+            w = MenuItemPanel(item.text, selected=(i == 0))
             self._widgets.append(w)
             yield w
 
-    def watch_selected_index(self, new_index: int) -> None:
+    def _on_selected_index(self, new_index: int) -> None:
         for i, w in enumerate(self._widgets):
             w.set_class(i == new_index, "-selected")
-        item = self.items[new_index]
+        item = self.view_model.menu_items[new_index]
         self.post_message(MenuSelectionChanged(new_index, item.text, item.tab))
 
     def on_mount(self) -> None:
-        self.watch_selected_index(self.selected_index)
+        self._selected_index_subscription = self.view_model.selected_index_subject.subscribe(self._on_selected_index)
+        self._on_selected_index(self.view_model.selected_index)
 
     def on_key(self, event: Key) -> None:
+        current = self.view_model.selected_index
         if event.key == "down":
-            self.selected_index = (self.selected_index + 1) % len(self._widgets)
+            self.view_model.set_selected_index((current + 1) % len(self._widgets))
             event.stop()
         elif event.key == "up":
-            self.selected_index = (self.selected_index - 1) % len(self._widgets)
+            self.view_model.set_selected_index((current - 1) % len(self._widgets))
             event.stop()
+
+    def on_unmount(self) -> None:
+        if self._selected_index_subscription:
+            self._selected_index_subscription.dispose()

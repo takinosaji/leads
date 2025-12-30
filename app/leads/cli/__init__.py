@@ -4,10 +4,10 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 
 from . import (dependency_injection,
                textual_cli,
-               logging,
+               cli_logging,
                configuration)
 
 __all__ = ['dependency_injection',
            'textual_cli',
-           'logging',
+           'cli_logging',
            'configuration']

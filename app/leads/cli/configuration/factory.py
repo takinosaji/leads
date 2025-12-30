@@ -1,5 +1,4 @@
 import os
-from marshal import loads
 
 import yaml
 from pathlib import Path
@@ -7,7 +6,7 @@ from typing import Callable
 
 from returns.result import Result, safe
 
-from .logging import get_default_logger, LogLevel
+from .configuration_logging import get_default_logger, LogLevel
 
 from leads.cli.configuration.models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
 

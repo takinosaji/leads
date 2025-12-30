@@ -3,7 +3,7 @@ from structlog import BoundLogger
 
 from leads.cli.configuration.factory import load_cli_configuration, CliConfigurationLoader, CliConfigurationSaver, \
     save_cli_configuration
-from leads.cli.logging import create_configured_logger
+from leads.cli.cli_logging import create_configured_logger
 
 
 def get_container():

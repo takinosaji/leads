@@ -34,7 +34,7 @@ class NotificationPanel(Container):
         padding: 0 0;
         text-style: bold;
         background: #000000;
-        color: #ffffff;
+        color: #ffaf00;
     }
 
     NotificationPanel > .row > .notifications-container {

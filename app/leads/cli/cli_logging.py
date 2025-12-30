@@ -1,10 +1,8 @@
-from typing import Optional
-
 import structlog
 from returns.result import Success
 
 from leads.cli.configuration.factory import CliConfigurationLoader
-from leads.cli.configuration.logging import get_default_logger
+from leads.cli.configuration.configuration_logging import get_default_logger
 
 
 def create_configured_logger(dep_load_cli_configuration: CliConfigurationLoader) -> structlog.BoundLogger:

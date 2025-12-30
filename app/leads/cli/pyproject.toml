@@ -32,10 +32,10 @@ partial-injector = "^2.3.5"
 spinq = "^1.4.0"
 returns = "^0.26.0"
 nanoid = "^2.0.0"
-pyinstaller = "^6.17.0"
 textual = "^6.10.0"
 leads-application-core = { path = "../application_core", develop = true }
 leads-secondary-adapters = { path = "../secondary_adapters", develop = true }
+rx = "^3.2.0"
 
 
 [project]
