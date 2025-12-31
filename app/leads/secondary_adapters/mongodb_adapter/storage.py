@@ -4,7 +4,7 @@ from pymongo.synchronous.collection import Collection
 from pymongo.synchronous.database import Database
 from pymongo import MongoClient
 
-from leads.secondary_adapters.mongodb_.configuration import MongoDbStorageConfiguration
+from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
 
 type MongoDBClientFactory = Callable[[MongoDbStorageConfiguration], MongoClient[dict]]
 type StorageCollection = Collection[dict]

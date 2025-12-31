@@ -1,9 +1,9 @@
 from partial_injector.partial_container import Container, FromContainer
 from pymongo import MongoClient
 
-from leads.secondary_adapters.mongodb_.configuration import MongoDbStorageConfiguration
-from leads.secondary_adapters.mongodb_.factories import create_mongodb_dto, MongoDBDtoCreator
-from leads.secondary_adapters.mongodb_.storage import create_mongodb_client, StorageDatabase, StorageCollection
+from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
+from leads.secondary_adapters.mongodb_adapter.factories import create_mongodb_dto, MongoDBDtoCreator
+from leads.secondary_adapters.mongodb_adapter.storage import create_mongodb_client, StorageDatabase, StorageCollection
 
 
 def register_dependencies(container: Container) -> None:

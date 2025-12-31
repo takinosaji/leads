@@ -1,6 +1,6 @@
 from partial_injector.partial_container import Container, FromContainer
 
-from leads.secondary_adapters.sqlite_.configuration import SQLiteStorageConfiguration
+from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 
 def register_dependencies(container: Container) -> None:

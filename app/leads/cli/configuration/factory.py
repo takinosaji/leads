@@ -9,7 +9,7 @@ from returns.result import Result, safe
 from .configuration_logging import get_default_logger, LogLevel
 
 from leads.cli.configuration.models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
-from ...secondary_adapters.sqlite_.configuration import SQLiteStorageConfiguration
+from ...secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 type CliConfigurationLoader = Callable[[], Result[CliConfiguration]]
 type CliConfigurationSaver = Callable[[CliConfiguration], Result]

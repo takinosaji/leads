@@ -9,8 +9,8 @@ from leads.cli.configuration.factory import CliConfigurationLoader, CliConfigura
 from leads.cli.configuration.models import CliConfiguration, ContextConfiguration, RuntimeConfiguration
 from leads.cli.views.models import FlatConfiguration
 from leads.cli.view_models.notification_view_model import NotificationViewModel
-from leads.secondary_adapters.mongodb_.configuration import MongoDbStorageConfiguration
-from leads.secondary_adapters.sqlite_.configuration import SQLiteStorageConfiguration
+from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
+from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 
 class InitializedFocusState:

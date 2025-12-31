@@ -3,8 +3,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 from leads.application_core.secondary_ports.pydantic_models import model_config
 from leads.cli.configuration.configuration_logging import LogLevel
-from leads.secondary_adapters.mongodb_.configuration import MongoDbStorageConfiguration
-from leads.secondary_adapters.sqlite_.configuration import SQLiteStorageConfiguration
+from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
+from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 
 class RuntimeConfiguration(BaseModel):
