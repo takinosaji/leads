@@ -1,4 +1,4 @@
-__author__ = "kostiantyn.chomakov@syngenta.com"
+__author__ = "kostiantyn.chomakov@gmail.com"
 
 # Import submodules
 from . import models

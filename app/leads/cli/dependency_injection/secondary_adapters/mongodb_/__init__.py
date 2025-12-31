@@ -2,6 +2,6 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 
 # Import submodules
 
-from . import container
+from . import storage
 
-__all__ = ['container']
+__all__ = ['storage']

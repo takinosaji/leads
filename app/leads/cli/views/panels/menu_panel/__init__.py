@@ -1,7 +1,10 @@
 __author__ = "kostiantyn.chomakov@gmail.com"
 
 # Import submodules
+from . import (
+    panel,
+)
 
-from . import container
-
-__all__ = ['container']
+__all__ = [
+    'panel',
+]

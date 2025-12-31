@@ -1,2 +1,0 @@
-# HotkeysPanel package init
-

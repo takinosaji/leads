@@ -1,9 +1,10 @@
 from typing import Optional
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from leads.application_core.secondary_ports.pydantic_models import model_config
 from leads.cli.configuration.configuration_logging import LogLevel
+from leads.secondary_adapters.mongodb_.configuration import MongoDbStorageConfiguration
+from leads.secondary_adapters.sqlite_.configuration import SQLiteStorageConfiguration
 
 
 class RuntimeConfiguration(BaseModel):
@@ -29,6 +30,13 @@ class ContextConfiguration(BaseModel):
 class CliConfiguration(BaseModel):
     model_config = model_config
 
-    context_configuration: ContextConfiguration
-    runtime_configuration: RuntimeConfiguration
+    context_configuration: ContextConfiguration = Field(...)
+    runtime_configuration: RuntimeConfiguration = Field(...)
+    mongodb_storage_configuration: Optional[MongoDbStorageConfiguration] = Field(None)
+    sqlite_storage_configuration: Optional[SQLiteStorageConfiguration] = Field(None)
 
+    @model_validator(mode="after")
+    def check_storage_config(self):
+        if not self.mongodb_storage_configuration and not self.sqlite_storage_configuration:
+            raise ValueError("Either mongodb_storage_configuration or sqlite_storage_configuration must be present.")
+        return self

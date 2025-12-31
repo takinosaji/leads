@@ -9,7 +9,7 @@ from returns.result import Result, safe
 from .configuration_logging import get_default_logger, LogLevel
 
 from leads.cli.configuration.models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
-
+from ...secondary_adapters.sqlite_.configuration import SQLiteStorageConfiguration
 
 type CliConfigurationLoader = Callable[[], Result[CliConfiguration]]
 type CliConfigurationSaver = Callable[[CliConfiguration], Result]
@@ -26,7 +26,11 @@ def __create_cli_configuration(dep_save_cli_configuration: CliConfigurationSaver
                                                     ),
                                                     runtime_configuration=RuntimeConfiguration(
                                                         min_log_level=LogLevel.INFO
-                                                    )
+                                                    ),
+                                                    sqlite_storage_configuration=SQLiteStorageConfiguration(
+                                                        connection_string=f"sqlite:////{__get_leads_folder_path()}/leads.db"
+                                                    ),
+                                                    mongodb_storage_configuration=None
         ))
 
     try:
@@ -46,9 +50,13 @@ def __create_cli_configuration(dep_save_cli_configuration: CliConfigurationSaver
 load_cli_configuration: CliConfigurationLoader = __create_cli_configuration
 
 
-def __get_config_file_path() -> Path:
+def __get_leads_folder_path() -> Path:
     home = Path.home()
-    return home / ".leads" / "config.yaml"
+    return home / ".leads"
+
+
+def __get_config_file_path() -> Path:
+    return __get_leads_folder_path() / "config.yaml"
 
 
 @safe

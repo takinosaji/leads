@@ -4,4 +4,4 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 
 from . import correlation
 
-__all__ = ['correlation']
+__all__ = ["correlation"]
