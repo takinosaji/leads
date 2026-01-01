@@ -4,6 +4,7 @@ from textual.widgets import Static
 from textual.events import Key
 from textual.message import Message
 
+from leads.cli.view_models.hotkeys_view_model import HotkeysViewModel, HotkeyItem
 from leads.cli.views.models import CliTab
 from leads.cli.view_models.menu_view_model import MenuViewModel
 
@@ -77,16 +78,19 @@ class MenuPanel(Vertical):
     }}
     """
 
-    def __init__(self, menu_view_model: MenuViewModel) -> None:
+    def __init__(self,
+                 menu_view_model: MenuViewModel,
+                 hotkeys_view_model: HotkeysViewModel):
         super().__init__(classes="menu-panel")
-        self.view_model = menu_view_model
+        self._view_model = menu_view_model
+        self._hotkeys_view_model = hotkeys_view_model
         self.can_focus = True
 
         self._widgets: list[MenuItemPanel] = []
-        self._selected_index_subscription = self.view_model.selected_index_subject.subscribe(self._on_selected_index)
+        self._selected_index_subscription = self._view_model.selected_index_subject.subscribe(self._on_selected_index)
 
     def compose(self) -> ComposeResult:
-        for i, item in enumerate(self.view_model.menu_items):
+        for i, item in enumerate(self._view_model.menu_items):
             widget = MenuItemPanel(item.text, selected=(i == 0))
             self._widgets.append(widget)
             yield widget
@@ -94,19 +98,27 @@ class MenuPanel(Vertical):
     def _on_selected_index(self, new_index: int) -> None:
         for i, w in enumerate(self._widgets):
             w.set_class(i == new_index, "-selected")
-        item = self.view_model.menu_items[new_index]
+        item = self._view_model.menu_items[new_index]
         self.post_message(MenuSelectionChanged(new_index, item.text, item.tab))
 
     def on_mount(self) -> None:
-        self._on_selected_index(self.view_model.selected_index)
+        self._on_selected_index(self._view_model.selected_index)
+
+    def on_focus(self, event) -> None:
+        self._hotkeys_view_model.set_hotkeys([
+            HotkeyItem("<Tab>", "Change Focus"),
+            HotkeyItem("<↑/↓>", "Navigate Menu"),
+            HotkeyItem("<:>", "Enter Command")
+        ])
+        return None
 
     def on_key(self, event: Key) -> None:
-        current = self.view_model.selected_index
+        current = self._view_model.selected_index
         if event.key == "down":
-            self.view_model.set_selected_index((current + 1) % len(self._widgets))
+            self._view_model.set_selected_index((current + 1) % len(self._widgets))
             event.stop()
         elif event.key == "up":
-            self.view_model.set_selected_index((current - 1) % len(self._widgets))
+            self._view_model.set_selected_index((current - 1) % len(self._widgets))
             event.stop()
 
     def on_unmount(self) -> None:

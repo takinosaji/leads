@@ -6,6 +6,8 @@ from textual.containers import Container
 from textual.events import Key
 from typing import Literal
 
+from leads.cli.view_models.hotkeys_view_model import HotkeysViewModel, HotkeyItem
+
 
 class CommandSubmitted(Message):
     def __init__(self, text: str) -> None:
@@ -61,22 +63,35 @@ class CommandPanel(Container):
     }
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self,
+                 hotkeys_view_model: HotkeysViewModel,
+                 **kwargs) -> None:
         super().__init__(id="command", **kwargs)
-        self.input = Input(placeholder="", id="command-input")
+        self.can_focus = True
+        self._hotkeys_view_model = hotkeys_view_model
+        self._input = Input(placeholder="", id="command-input")
 
     def compose(self) -> ComposeResult:
         with Horizontal(classes="row"):
             yield Static("Command:", classes="label")
-            yield self.input
+            yield self._input
 
     def on_mount(self) -> None:
         self.add_class("hidden")
 
+    def on_focus(self, event) -> None:
+        self._hotkeys_view_model.set_hotkeys([
+            HotkeyItem("<Tab>/<Esc>", "Cancel"),
+            HotkeyItem("<Enter>", "Submit"),
+            HotkeyItem("<w>", "Write changes"),
+            HotkeyItem("<q>", "Quit")
+        ])
+
     def show(self) -> None:
         self.remove_class("hidden")
-        self.input.value = ""
-        self.input.focus()
+        self._input.value = ""
+        self.focus()
+        self._input.focus()
 
     def hide(self, reason: Literal["escape", "submit", "tab", "unknown"] = "unknown") -> None:
         self.add_class("hidden")

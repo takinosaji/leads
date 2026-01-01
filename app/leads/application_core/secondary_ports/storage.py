@@ -4,3 +4,4 @@ from typing import Callable, Optional
 
 from pydantic import BaseModel
 
+type

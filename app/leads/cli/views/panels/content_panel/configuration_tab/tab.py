@@ -97,9 +97,8 @@ class ConfigurationTab(BaseView):
 
     def __init__(self,
                  configuration_view_model: ConfigurationViewModel,
-                 hotkeys_view_model: HotkeysViewModel) -> None:
+                 hotkeys_view_model: HotkeysViewModel):
         super().__init__("Configuration", id="configuration-tab")
-
         self._view_model = configuration_view_model
         self._hotkeys_view_model = hotkeys_view_model
         self._rows: list[Horizontal] = []
@@ -107,10 +106,18 @@ class ConfigurationTab(BaseView):
         self._is_selected = False
         self._subscription = self._view_model.subscribe(lambda _: self._on_view_model_changed())
 
+    def on_focus(self, event) -> None:
+        self._hotkeys_view_model.set_hotkeys([
+            HotkeyItem("<Tab>", "Change Focus"),
+            HotkeyItem("<↑/↓>", "Navigate Items"),
+            HotkeyItem("<i>", "Edit Item"),
+            HotkeyItem("<:>", "Enter Command"),
+        ])
+        return None
+
     def on_mount(self) -> None:
         if not self._is_selected:
             return None
-
         self._rows = list(self.query(Horizontal).filter(".row"))
         self._view_model.focus_state = InitializedFocusState(self._view_model.focus_state.index if self._view_model.focus_state else 0,
                                                              total_rows=len(self._rows))
@@ -127,10 +134,6 @@ class ConfigurationTab(BaseView):
     def activate(self):
         self._is_selected = True
         self._on_view_model_changed()
-
-        self._hotkeys_view_model.set_hotkeys([
-            HotkeyItem("<Tab>", "Change Focus")
-        ])
 
     def deactivate(self):
         self._is_selected = False

@@ -19,7 +19,7 @@ class HotkeysPanel(Vertical):
     }
 
     HotkeysPanel > .hotkey-row > .hotkey-symbol {
-        width: 6;
+        width: 12;
         color: #ff4fcf;
         text-style: bold;
         padding-right: 1;
@@ -31,7 +31,9 @@ class HotkeysPanel(Vertical):
     }
     """
 
-    def __init__(self, hotkeys_view_model: HotkeysViewModel, **kwargs):
+    def __init__(self,
+                 hotkeys_view_model: HotkeysViewModel,
+                 **kwargs):
         super().__init__(**kwargs)
         self.can_focus = False
         self.view_model = hotkeys_view_model

@@ -142,7 +142,7 @@ click = "^8.3.0"
 leads-application-core = {path = "../application_core", develop = true}
 leads-secondary-adapters = {path = "../secondary_adapters", develop = true}
 nanoid = "^2.0.0"
-partial-injector = "^2.3.5"
+partial-injector = "^2.3.6"
 pydantic = "^2.11.9"
 pymongo = {version = "^4.15.5", extras = ["srv"]}
 pyyaml = "^6.0"
@@ -281,14 +281,14 @@ files = [
 
 [[package]]
 name = "partial-injector"
-version = "2.3.5"
+version = "2.3.6"
 description = "Dependency Injection for FP"
 optional = false
-python-versions = "<4.0,>=3.13"
+python-versions = "<4.0,>=3.14"
 groups = ["main"]
 files = [
-    {file = "partial_injector-2.3.5-py3-none-any.whl", hash = "sha256:20bb49b06a004d326e9562fa4450aa09dc8c4712cdb431d57536c3656b84ec2c"},
-    {file = "partial_injector-2.3.5.tar.gz", hash = "sha256:b6f065431168d02155a19638578efd49e6c71c57babe4ad8cabe25ed2a60418f"},
+    {file = "partial_injector-2.3.6-py3-none-any.whl", hash = "sha256:7b80071e58647ef445077a7887f9598217992d170ac99ac2df3facac1fcbc4a4"},
+    {file = "partial_injector-2.3.6.tar.gz", hash = "sha256:8cfcbcd0ab37bcbbaaffe31a069d923e54ed648f1064a7bb80c3ce54845b1ba6"},
 ]
 
 [[package]]

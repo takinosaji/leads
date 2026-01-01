@@ -1,22 +1,21 @@
 import os
-
 import yaml
 from pathlib import Path
 from typing import Callable
-
 from returns.result import Result, safe
 
 from .configuration_logging import get_default_logger, LogLevel
-
-from leads.cli.configuration.models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
-from ...secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
+from .models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
+from .cache import CliConfigurationCache
+from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 type CliConfigurationLoader = Callable[[], Result[CliConfiguration]]
 type CliConfigurationSaver = Callable[[CliConfiguration], Result]
 
 
 @safe
-def __create_cli_configuration(dep_save_cli_configuration: CliConfigurationSaver) -> CliConfiguration:
+def __load_n_cache_cli_configuration(dep_configuration_cache: CliConfigurationCache,
+                                     dep_save_cli_configuration: CliConfigurationSaver) -> CliConfiguration:
     logger = get_default_logger()
 
     file_path = __get_config_file_path()
@@ -42,12 +41,13 @@ def __create_cli_configuration(dep_save_cli_configuration: CliConfigurationSaver
 
     try:
         configuration = CliConfiguration(**data)
+        dep_configuration_cache.configuration = configuration
     except Exception as exc:
         logger.error("Invalid configuration contents", exc_info=exc)
         raise
 
     return configuration
-load_cli_configuration: CliConfigurationLoader = __create_cli_configuration
+load_n_cache_cli_configuration: CliConfigurationLoader = __load_n_cache_cli_configuration
 
 
 def __get_leads_folder_path() -> Path:

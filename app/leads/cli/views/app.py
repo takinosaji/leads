@@ -5,6 +5,7 @@ from textual.containers import Horizontal
 from textual.events import Key
 
 from leads.cli.view_models.app_view_model import AppViewModel
+from leads.cli.views.models import CliTab
 from leads.cli.views.panels.header_panel.panel import HeaderPanel
 from leads.cli.views.panels.menu_panel.panel import MenuPanel, MenuSelectionChanged
 from leads.cli.views.panels.content_panel.panel import ContentPanel
@@ -21,17 +22,14 @@ class CliAppScreen(Screen):
         self.app_view_model = AppViewModel(container)
 
         self.header_panel = HeaderPanel(self.app_view_model.hotkeys_view_model)
-        self.menu_panel = MenuPanel(self.app_view_model.menu_view_model)
+        self.menu_panel = MenuPanel(self.app_view_model.menu_view_model, self.app_view_model.hotkeys_view_model)
         self.content_panel = ContentPanel(
             self.app_view_model.configuration_view_model,
             self.app_view_model.hotkeys_view_model,
             self.app_view_model.notification_view_model
         )
         self.notification_panel = NotificationPanel(self.app_view_model.notification_view_model)
-        self.command_panel = CommandPanel()
-
-        self._focus_subscription = self.app_view_model.focus_state.index_subject.subscribe(
-            lambda idx: self.app_view_model.focus_state.set_focus_at(self, idx))
+        self.command_panel = CommandPanel(self.app_view_model.hotkeys_view_model)
 
     def compose(self) -> ComposeResult:
         yield self.header_panel
@@ -47,8 +45,11 @@ class CliAppScreen(Screen):
         return not self.command_panel.has_class("hidden")
 
     def on_mount(self) -> None:
-        self.app_view_model.focus_state.build(self.menu_panel, self.content_panel)
-        self.app_view_model.focus_state.set_focus_at(self, 0)
+        self.app_view_model.focus_state.build(self.menu_panel,
+                                              self.content_panel.tabs[CliTab.CONFIGURATION],
+                                              self.content_panel.tabs[CliTab.FORESTS],
+                                              self.content_panel.tabs[CliTab.TRAILS])
+        self.app_view_model.focus_state.set_focus_widget(self, self.menu_panel)
 
     def on_menu_selection_changed(self, message: MenuSelectionChanged) -> None:
         self.content_panel.activate(message.tab)
@@ -69,13 +70,10 @@ class CliAppScreen(Screen):
                 pass
 
     def on_command_panel_closed(self, message: CommandPanelClosed) -> None:
-        if not self.app_view_model.focus_state.focusable_widgets:
-            return
-        if message.reason == "tab":
-            next_index = (self.app_view_model.focus_state.index + 1) % len(self.app_view_model.focus_state.focusable_widgets)
-            self.app_view_model.focus_state.set_focus_at(self, next_index)
+        if message.reason == "tab": # TODO: Is this bullshit? Refactor later
+            self.app_view_model.focus_state.focus_next(self)
         else:
-            self.app_view_model.focus_state.set_focus_at(self, self.app_view_model.focus_state.index)
+            self.app_view_model.focus_state.refocus(self)
 
     def _handle_command_globally(self, text: str) -> None:
         if text == "q":
@@ -94,7 +92,7 @@ class CliAppScreen(Screen):
         self._handle_command_globally(text)
 
     def on_unmount(self) -> None:
-        self._focus_subscription.dispose()
+        pass
 
 
 class CliApp(App):

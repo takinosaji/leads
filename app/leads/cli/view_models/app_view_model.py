@@ -13,29 +13,33 @@ from leads.cli.view_models.configuration_view_model import ConfigurationViewMode
 
 class AppFocusState:
     def __init__(self):
-        self.focusable_widgets: List[Widget] = []
-        self.index_subject = BehaviorSubject(0)
-
-    @property
-    def index(self):
-        return self.index_subject.value
+        self._focusable_widgets: List[Widget] = []
+        self._index: int = 0
 
     def build(self, *widgets: Widget) -> None:
-        self.focusable_widgets = [w for w in widgets if isinstance(w, Widget)]
-        if self.focusable_widgets:
-            self.index_subject.on_next(min(self.index, max(0, len(self.focusable_widgets) - 1)))
-
-    def set_focus_at(self, screen: Screen, index: int) -> None:
-        if not self.focusable_widgets:
-            return
-        index = index % len(self.focusable_widgets)
-        screen.set_focus(self.focusable_widgets[index])
+        self._focusable_widgets = [w for w in widgets if isinstance(w, Widget)]
+        if self._focusable_widgets:
+            self._index = min(self._index, max(0, len(self._focusable_widgets) - 1))
 
     def focus_next(self, screen: Screen) -> None:
-        if not self.focusable_widgets:
-            return
-        new_index = (self.index + 1) % len(self.focusable_widgets)
-        self.index_subject.on_next(new_index)
+        focused_widget = self._focusable_widgets[self._index]
+        num_widgets = len(self._focusable_widgets)
+        for i in range(1, num_widgets + 1):
+            new_index = (self._index + i) % num_widgets
+            widget = self._focusable_widgets[new_index]
+            if not widget.has_class("hidden") and widget is not focused_widget:
+                self._index = new_index
+                self.set_focus_widget(screen, widget)
+                break
+        return None
+
+    def set_focus_widget(self, screen: Screen, widget: Widget) -> None:
+        if widget in self._focusable_widgets:
+            screen.set_focus(widget)
+            self._index = self._focusable_widgets.index(widget)
+
+    def refocus(self, screen: Screen) -> None:
+        self.set_focus_widget(screen, self._focusable_widgets[self._index])
 
 
 class AppViewModel:
