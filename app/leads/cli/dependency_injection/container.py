@@ -4,9 +4,9 @@ from structlog import BoundLogger
 from leads.cli.configuration.factory import (load_n_cache_cli_configuration,
                                              CliConfigurationLoader,
                                              CliConfigurationSaver,
+                                             CliConfigurationCache,
                                              save_cli_configuration)
 from leads.cli.cli_logging import create_configured_logger
-from leads.cli.configuration.cache import CliConfigurationCache
 from leads.cli.dependency_injection import secondary_adapters
 
 
@@ -23,8 +23,8 @@ def get_container():
     # Application Core
 
     # Secondary Adapter
-    # secondary_adapters.sqlite_.storage.register_dependencies(container)
-    # secondary_adapters.mongodb_.storage.register_dependencies(container)
+    #secondary_adapters.sqlite_adapters.storage.register_dependencies(container)
+    #.mongodb_adapters.storage.register_dependencies(container)
 
     container.build()
 

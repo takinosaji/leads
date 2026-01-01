@@ -76,20 +76,21 @@ class CliAppScreen(Screen):
             self.app_view_model.focus_state.refocus(self)
 
     def _handle_command_globally(self, text: str) -> None:
-        if text == "q":
+        if text in ("q", "Q"):
             self.app.exit()
-            return
+        return None
 
     def on_command_submitted(self, message: CommandSubmitted) -> None:
         text = message.text
         if not text:
-            return
+            return None
 
         handled_locally = self.content_panel.send_command_to_active_tab(text)
         if handled_locally:
-            return
+            return None
 
         self._handle_command_globally(text)
+        return None
 
     def on_unmount(self) -> None:
         pass
@@ -98,6 +99,7 @@ class CliAppScreen(Screen):
 class CliApp(App):
     def __init__(self, container: Container):
         super().__init__()
+
         self.container = container
 
     def on_mount(self) -> None:
@@ -106,4 +108,5 @@ class CliApp(App):
 
 def build_injected_cli(container: Container):
     app = CliApp(container)
+
     return app.run

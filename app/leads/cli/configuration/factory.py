@@ -5,8 +5,7 @@ from typing import Callable
 from returns.result import Result, safe
 
 from .configuration_logging import get_default_logger, LogLevel
-from .models import CliConfiguration, RuntimeConfiguration, ContextConfiguration
-from .cache import CliConfigurationCache
+from .models import CliConfiguration, RuntimeConfiguration, ContextConfiguration, CliConfigurationCache
 from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 type CliConfigurationLoader = Callable[[], Result[CliConfiguration]]

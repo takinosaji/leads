@@ -40,3 +40,8 @@ class CliConfiguration(BaseModel):
         if not self.mongodb_storage_configuration and not self.sqlite_storage_configuration:
             raise ValueError("Either mongodb_storage_configuration or sqlite_storage_configuration must be present.")
         return self
+
+
+class CliConfigurationCache:
+    def __init__(self):
+        self.configuration: CliConfiguration | None = None
