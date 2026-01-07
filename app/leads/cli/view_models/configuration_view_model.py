@@ -35,7 +35,6 @@ class EditingState:
         self._changed = changed
         self.row_index: int | None = None
         self.key: str | None = None
-        self.value: str | None = None
 
     def start(self, idx: int, key: str, value: str):
         self.row_index = idx
@@ -68,6 +67,10 @@ class ConfigurationViewModel:
 
     def subscribe(self, observer):
         return self._subject.subscribe(observer)
+
+    def clear_state(self) -> None:
+        self.data = None
+        self.focus_state = None
 
     @safe
     def load_configuration(self):

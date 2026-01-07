@@ -137,8 +137,7 @@ class ConfigurationTab(BaseView):
 
     def deactivate(self):
         self._is_selected = False
-        self._view_model.data = None
-        self._view_model.focus_state = None
+        self._view_model.clear_state()
         self._on_view_model_changed()
 
     def compose(self) -> ComposeResult:

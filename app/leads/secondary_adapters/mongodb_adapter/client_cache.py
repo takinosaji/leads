@@ -1,29 +1,24 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Mapping, Any
 
 from pymongo import MongoClient
+from pymongo.synchronous.database import Database
 
-from leads.cli.configuration.models import CliConfigurationCache
 from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
 
 
 class MongoDbClientCache:
     def __init__(self,
-                 configuration_cache: CliConfigurationCache,
+                 configuration: MongoDbStorageConfiguration,
     ) -> None:
-        self._configuration_cache = configuration_cache
+        self._configuration = configuration
         self._client: Optional[MongoClient] = None
         self._last_connection_string: Optional[str] = None
-
-    def _get_current_mongodb_config(self) -> Optional[MongoDbStorageConfiguration]:
-        configuration = self._configuration_cache.configuration
-        if configuration is None:
-            raise RuntimeError("CLI configuration has not been loaded into CliConfigurationCache.")
-        return configuration.mongodb_storage_configuration
+        self._last_database_name: Optional[str] = None
 
     def _ensure_client_up_to_date(self) -> Optional[MongoClient]:
-        mongo_config = self._get_current_mongodb_config()
+        mongo_config = self._configuration
 
         current_connection_string: Optional[str]
         current_database_name: Optional[str]
@@ -35,7 +30,8 @@ class MongoDbClientCache:
             current_database_name = mongo_config.database_name
 
         config_changed = (
-            current_connection_string != self._last_connection_string
+            current_connection_string != self._last_connection_string and
+            current_database_name != self._last_database_name
         )
 
         if config_changed:
@@ -44,6 +40,7 @@ class MongoDbClientCache:
                 self._client = None
 
             self._last_connection_string = current_connection_string
+            self._last_database_name = current_database_name
 
             if not current_connection_string:
                 return None
@@ -55,6 +52,10 @@ class MongoDbClientCache:
     @property
     def client(self) -> Optional[MongoClient]:
         return self._ensure_client_up_to_date()
+
+    @property
+    def database(self) -> Database[Mapping[str, Any] | Any]:
+        return self.client[self._last_database_name]
 
     def close(self) -> None:
         if self._client is not None:

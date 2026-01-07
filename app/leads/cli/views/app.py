@@ -25,6 +25,7 @@ class CliAppScreen(Screen):
         self.menu_panel = MenuPanel(self.app_view_model.menu_view_model, self.app_view_model.hotkeys_view_model)
         self.content_panel = ContentPanel(
             self.app_view_model.configuration_view_model,
+            self.app_view_model.forests_view_model,
             self.app_view_model.hotkeys_view_model,
             self.app_view_model.notification_view_model
         )

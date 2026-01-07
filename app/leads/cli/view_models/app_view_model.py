@@ -1,6 +1,5 @@
 from partial_injector.partial_container import Container
 from typing import List
-from rx.subject import BehaviorSubject
 from textual.widget import Widget
 from textual.screen import Screen
 
@@ -9,6 +8,7 @@ from leads.cli.view_models.hotkeys_view_model import HotkeysViewModel
 from leads.cli.view_models.menu_view_model import MenuViewModel, MenuItem
 from leads.cli.views.models import CliTab
 from leads.cli.view_models.configuration_view_model import ConfigurationViewModel
+from leads.cli.view_models.forests_view_model import ForestsViewModel
 
 
 class AppFocusState:
@@ -52,5 +52,6 @@ class AppViewModel:
         ])
         self.notification_view_model = NotificationViewModel()
         self.configuration_view_model = ConfigurationViewModel(container, self.notification_view_model)
+        self.forests_view_model = ForestsViewModel()
 
         self.focus_state: AppFocusState = AppFocusState()

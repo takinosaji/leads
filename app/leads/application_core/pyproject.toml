@@ -27,6 +27,7 @@ classifiers = [
 python = ">=3.14,<3.15"
 returns = "^0.26.0"
 structlog = "^25.5.0"
+nanoid = "^2.0.0"
 pydantic = "^2.12.5"
 spinq = "^1.4.0"
 leads-application-core-secondary-ports = { path = "./secondary_ports", develop = true }

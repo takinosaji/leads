@@ -73,6 +73,7 @@ develop = true
 
 [package.dependencies]
 leads-application-core-secondary-ports = {path = "secondary_ports", develop = true}
+nanoid = "^2.0.0"
 pydantic = "^2.12.5"
 returns = "^0.26.0"
 spinq = "^1.4.0"

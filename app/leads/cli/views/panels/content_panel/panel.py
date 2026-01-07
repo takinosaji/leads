@@ -5,8 +5,10 @@ from leads.cli.view_models.app_view_model import AppFocusState
 from leads.cli.views.models import CliTab
 from leads.cli.views.panels.base_view import BaseView
 from leads.cli.views.panels.content_panel.configuration_tab.tab import ConfigurationTab
+from leads.cli.views.panels.content_panel.forests_tab.tab import ForestsTab
 from leads.cli.view_models.hotkeys_view_model import HotkeysViewModel
 from leads.cli.view_models.configuration_view_model import ConfigurationViewModel
+from leads.cli.view_models.forests_view_model import ForestsViewModel
 from leads.cli.view_models.notification_view_model import NotificationViewModel
 
 
@@ -37,6 +39,7 @@ class ContentPanel(Container):
 
     def __init__(self,
                  configuration_view_model: ConfigurationViewModel,
+                 forests_view_model: ForestsViewModel,
                  hotkeys_view_model: HotkeysViewModel,
                  notification_view_model: NotificationViewModel,
                  **kwargs):
@@ -44,13 +47,14 @@ class ContentPanel(Container):
         self.can_focus = False
 
         self._configuration_view_model = configuration_view_model
+        self._forests_view_model = forests_view_model
         self._hotkeys_view_model = hotkeys_view_model
         self._notification_view_model = notification_view_model
         self.__active_tab_key: CliTab | None = None
 
         self.tabs = {
             CliTab.CONFIGURATION: ConfigurationTab(self._configuration_view_model, self._hotkeys_view_model),
-            CliTab.FORESTS: BaseView("Forests", id="forests-tab"),
+            CliTab.FORESTS: ForestsTab(self._forests_view_model, self._hotkeys_view_model),
             CliTab.TRAILS: BaseView("Trails", id="trails-tab"),
         }
 
