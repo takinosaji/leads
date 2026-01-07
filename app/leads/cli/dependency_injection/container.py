@@ -14,17 +14,17 @@ def get_container():
     container = Container()
 
     # CLI
-    container.register_factory(lambda: CliConfigurationCache(), key=CliConfigurationCache)
+    container.register_singleton_factory(lambda: CliConfigurationCache(), key=CliConfigurationCache)
 
-    container.register_instance(save_cli_configuration, key=CliConfigurationSaver)
-    container.register_instance(load_n_cache_cli_configuration, key=CliConfigurationLoader)
-    container.register_factory(create_configured_logger, args=[FromContainer(CliConfigurationLoader)], key=BoundLogger)
+    container.register_singleton(save_cli_configuration, key=CliConfigurationSaver)
+    container.register_singleton(load_n_cache_cli_configuration, key=CliConfigurationLoader)
+    container.register_singleton_factory(create_configured_logger, factory_args=[FromContainer(CliConfigurationLoader)], key=BoundLogger)
 
     # Application Core
 
     # Secondary Adapter
-    #secondary_adapters.sqlite_adapters.storage.register_dependencies(container)
-    #.mongodb_adapters.storage.register_dependencies(container)
+    secondary_adapters.sqlite_adapters.storage.register_dependencies(container)
+    secondary_adapters.mongodb_adapters.storage.register_dependencies(container)
 
     container.build()
 

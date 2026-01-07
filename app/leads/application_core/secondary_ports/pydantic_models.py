@@ -1,4 +1,5 @@
 import traceback
+from enum import Enum
 from typing import Callable
 
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -15,6 +16,10 @@ model_config = ConfigDict(arbitrary_types_allowed=True,
                           validate_assignment=True)
 
 extensible_model_config = ConfigDict(**{**model_config, 'extra': 'allow'})
+
+
+class ModelsMetadata(str, Enum):
+    MASKED = "masked"
 
 
 class PydanticValidationError(BaseModel):
