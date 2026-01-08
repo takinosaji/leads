@@ -1,6 +1,6 @@
 from returns.result import safe
 
-from leads.application_core.secondary_ports.forests import Forest, ForestPersister, ForestRetriever
+from leads.application_core.secondary_ports.forests import Forest, ForestPersister, ForestRetriever, ForestRemover
 from leads.secondary_adapters.mongodb_adapter.client_cache import MongoDbClientCache
 
 __FORESTS_COLLECTION_NAME = "forests"
@@ -23,6 +23,14 @@ def __retrieve_forests(dep_client_cache: MongoDbClientCache,
     forests = [Forest.model_validate(forest_dict) for forest_dict in forest_dicts]
     return forests
 retrieve_forests: ForestRetriever = __retrieve_forests
+
+@safe
+def __remove_forest(dep_client_cache: MongoDbClientCache,
+                    forest: Forest) -> None:
+    forests_collection = dep_client_cache.database.get_collection(__FORESTS_COLLECTION_NAME)
+    forests_collection.delete_one({"id": forest.id})
+    return None
+remove_forest: ForestRemover = __remove_forest
 
 
 

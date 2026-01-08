@@ -10,6 +10,7 @@ from leads.application_core.secondary_ports.exceptions import get_traceback
 from leads.cli.views.panels.base_view import BaseView
 from leads.cli.view_models.hotkeys_view_model import HotkeyItem, HotkeysViewModel
 from leads.cli.view_models.configuration_view_model import ConfigurationViewModel, InitializedFocusState
+from leads.cli.views.panels.content_panel.editable_input import EditableInput
 
 
 class ConfigurationTab(BaseView):
@@ -189,6 +190,7 @@ class ConfigurationTab(BaseView):
                 idx = self._view_model.focus_state.index
                 key, value = dicts.get_key_value_by_index_(self._view_model.data.__dict__, idx)
                 self._view_model.edit_state.start(idx, key, value)
+        return None
 
     def handle_command(self, text: str) -> bool:
         match text:
@@ -197,25 +199,3 @@ class ConfigurationTab(BaseView):
                 return True
             case _:
                 return False
-
-
-class EditableInput(Input):
-    def __init__(self, editing_state, **kwargs):
-        super().__init__(**kwargs)
-
-        self.editing_state = editing_state
-
-    def on_mount(self) -> None:
-        self.focus()
-        self.cursor_position = len(self.value)
-
-    def on_key(self, event: events.Key) -> None:
-        match event.key:
-            case "escape":
-                self.editing_state.end()
-                event.stop()
-            case "tab":
-                self.editing_state.end()
-            case "enter":
-                self.editing_state.apply(self.value)
-                event.stop()

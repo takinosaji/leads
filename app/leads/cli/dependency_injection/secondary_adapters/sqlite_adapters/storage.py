@@ -5,8 +5,8 @@ from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageC
 
 
 def register_dependencies(container: Container) -> None:
-    container.register_transient(FromContainer(CliConfigurationCache, lambda cache: cache.configuration.mongodb_storage_configuration),
-                                 key=SQLiteStorageConfiguration)
+    container.register_transient(FromContainer(CliConfigurationCache, lambda cache: cache.configuration.sqlite_storage_configuration),
+                                     key=SQLiteStorageConfiguration)
     # container.register_transient_factory(create_sqlite_client,
     #                                      key=SqliteClient,
     #                                      factory_args=[FromContainer(SQLiteStorageConfiguration, lambda conf: conf.connection_string)],

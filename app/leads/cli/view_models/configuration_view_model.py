@@ -58,7 +58,7 @@ class ConfigurationViewModel:
     def __init__(self,
                  container: Container,
                  notification_view_model: NotificationViewModel):
-        self.container: Container = container
+        self.__container: Container = container
         self.notification_view_model: NotificationViewModel = notification_view_model
         self.data: FlatConfiguration | None = None
         self.focus_state: InitializedFocusState | None = None
@@ -88,7 +88,7 @@ class ConfigurationViewModel:
 
         if self.data is None:
             self.data = (
-                self.container.resolve(CliConfigurationLoader)()
+                self.__container.resolve(CliConfigurationLoader)()
                 .bind(map_to_flat)
                 .unwrap()
             )
@@ -116,7 +116,7 @@ class ConfigurationViewModel:
                                    if self.data.mongodb_storage_database_name else None)
                 )
             )
-            self.container.resolve(CliConfigurationSaver)(cli_configuration)
+            self.__container.resolve(CliConfigurationSaver)(cli_configuration)
             self.notification_view_model.add_notification("Configuration saved successfully.")
             self.data = None
             self._subject.on_next(None)

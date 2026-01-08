@@ -4,8 +4,8 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 
 from . import (configuration,
                factories,
-               storage)
+               forests)
 
 __all__ = ["configuration",
            "factories",
-           "storage"]
+           "forests"]

@@ -5,10 +5,12 @@ from . import (
     panel,
     configuration_tab,
     forests_tab,
+    editable_input
 )
 
 __all__ = [
     'panel',
     'configuration_tab',
     'forests_tab',
+    'editable_input'
 ]

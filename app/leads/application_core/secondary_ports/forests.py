@@ -1,5 +1,5 @@
+from datetime import datetime
 from typing import Optional, Callable
-
 from pydantic import BaseModel, Field
 from returns.result import Result
 
@@ -12,8 +12,11 @@ class Forest(BaseModel):
     id: str = Field(...)
     name: str = Field(...)
     description: Optional[str] = Field(default=None)
+    created_at: datetime = Field(...)
+    updated_at: Optional[datetime] = Field(default=None)
     is_archived: bool = Field(default=False)
 
 
 type ForestPersister = Callable[[Forest], Result]
 type ForestRetriever = Callable[[bool], Result[list[Forest]]]
+type ForestRemover = Callable[[Forest], Result]
