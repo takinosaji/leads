@@ -118,7 +118,7 @@ class ConfigurationViewModel:
             )
             self.__container.resolve(CliConfigurationSaver)(cli_configuration)
             self.notification_view_model.add_notification("Configuration saved successfully.")
-            self.data = None
-            self._subject.on_next(None)
+
+
         except Exception as error:
             self.notification_view_model.add_notification(escape(str(error)), True)

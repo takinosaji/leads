@@ -51,3 +51,10 @@ def __extract_validation_error(validation_error: ValidationError) -> PydanticVal
 
 
 extract_validation_error: ValidationErrorExtractor = __extract_validation_error
+
+
+def is_masked_field(model_instance, model_field: str, metadata_key: str, metadata_value: any) -> bool:
+    for field_name, field_info in model_instance.model_fields.items():
+        if field_name == model_field and isinstance(field_info.json_schema_extra, dict):
+            return field_info.json_schema_extra.get(metadata_key) == metadata_value
+    return False

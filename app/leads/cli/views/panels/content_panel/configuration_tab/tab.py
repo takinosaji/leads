@@ -3,10 +3,11 @@ from spinq import dicts
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.markup import escape
-from textual.widgets import Static, Input
-from textual import events
+from textual.widgets import Static
 
 from leads.application_core.secondary_ports.exceptions import get_traceback
+from leads.application_core.secondary_ports.pydantic_models import is_masked_field, ModelsMetadata
+from leads.cli.view_models.app_view_model import AppFocusState
 from leads.cli.views.panels.base_view import BaseView
 from leads.cli.view_models.hotkeys_view_model import HotkeyItem, HotkeysViewModel
 from leads.cli.view_models.configuration_view_model import ConfigurationViewModel, InitializedFocusState
@@ -98,10 +99,12 @@ class ConfigurationTab(BaseView):
 
     def __init__(self,
                  configuration_view_model: ConfigurationViewModel,
-                 hotkeys_view_model: HotkeysViewModel):
+                 hotkeys_view_model: HotkeysViewModel,
+                 app_focus_state: AppFocusState):
         super().__init__("Configuration", id="configuration-tab")
         self._view_model = configuration_view_model
         self._hotkeys_view_model = hotkeys_view_model
+        self._app_focus_state = app_focus_state
         self._rows: list[Horizontal] = []
         self.can_focus = True
         self._is_selected = False
@@ -111,7 +114,7 @@ class ConfigurationTab(BaseView):
         self._hotkeys_view_model.set_hotkeys([
             HotkeyItem("<Tab>", "Change Focus"),
             HotkeyItem("<↑/↓>", "Navigate Items"),
-            HotkeyItem("<i>", "Edit Item"),
+            HotkeyItem("<e>", "Edit Item"),
             HotkeyItem("<:>", "Enter Command"),
         ])
         return None
@@ -147,7 +150,7 @@ class ConfigurationTab(BaseView):
             return None
 
         @safe
-        def compose_configuration_layout(data: dict):
+        def compose_configuration_layout(data):
             with Vertical(classes="table"):
                 with Horizontal(classes="header"):
                     yield Static("KEY", classes="cell-key")
@@ -159,7 +162,11 @@ class ConfigurationTab(BaseView):
                             yield EditableInput(self._view_model.edit_state, value=self._view_model.edit_state.value or v,
                                                 classes="cell-value", id=f"edit-input-{idx}")
                         else:
-                            yield Static(v, classes="cell-value")
+                            if is_masked_field(data, k, ModelsMetadata.MASKED, True):
+                                masked_value = '*' * len(str(v))
+                                yield Static(masked_value, classes="cell-value")
+                            else:
+                                yield Static(v, classes="cell-value")
 
         @safe
         def compose_error_layout(error: Exception):
@@ -186,7 +193,7 @@ class ConfigurationTab(BaseView):
             case "up":
                 self._view_model.focus_state.move_prev()
                 self.apply_selection()
-            case i if i in ("i", "I"):
+            case _ if key in ("e", "E"):
                 idx = self._view_model.focus_state.index
                 key, value = dicts.get_key_value_by_index_(self._view_model.data.__dict__, idx)
                 self._view_model.edit_state.start(idx, key, value)
@@ -199,3 +206,7 @@ class ConfigurationTab(BaseView):
                 return True
             case _:
                 return False
+
+    def on_click(self, event) -> None:
+        self._app_focus_state.sync_focus_widget(self)
+        return None

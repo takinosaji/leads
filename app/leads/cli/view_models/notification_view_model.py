@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from dataclasses import dataclass
 from rx.subject import BehaviorSubject
 from returns.result import safe
@@ -6,6 +8,7 @@ from returns.result import safe
 @dataclass
 class NotificationItem:
     message: str
+    timestamp: datetime
     is_error: bool = False
 
 
@@ -23,7 +26,8 @@ class NotificationViewModel:
 
     @safe
     def add_notification(self, message: str, is_error: bool = False):
-        new_list = self.notifications + [NotificationItem(message, is_error)]
+        new_item = NotificationItem(message, datetime.now(timezone.utc), is_error)
+        new_list = [new_item] + self.notifications
         self._notifications_subject.on_next(new_list)
 
     @safe

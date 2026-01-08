@@ -42,6 +42,7 @@ class ContentPanel(Container):
                  forests_view_model: ForestsViewModel,
                  hotkeys_view_model: HotkeysViewModel,
                  notification_view_model: NotificationViewModel,
+                 app_focus_state: AppFocusState,
                  **kwargs):
         super().__init__(id="content", **kwargs)
         self.can_focus = False
@@ -50,11 +51,15 @@ class ContentPanel(Container):
         self._forests_view_model = forests_view_model
         self._hotkeys_view_model = hotkeys_view_model
         self._notification_view_model = notification_view_model
+        self._app_focus_state = app_focus_state
         self.__active_tab_key: CliTab | None = None
 
         self.tabs = {
-            CliTab.CONFIGURATION: ConfigurationTab(self._configuration_view_model, self._hotkeys_view_model),
-            CliTab.FORESTS: ForestsTab(self._forests_view_model, self._hotkeys_view_model),
+            CliTab.CONFIGURATION: ConfigurationTab(self._configuration_view_model, self._hotkeys_view_model, self._app_focus_state),
+            CliTab.FORESTS: ForestsTab(self._forests_view_model,
+                                       self._notification_view_model,
+                                       self._hotkeys_view_model,
+                                       self._app_focus_state),
             CliTab.TRAILS: BaseView("Trails", id="trails-tab"),
         }
 

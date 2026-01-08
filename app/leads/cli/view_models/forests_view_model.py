@@ -1,4 +1,6 @@
 from typing import List, Optional
+
+from pydantic.dataclasses import dataclass
 from rx.subject import BehaviorSubject
 from returns.result import safe
 from partial_injector.partial_container import Container
@@ -7,36 +9,28 @@ from leads.application_core.forests.services import ForestGetter
 from leads.application_core.secondary_ports.forests import Forest
 
 
+@dataclass
+class ForestDto:
+    name: str
+    description: str
+    is_archived: bool
+
+
 class ForestsFocusState:
-    def __init__(self, row_index: int, col_index: int, total_rows: int, total_cols: int) -> None:
+    def __init__(self, index: int, total_rows: int) -> None:
         self.total_rows = total_rows
-        self.total_cols = total_cols
-
         if self.total_rows:
-            self.row_index = row_index % self.total_rows
+            self.index = index % self.total_rows
         else:
-            self.row_index = 0
+            self.index = 0
 
-        if self.total_cols:
-            self.col_index = col_index % self.total_cols
-        else:
-            self.col_index = 0
-
-    def move_next_row(self) -> None:
+    def move_next(self) -> None:
         if self.total_rows:
-            self.row_index = (self.row_index + 1) % self.total_rows
+            self.index = (self.index + 1) % self.total_rows
 
-    def move_prev_row(self) -> None:
+    def move_prev(self) -> None:
         if self.total_rows:
-            self.row_index = (self.row_index - 1) % self.total_rows
-
-    def move_next_col(self) -> None:
-        if self.total_cols:
-            self.col_index = (self.col_index + 1) % self.total_cols
-
-    def move_prev_col(self) -> None:
-        if self.total_cols:
-            self.col_index = (self.col_index - 1) % self.total_cols
+            self.index = (self.index - 1) % self.total_rows
 
 
 class ForestsViewModel:

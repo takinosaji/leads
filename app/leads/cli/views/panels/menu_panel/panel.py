@@ -4,6 +4,7 @@ from textual.widgets import Static
 from textual.events import Key
 from textual.message import Message
 
+from leads.cli.view_models.app_view_model import AppFocusState
 from leads.cli.view_models.hotkeys_view_model import HotkeysViewModel, HotkeyItem
 from leads.cli.views.models import CliTab
 from leads.cli.view_models.menu_view_model import MenuViewModel
@@ -80,10 +81,12 @@ class MenuPanel(Vertical):
 
     def __init__(self,
                  menu_view_model: MenuViewModel,
-                 hotkeys_view_model: HotkeysViewModel):
+                 hotkeys_view_model: HotkeysViewModel,
+                 app_focus_state: AppFocusState):
         super().__init__(classes="menu-panel")
         self._view_model = menu_view_model
         self._hotkeys_view_model = hotkeys_view_model
+        self._app_focus_state = app_focus_state
         self.can_focus = True
 
         self._widgets: list[MenuItemPanel] = []
@@ -120,6 +123,11 @@ class MenuPanel(Vertical):
         elif event.key == "up":
             self._view_model.set_selected_index((current - 1) % len(self._widgets))
             event.stop()
+
+    def on_click(self, event) -> None:
+        if self._app_focus_state:
+            self._app_focus_state.sync_focus_widget(self)
+        return None
 
     def on_unmount(self) -> None:
         self._selected_index_subscription.dispose()

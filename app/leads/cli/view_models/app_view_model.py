@@ -12,8 +12,9 @@ from leads.cli.view_models.forests_view_model import ForestsViewModel
 
 
 class AppFocusState:
-    def __init__(self):
+    def __init__(self, screen: Screen):
         self._focusable_widgets: List[Widget] = []
+        self._screen = screen
         self._index: int = 0
 
     def build(self, *widgets: Widget) -> None:
@@ -21,7 +22,7 @@ class AppFocusState:
         if self._focusable_widgets:
             self._index = min(self._index, max(0, len(self._focusable_widgets) - 1))
 
-    def focus_next(self, screen: Screen) -> None:
+    def focus_next(self) -> None:
         focused_widget = self._focusable_widgets[self._index]
         num_widgets = len(self._focusable_widgets)
         for i in range(1, num_widgets + 1):
@@ -29,21 +30,30 @@ class AppFocusState:
             widget = self._focusable_widgets[new_index]
             if not widget.has_class("hidden") and widget is not focused_widget:
                 self._index = new_index
-                self.set_focus_widget(screen, widget)
+                self.set_focus_widget(widget)
                 break
         return None
 
-    def set_focus_widget(self, screen: Screen, widget: Widget) -> None:
+    def set_focus_widget(self, widget: Widget) -> None:
         if widget in self._focusable_widgets:
-            screen.set_focus(widget)
+            self._screen.set_focus(widget)
             self._index = self._focusable_widgets.index(widget)
 
-    def refocus(self, screen: Screen) -> None:
-        self.set_focus_widget(screen, self._focusable_widgets[self._index])
+    def sync_focus_widget(self, widget: Widget) -> None:
+        self._index = self._focusable_widgets.index(widget)
+
+    def try_sync_focus_widget(self, widget: Widget) -> None:
+        if widget in self._focusable_widgets:
+            self._index = self._focusable_widgets.index(widget)
+
+    def refocus(self) -> None:
+        self.set_focus_widget(self._focusable_widgets[self._index])
 
 
 class AppViewModel:
-    def __init__(self, container: Container):
+    def __init__(self,
+                 container: Container,
+                 screen: Screen):
         self.hotkeys_view_model = HotkeysViewModel()
         self.menu_view_model = MenuViewModel([
             MenuItem("Configuration", CliTab.CONFIGURATION),
@@ -54,4 +64,4 @@ class AppViewModel:
         self.configuration_view_model = ConfigurationViewModel(container, self.notification_view_model)
         self.forests_view_model = ForestsViewModel(container)
 
-        self.focus_state: AppFocusState = AppFocusState()
+        self.focus_state: AppFocusState = AppFocusState(screen)

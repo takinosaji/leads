@@ -53,7 +53,7 @@ class NotificationPanel(Container):
     }
 
     NotificationPanel > .row > .notifications-container > .notification-row > .type-label {
-        width: 8;
+        width: 20;
         padding: 0 1;
         text-style: bold;
     }
@@ -104,7 +104,7 @@ class NotificationPanel(Container):
                 for item in self.view_model.notifications:
                     row_class = "notification-row -error" if item.is_error else "notification-row -info"
                     with Horizontal(classes=row_class):
-                        yield Static("ERROR:" if item.is_error else "INFO:", classes="type-label")
+                        yield Static(f"[{item.timestamp.strftime("%H:%M:%S")}] " + ("ERROR:" if item.is_error else "INFO:"), classes="type-label")
                         yield Static(item.message, classes="notification-box")
 
     def on_mount(self) -> None:

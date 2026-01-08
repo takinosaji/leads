@@ -19,15 +19,18 @@ class CliAppScreen(Screen):
 
         self.container = container
 
-        self.app_view_model = AppViewModel(container)
+        self.app_view_model = AppViewModel(container, self)
 
         self.header_panel = HeaderPanel(self.app_view_model.hotkeys_view_model)
-        self.menu_panel = MenuPanel(self.app_view_model.menu_view_model, self.app_view_model.hotkeys_view_model)
+        self.menu_panel = MenuPanel(self.app_view_model.menu_view_model,
+                                    self.app_view_model.hotkeys_view_model,
+                                    self.app_view_model.focus_state)
         self.content_panel = ContentPanel(
             self.app_view_model.configuration_view_model,
             self.app_view_model.forests_view_model,
             self.app_view_model.hotkeys_view_model,
-            self.app_view_model.notification_view_model
+            self.app_view_model.notification_view_model,
+            self.app_view_model.focus_state
         )
         self.notification_panel = NotificationPanel(self.app_view_model.notification_view_model)
         self.command_panel = CommandPanel(self.app_view_model.hotkeys_view_model)
@@ -50,7 +53,7 @@ class CliAppScreen(Screen):
                                               self.content_panel.tabs[CliTab.CONFIGURATION],
                                               self.content_panel.tabs[CliTab.FORESTS],
                                               self.content_panel.tabs[CliTab.TRAILS])
-        self.app_view_model.focus_state.set_focus_widget(self, self.menu_panel)
+        self.app_view_model.focus_state.set_focus_widget(self.menu_panel)
 
     def on_menu_selection_changed(self, message: MenuSelectionChanged) -> None:
         self.content_panel.activate(message.tab)
@@ -64,7 +67,7 @@ class CliAppScreen(Screen):
             case "tab":
                 if self._is_command_panel_visible(): # TODO: This is bullshit, refactor later
                     return
-                self.app_view_model.focus_state.focus_next(self)
+                self.app_view_model.focus_state.focus_next()
                 event.stop()
                 return
             case _:
@@ -72,9 +75,9 @@ class CliAppScreen(Screen):
 
     def on_command_panel_closed(self, message: CommandPanelClosed) -> None:
         if message.reason == "tab": # TODO: Is this bullshit? Refactor later
-            self.app_view_model.focus_state.focus_next(self)
+            self.app_view_model.focus_state.focus_next()
         else:
-            self.app_view_model.focus_state.refocus(self)
+            self.app_view_model.focus_state.refocus()
 
     def _handle_command_globally(self, text: str) -> None:
         if text in ("q", "Q"):

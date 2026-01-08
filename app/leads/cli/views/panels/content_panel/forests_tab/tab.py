@@ -7,9 +7,12 @@ from textual.widgets import Static
 from leads.application_core.secondary_ports.exceptions import get_traceback
 from textual.markup import escape
 
+from leads.cli.view_models.app_view_model import AppFocusState
+from leads.cli.view_models.notification_view_model import NotificationViewModel
 from leads.cli.views.panels.base_view import BaseView
 from leads.cli.view_models.hotkeys_view_model import HotkeyItem, HotkeysViewModel
 from leads.cli.view_models.forests_view_model import ForestsViewModel, ForestsFocusState
+from leads.cli.views.panels.content_panel.forests_tab.forest_creation_update_modal import ForestCreationUpdateModal
 
 
 class ForestsTab(BaseView):
@@ -199,12 +202,15 @@ class ForestsTab(BaseView):
 
     def __init__(self,
                  forests_view_model: ForestsViewModel,
-                 hotkeys_view_model: HotkeysViewModel):
+                 notification_view_model: NotificationViewModel,
+                 hotkeys_view_model: HotkeysViewModel,
+                 app_focus_state: AppFocusState):
         super().__init__("Forests", id="forests-tab")
         self._view_model = forests_view_model
+        self._notification_view_model = notification_view_model
         self._hotkeys_view_model = hotkeys_view_model
+        self._app_focus_state = app_focus_state
         self._rows: List[Horizontal] = []
-        self._cells: List[List[Static]] = []
         self.can_focus = True
         self._is_selected = False
         self._subscription = self._view_model.subscribe(lambda _: self._on_view_model_changed())
@@ -214,6 +220,7 @@ class ForestsTab(BaseView):
             HotkeyItem("<Tab>", "Change Focus"),
             HotkeyItem("<↑/↓/←/→>", "Navigate Cells"),
             HotkeyItem("<t>", "Toggle Archived"),
+            HotkeyItem('<n>', "Create Forest")
         ])
         return None
 
@@ -222,30 +229,12 @@ class ForestsTab(BaseView):
             return None
 
         self._rows = list(self.query(Horizontal).filter(".row"))
-        self._cells = []
-        for row in self._rows:
-            row_cells: List[Static] = []
-            for cls in self._cell_classes:
-                cell = row.query_one(f".{cls}", Static)
-                cell.add_class("cell")
-                row_cells.append(cell)
-            self._cells.append(row_cells)
-
-        total_rows = len(self._cells)
-        total_cols = len(self._cell_classes) if total_rows else 0
-        prev_row = self._view_model.focus_state.row_index if self._view_model.focus_state else 0
-        prev_col = self._view_model.focus_state.col_index if self._view_model.focus_state else 0
-        self._view_model.focus_state = ForestsFocusState(prev_row, prev_col, total_rows, total_cols)
+        total_rows = len(self._rows)
+        prev_index = self._view_model.focus_state.index if self._view_model.focus_state else 0
+        self._view_model.focus_state = ForestsFocusState(prev_index, total_rows)
 
         self.apply_selection()
         return None
-
-    @property
-    def _cell_classes(self) -> List[str]:
-        base = ["cell-id", "cell-name", "cell-description", "cell-created-at", "cell-updated-at"]
-        if self._view_model.include_archived:
-            base.append("cell-archived")
-        return base
 
     def on_unmount(self) -> None:
         self._subscription.dispose()
@@ -266,32 +255,31 @@ class ForestsTab(BaseView):
     def apply_selection(self) -> None:
         if not self._view_model.focus_state:
             return None
-        for r, row_cells in enumerate(self._cells):
-            row = self._rows[r]
-            row.set_class(self._view_model.focus_state.row_index == r, "-row-selected")
-            for c, cell in enumerate(row_cells):
-                cell.set_class(self._view_model.focus_state.row_index == r and
-                               self._view_model.focus_state.col_index == c, "-selected")
+        for i, row in enumerate(self._rows):
+            row.set_class(i == self._view_model.focus_state.index, "-selected")
         return None
 
     def on_key(self, event) -> None:
         key = getattr(event, "key", None)
         match key:
             case "down":
-                self._view_model.focus_state.move_next_row()
+                self._view_model.focus_state.move_next()
                 self.apply_selection()
             case "up":
-                self._view_model.focus_state.move_prev_row()
+                self._view_model.focus_state.move_prev()
                 self.apply_selection()
-            case "right":
-                self._view_model.focus_state.move_next_col()
-                self.apply_selection()
-            case "left":
-                self._view_model.focus_state.move_prev_col()
-                self.apply_selection()
-            case k if k in ("t", "T"):
+            case _ if key in ("t", "T"):
                 self._view_model.toggle_include_archived()
+            case _ if key in ("n", "N"):
+                self.call_later(self._open_forest_creation_modal)
         return None
+
+    def _open_forest_creation_modal(self):
+        self.app.push_screen(ForestCreationUpdateModal(self._view_model,
+                                                       self._notification_view_model,
+                                                       title="Create Forest",
+                                                       button_text="Create",
+                                                       archived_locked=True))
 
     def compose(self) -> ComposeResult:
         if not self._is_selected:
@@ -334,3 +322,9 @@ class ForestsTab(BaseView):
 
     def handle_command(self, text: str) -> bool:
         return False
+
+    def on_click(self, event) -> None:
+        if self._app_focus_state:
+            self._app_focus_state.sync_focus_widget(self)
+        return None
+
