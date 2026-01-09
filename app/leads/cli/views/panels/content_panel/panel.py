@@ -1,3 +1,5 @@
+from typing import Optional
+
 from textual.app import ComposeResult
 from textual.containers import Container
 
@@ -52,7 +54,7 @@ class ContentPanel(Container):
         self._hotkeys_view_model = hotkeys_view_model
         self._notification_view_model = notification_view_model
         self._app_focus_state = app_focus_state
-        self.__active_tab_key: CliTab | None = None
+        self.__active_tab_key: Optional[CliTab] = None
 
         self.tabs = {
             CliTab.CONFIGURATION: ConfigurationTab(self._configuration_view_model, self._hotkeys_view_model, self._app_focus_state),

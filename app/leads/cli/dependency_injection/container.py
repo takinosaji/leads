@@ -2,8 +2,8 @@ from partial_injector.partial_container import Container, FromContainer
 from structlog import BoundLogger
 
 from leads.application_core.forests.services import create_forest, ForestCreator, edit_forest, ForestEditor, \
-    archive_forest, unarchive_forest, ForestArchiver, ForestUnarchiver, ForestGetter, get_forests, delete_forest, \
-    ForestDeleter
+    archive_forest, unarchive_forest, ForestArchiver, ForestUnarchiver, ForestsGetter, get_forests, delete_forest, \
+    ForestDeleter, ForestByNameGetter, get_forest_by_name, ForestByIdGetter, get_forest_by_id
 
 from leads.cli.configuration.factory import (load_n_cache_cli_configuration,
                                              CliConfigurationLoader,
@@ -29,7 +29,9 @@ def get_container():
     container.register_transient(edit_forest, key=ForestEditor)
     container.register_transient(archive_forest, key=ForestArchiver)
     container.register_transient(unarchive_forest, key=ForestUnarchiver)
-    container.register_transient(get_forests, key=ForestGetter)
+    container.register_transient(get_forests, key=ForestsGetter)
+    container.register_transient(get_forest_by_name, key=ForestByNameGetter)
+    container.register_transient(get_forest_by_id, key=ForestByIdGetter)
     container.register_transient(delete_forest, key=ForestDeleter)
 
     # Secondary Adapter

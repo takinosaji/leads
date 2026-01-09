@@ -2,6 +2,6 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 
 # Import submodules
 
-from . import (services)
+from . import (services, models)
 
-__all__ = ["services"]
+__all__ = ["services", "models"]

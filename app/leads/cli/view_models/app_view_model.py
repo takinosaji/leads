@@ -62,6 +62,6 @@ class AppViewModel:
         ])
         self.notification_view_model = NotificationViewModel()
         self.configuration_view_model = ConfigurationViewModel(container, self.notification_view_model)
-        self.forests_view_model = ForestsViewModel(container)
+        self.forests_view_model = ForestsViewModel(container, self.notification_view_model)
 
         self.focus_state: AppFocusState = AppFocusState(screen)

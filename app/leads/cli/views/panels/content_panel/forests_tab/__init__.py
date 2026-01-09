@@ -1,4 +1,12 @@
-from .tab import ForestsTab
+__author__ = "kostiantyn.chomakov@gmail.com"
 
-__all__ = ["ForestsTab"]
+# Import submodules
+from . import (
+    tab,
+    forest_creation_modal
+)
 
+__all__ = [
+    'tab',
+    'forest_creation_modal'
+]

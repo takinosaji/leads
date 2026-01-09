@@ -1,4 +1,6 @@
+from returns.pointfree import lash, bind
 from returns.result import safe
+from returns.pipeline import flow
 from spinq import dicts
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
@@ -172,12 +174,10 @@ class ConfigurationTab(BaseView):
         def compose_error_layout(error: Exception):
             yield Static(f"Error loading configuration: {escape(str(error))}\n{escape(get_traceback(error))}", classes="error-message")
 
-        yield from (
-            self._view_model.load_configuration()
-            .bind(compose_configuration_layout)
-            .lash(compose_error_layout)
-            .unwrap()
-        )
+        yield from flow(
+            self._view_model.load_configuration(),
+            bind(compose_configuration_layout),
+            lash(compose_error_layout)).unwrap()
         return None
 
     def apply_selection(self) -> None:

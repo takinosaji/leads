@@ -12,8 +12,8 @@ class BaseView(Container):
     }
     """
 
-    def __init__(self, title: str, *, id: str | None = None) -> None:
-        super().__init__(id=id, classes="content-tab")
+    def __init__(self, title: str, **kwargs) -> None:
+        super().__init__(classes="content-tab", **kwargs)
         self._title = title
 
     def compose(self) -> ComposeResult:

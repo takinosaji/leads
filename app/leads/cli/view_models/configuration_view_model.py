@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from partial_injector.partial_container import Container
 from returns.result import safe
 from spinq import dicts
@@ -33,8 +33,9 @@ class EditingState:
                  changed: Callable[[], None]):
         self._view_model: ConfigurationViewModel = view_model
         self._changed = changed
-        self.row_index: int | None = None
-        self.key: str | None = None
+        self.row_index: Optional[int] = None
+        self.key: Optional[str] = None
+        self.value : Optional[str] = None
 
     def start(self, idx: int, key: str, value: str):
         self.row_index = idx
@@ -60,8 +61,8 @@ class ConfigurationViewModel:
                  notification_view_model: NotificationViewModel):
         self.__container: Container = container
         self.notification_view_model: NotificationViewModel = notification_view_model
-        self.data: FlatConfiguration | None = None
-        self.focus_state: InitializedFocusState | None = None
+        self.data: Optional[FlatConfiguration] = None
+        self.focus_state: Optional[InitializedFocusState] = None
         self.edit_state: EditingState = EditingState(self, lambda: self._subject.on_next(None))
         self._subject = BehaviorSubject(None)
 
@@ -121,4 +122,4 @@ class ConfigurationViewModel:
 
 
         except Exception as error:
-            self.notification_view_model.add_notification(escape(str(error)), True)
+            self.notification_view_model.add_notification(str(error), True)

@@ -3,11 +3,12 @@ from textual.containers import Vertical, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Label, Button, Input, Checkbox, TextArea
 
-from leads.cli.view_models.forests_view_model import ForestDto, ForestsViewModel
+from leads.application_core.secondary_ports.forests import NewForestDto
+from leads.cli.view_models.forests_view_model import ForestsViewModel
 from leads.cli.view_models.notification_view_model import NotificationViewModel
 
 
-class ForestCreationUpdateModal(ModalScreen):
+class ForestCreationModal(ModalScreen):
     DEFAULT_CSS = """
     ForestCreationUpdateModal {
         align: center middle;
@@ -94,10 +95,13 @@ class ForestCreationUpdateModal(ModalScreen):
             name = self.query_one("#name", Input).value
             description = self.query_one("#description", TextArea).text
             archived = not self._archived_locked and self.query_one("#archived", Checkbox).value
-            # self._view_model.create_forest(ForestDto(name=name,
-            #                                          description=description,
-            #                                          is_archived=archived))
-            # self.dismiss()
+
+
+
+
+            self._view_model.create_forest(NewForestDto(name=name,
+                                                        description=description))
+            self.dismiss()
             self._notification_view_model.add_notification("hi", is_error=True)
         else:
             self.dismiss()

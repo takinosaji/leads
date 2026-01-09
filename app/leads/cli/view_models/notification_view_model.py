@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from dataclasses import dataclass
 from rx.subject import BehaviorSubject
 from returns.result import safe
+from textual.markup import escape
 
 
 @dataclass
@@ -26,7 +27,7 @@ class NotificationViewModel:
 
     @safe
     def add_notification(self, message: str, is_error: bool = False):
-        new_item = NotificationItem(message, datetime.now(timezone.utc), is_error)
+        new_item = NotificationItem(escape(message), datetime.now(timezone.utc), is_error)
         new_list = [new_item] + self.notifications
         self._notifications_subject.on_next(new_list)
 

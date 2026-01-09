@@ -44,4 +44,4 @@ class CliConfiguration(BaseModel):
 
 class CliConfigurationCache:
     def __init__(self):
-        self.configuration: CliConfiguration | None = None
+        self.configuration: Optional[CliConfiguration] = None

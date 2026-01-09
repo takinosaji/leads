@@ -1,51 +1,138 @@
 from datetime import datetime, timezone
-from typing import Callable
+from typing import Callable, Optional
 from nanoid import generate
+from pydantic.dataclasses import dataclass
+from returns.pointfree import bind
 from returns.result import Result, safe
+from returns.pipeline import flow
 
-from leads.application_core.secondary_ports.forests import Forest, ForestPersister, ForestRetriever, ForestRemover
+from leads.application_core.forests.models import ForestDescription, ForestName, ForestId
+from leads.application_core.secondary_ports.forests import Forest, ForestPersister, ForestsRetriever, ForestRemover, \
+    PersistedForestDto, ForestByIdRetriever, ForestByNameRetriever, NewForestDto
 
 
-type ForestId = str
-type ForestName = str
-type ForestDescription = str
 type ForestCreator = Callable[[ForestName, ForestDescription], Result[Forest]]
 type ForestEditor = Callable[[Forest, ForestName, ForestDescription], Result]
 type ForestArchiver = Callable[[Forest], Result]
 type ForestDeleter = Callable[[Forest], Result]
 type ForestUnarchiver = Callable[[Forest], Result]
-type ForestGetter = Callable[[bool], Result[list[Forest]]]
+type ForestsGetter = Callable[[bool], Result[list[Forest]]]
+type ForestByNameGetter = Callable[[ForestName], Result[Optional[Forest]]]
+type ForestByIdGetter = Callable[[ForestId], Result[Optional[Forest]]]
 
 
 @safe
-def __get_forests(dep_forests_retriever: ForestRetriever,
+def __get_forests(dep_retrieve_forests: ForestsRetriever,
                   include_archived: bool) -> list[Forest]:
-    forests = dep_forests_retriever(include_archived).unwrap()
+    @safe
+    def create_forests(dtos: list[PersistedForestDto]):
+        return [Forest.model_validate(forest_dict) for forest_dict in dtos]
+
+    forests = (dep_retrieve_forests(include_archived)
+                             .bind(create_forests)
+                             .unwrap())
     return forests
-get_forests: ForestGetter = __get_forests
+get_forests: ForestsGetter = __get_forests
+
+
+@safe
+def __get_forest_by_name(dep_retrieve_forest_by_name: ForestByNameRetriever,
+                         name: ForestName) -> Optional[Forest]:
+    @safe
+    def from_persisted_dto(dto: Optional[PersistedForestDto]) -> Optional[Forest]:
+        return Forest.model_validate(dto) if dto is not None else None
+
+    forest = flow(name,
+                  dep_retrieve_forest_by_name,
+                  bind(from_persisted_dto)).unwrap()
+
+    return forest
+get_forest_by_name: ForestByNameGetter = __get_forest_by_name
+
+
+@safe
+def __get_forest_by_id(dep_retrieve_forest_by_id: ForestByIdRetriever,
+                          forest_id: ForestId) -> Optional[Forest]:
+     @safe
+     def from_persisted_dto(dto: Optional[PersistedForestDto]) -> Optional[Forest]:
+          return Forest.model_validate(dto) if dto is not None else None
+
+     forest = (dep_retrieve_forest_by_id(forest_id)
+                  .bind(from_persisted_dto)
+                  .unwrap())
+
+     return forest
+get_forest_by_id: ForestByIdGetter = __get_forest_by_id
 
 
 @safe
 def __create_forest(dep_persist_forest: ForestPersister,
-                    name: ForestName,
-                    description: ForestDescription) -> Forest:
-    forest_id = generate()
-    moment_of_time = datetime.now(timezone.utc)
-    forest = Forest(id=forest_id,
-                    name=name,
-                    description=description,
-                    created_at=moment_of_time,
-                    updated_at=moment_of_time)
-    dep_persist_forest(forest)
-    return forest
+                    dep_get_forest_by_name: ForestByNameGetter,
+                    dep_get_forest_by_id: ForestByIdGetter,
+                    dto: NewForestDto) -> Forest:
+    @dataclass
+    class ForestCreationState:
+        forest: Optional[Forest] = None
+        existing_forest: Optional[Forest] = None
+        persisted_id: Optional[ForestId] = None
+        persisted_dto: Optional[PersistedForestDto] = None
+
+    @safe
+    def from_new_dto(new_forest_dto: NewForestDto) -> ForestCreationState:
+        fid = generate()
+        moment_of_time = datetime.now(timezone.utc)
+        forest = Forest(id=fid,
+                        name=new_forest_dto.name,
+                        description=new_forest_dto.description,
+                        created_at=moment_of_time,
+                        updated_at=moment_of_time)
+        return ForestCreationState(forest=forest)
+
+    @safe
+    def get_forest_if_exists(state: ForestCreationState) -> ForestCreationState:
+        state.existing_forest = dep_get_forest_by_name(state.forest.name).unwrap()
+        return state
+
+    @safe
+    def get_persisted_forest(state: ForestCreationState) -> ForestCreationState:
+        state.persisted_dto = dep_get_forest_by_id(state.persisted_id).unwrap().model_dump()
+        return state
+
+    @safe
+    def handle_forest_exists(state: ForestCreationState) -> ForestCreationState:
+        if state.existing_forest is not None:
+            raise Exception(f"Forest with name '{state.existing_forest.name}' already exists.")
+        return state
+
+    @safe
+    def persist_forest(state: ForestCreationState) -> ForestCreationState:
+        state.persisted_id = dep_persist_forest(state.forest).unwrap()
+        return state
+
+    @safe
+    def persist_dto_to_model(state: ForestCreationState) -> Forest:
+        return Forest.model_validate(state.persisted_dto)
+
+    return flow(dto,
+        from_new_dto,
+        bind(get_forest_if_exists),
+        bind(handle_forest_exists),
+        bind(persist_forest),
+        bind(get_persisted_forest),
+        bind(persist_dto_to_model)
+    ).unwrap()
 create_forest: ForestCreator = __create_forest
 
+
 @safe
-def __edit_forest(forest: Forest, name: ForestName, description: ForestDescription) -> None:
+def __edit_forest(forest: Forest,
+                  name: ForestName,
+                  description: ForestDescription) -> None:
     forest.name = name
     forest.description = description
     forest.updated_at = datetime.now(timezone.utc)
 edit_forest: ForestEditor = __edit_forest
+
 
 @safe
 def __archive_forest(forest: Forest) -> None:
@@ -53,11 +140,13 @@ def __archive_forest(forest: Forest) -> None:
     forest.is_archived = True
 archive_forest: ForestArchiver = __archive_forest
 
+
 @safe
 def __unarchive_forest(forest: Forest) -> None:
     forest.updated_at = datetime.now(timezone.utc)
     forest.is_archived = False
 unarchive_forest: ForestUnarchiver = __unarchive_forest
+
 
 @safe
 def __delete_forest(dep_remove_forest: ForestRemover,

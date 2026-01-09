@@ -12,7 +12,7 @@ from leads.cli.view_models.notification_view_model import NotificationViewModel
 from leads.cli.views.panels.base_view import BaseView
 from leads.cli.view_models.hotkeys_view_model import HotkeyItem, HotkeysViewModel
 from leads.cli.view_models.forests_view_model import ForestsViewModel, ForestsFocusState
-from leads.cli.views.panels.content_panel.forests_tab.forest_creation_update_modal import ForestCreationUpdateModal
+from leads.cli.views.panels.content_panel.forests_tab.forest_creation_modal import ForestCreationModal
 
 
 class ForestsTab(BaseView):
@@ -275,11 +275,11 @@ class ForestsTab(BaseView):
         return None
 
     def _open_forest_creation_modal(self):
-        self.app.push_screen(ForestCreationUpdateModal(self._view_model,
-                                                       self._notification_view_model,
-                                                       title="Create Forest",
-                                                       button_text="Create",
-                                                       archived_locked=True))
+        self.app.push_screen(ForestCreationModal(self._view_model,
+                                                 self._notification_view_model,
+                                                 title="Create Forest",
+                                                 button_text="Create",
+                                                 archived_locked=True))
 
     def compose(self) -> ComposeResult:
         if not self._is_selected:
