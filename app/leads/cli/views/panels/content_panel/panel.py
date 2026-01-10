@@ -57,7 +57,9 @@ class ContentPanel(Container):
         self.__active_tab_key: Optional[CliTab] = None
 
         self.tabs = {
-            CliTab.CONFIGURATION: ConfigurationTab(self._configuration_view_model, self._hotkeys_view_model, self._app_focus_state),
+            CliTab.CONFIGURATION: ConfigurationTab(self._configuration_view_model,
+                                                   self._hotkeys_view_model,
+                                                   self._app_focus_state),
             CliTab.FORESTS: ForestsTab(self._forests_view_model,
                                        self._notification_view_model,
                                        self._hotkeys_view_model,

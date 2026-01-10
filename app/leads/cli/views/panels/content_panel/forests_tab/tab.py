@@ -11,8 +11,9 @@ from leads.cli.view_models.app_view_model import AppFocusState
 from leads.cli.view_models.notification_view_model import NotificationViewModel
 from leads.cli.views.panels.base_view import BaseView
 from leads.cli.view_models.hotkeys_view_model import HotkeyItem, HotkeysViewModel
-from leads.cli.view_models.forests_view_model import ForestsViewModel, ForestsFocusState
+from leads.cli.view_models.forests_view_model import ForestsViewModel
 from leads.cli.views.panels.content_panel.forests_tab.forest_creation_modal import ForestCreationModal
+from leads.cli.views.panels.content_panel.forests_tab.forest_update_modal import ForestUpdateModal
 
 
 class ForestsTab(BaseView):
@@ -220,7 +221,8 @@ class ForestsTab(BaseView):
             HotkeyItem("<Tab>", "Change Focus"),
             HotkeyItem("<↑/↓/←/→>", "Navigate Cells"),
             HotkeyItem("<t>", "Toggle Archived"),
-            HotkeyItem('<n>', "Create Forest")
+            HotkeyItem('<n>', "Create Forest"),
+            HotkeyItem('<e>', "Edit Forest"),
         ])
         return None
 
@@ -231,7 +233,7 @@ class ForestsTab(BaseView):
         self._rows = list(self.query(Horizontal).filter(".row"))
         total_rows = len(self._rows)
         prev_index = self._view_model.focus_state.index if self._view_model.focus_state else 0
-        self._view_model.focus_state = ForestsFocusState(prev_index, total_rows)
+        self._view_model.set_focus_state(prev_index, total_rows)
 
         self.apply_selection()
         return None
@@ -253,8 +255,6 @@ class ForestsTab(BaseView):
         self._on_view_model_changed()
 
     def apply_selection(self) -> None:
-        if not self._view_model.focus_state:
-            return None
         for i, row in enumerate(self._rows):
             row.set_class(i == self._view_model.focus_state.index, "-selected")
         return None
@@ -272,14 +272,18 @@ class ForestsTab(BaseView):
                 self._view_model.toggle_include_archived()
             case _ if key in ("n", "N"):
                 self.call_later(self._open_forest_creation_modal)
+            case _ if key in ("e", "E"):
+                self.call_later(self._open_forest_update_modal)
         return None
 
     def _open_forest_creation_modal(self):
         self.app.push_screen(ForestCreationModal(self._view_model,
-                                                 self._notification_view_model,
-                                                 title="Create Forest",
-                                                 button_text="Create",
-                                                 archived_locked=True))
+                                                 self._notification_view_model))
+
+    def _open_forest_update_modal(self):
+        if self._view_model.selected_forest:
+            self.app.push_screen(ForestUpdateModal(self._view_model,
+                                                   self._notification_view_model))
 
     def compose(self) -> ComposeResult:
         if not self._is_selected:
@@ -295,7 +299,7 @@ class ForestsTab(BaseView):
                     yield Static("DESCRIPTION", classes="cell-description")
                     yield Static("CREATED AT", classes="cell-created-at")
                     yield Static("UPDATED AT", classes="cell-updated-at")
-                    if self._view_model.include_archived:
+                    if self._view_model._include_archived:
                         yield Static("IS ARCHIVED", classes="cell-archived")
                 if data:
                     for forest in data:
@@ -305,7 +309,7 @@ class ForestsTab(BaseView):
                             yield Static(forest.description or "", classes="cell-description")
                             yield Static(str(forest.created_at) if forest.created_at else "", classes="cell-created-at")
                             yield Static(str(forest.updated_at) if forest.updated_at else "", classes="cell-updated-at")
-                            if self._view_model.include_archived:
+                            if self._view_model._include_archived:
                                 yield Static("YES" if forest.is_archived else "NO", classes="cell-archived")
 
         @safe

@@ -140,7 +140,6 @@ class ConfigurationTab(BaseView):
     def activate(self):
         self._is_selected = True
         self._on_view_model_changed()
-
     def deactivate(self):
         self._is_selected = False
         self._view_model.clear_state()

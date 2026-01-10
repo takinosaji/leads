@@ -6,12 +6,12 @@ from textual.containers import Vertical, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Label, Button, Input, Checkbox, TextArea
 
-from leads.application_core.secondary_ports.forests import NewForestDto, Forest
+from leads.application_core.secondary_ports.forests import NewForestDto, Forest, UpdateForestDto
 from leads.cli.view_models.forests_view_model import ForestsViewModel
 from leads.cli.view_models.notification_view_model import NotificationViewModel
 
 
-class ForestCreationModal(ModalScreen):
+class ForestUpdateModal(ModalScreen):
     DEFAULT_CSS = """
     ForestCreationModal {
         align: center middle;
@@ -62,10 +62,11 @@ class ForestCreationModal(ModalScreen):
 
         self._view_model = view_model
         self._notification_view_model = notification_view_model
+        self._forest_id = view_model.selected_forest.id
 
     def compose(self) -> ComposeResult:
         with Vertical(id="modal"):
-            yield Label("Create Forest", id="title")
+            yield Label("Update Forest", id="title")
 
             with Horizontal(classes="row"):
                 yield Label("Name:", classes="label")
@@ -79,17 +80,22 @@ class ForestCreationModal(ModalScreen):
                     classes="input",
                 )
 
+            with Horizontal(classes="row"):
+                yield Label("Archived:", classes="label")
+                yield Checkbox(id="archived")
+
             with Horizontal(id="buttons"):
-                yield Button("Create", id="ok", variant="primary")
+                yield Button("Update", id="ok", variant="primary")
 
     def on_button_pressed(self, event):
         if event.button.id == "ok":
             name = self.query_one("#name", Input).value
             description = self.query_one("#description", TextArea).text
+            archived = self.query_one("#archived", Checkbox).value
 
             @safe
             def success(forest: Forest):
-                self._notification_view_model.add_notification(f"Forest {forest.name} created successfully.", is_error=False)
+                self._notification_view_model.add_notification(f"Forest {forest.name} updated successfully.", is_error=False)
                 self.dismiss()
 
             @safe
@@ -97,8 +103,11 @@ class ForestCreationModal(ModalScreen):
                 self._notification_view_model.add_notification(str(error), is_error=True)
 
             self._notification_view_model.clear_notifications()
-            flow(NewForestDto(name=name, description=description),
-                 self._view_model.create_forest,
+            flow(UpdateForestDto(id=self._forest_id,
+                                 name=name,
+                                 description=description,
+                                 is_archived=archived),
+                 self._view_model.update_forest,
                  bind(success),
                  lash(fail)).unwrap()
         else:

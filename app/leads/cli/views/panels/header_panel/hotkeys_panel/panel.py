@@ -4,28 +4,34 @@ from textual.widgets import Static
 
 from leads.cli.view_models.hotkeys_view_model import HotkeysViewModel
 
-class HotkeysPanel(Vertical):
+class HotkeysPanel(Horizontal):
     DEFAULT_CSS = """
     HotkeysPanel {
-        width: 38;
+        width: 60;
         padding: 0 1;
     }
 
-    HotkeysPanel > .hotkey-row {
+    .hotkey-column {
+        layout: vertical;
+        margin-right: 2;
+        width: 30;
+    }
+
+    .hotkey-row {
         layout: horizontal;
         margin: 0;
         padding: 0;
         height: 1;
     }
 
-    HotkeysPanel > .hotkey-row > .hotkey-symbol {
+    .hotkey-symbol {
         width: 12;
         color: #ff4fcf;
         text-style: bold;
         padding-right: 1;
     }
 
-    HotkeysPanel > .hotkey-row > .hotkey-definition {
+    .hotkey-definition {
         color: #888888;
         padding-left: 0;
     }
@@ -43,10 +49,12 @@ class HotkeysPanel(Vertical):
         self.refresh(recompose=True)
 
     def compose(self) -> ComposeResult:
-        for hotkey in self.view_model.hotkeys:
-            with Horizontal(classes="hotkey-row"):
-                yield Static(hotkey.symbol, classes="hotkey-symbol")
-                yield Static(hotkey.definition, classes="hotkey-definition")
+        for column in self.view_model.hotkeys:
+            with Vertical(classes="hotkey-column"):
+                for hotkey in column:
+                    with Horizontal(classes="hotkey-row"):
+                        yield Static(hotkey.symbol, classes="hotkey-symbol")
+                        yield Static(hotkey.definition, classes="hotkey-definition")
 
     def on_unmount(self) -> None:
         self._subscription.dispose()

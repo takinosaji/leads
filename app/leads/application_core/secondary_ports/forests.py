@@ -17,6 +17,14 @@ class NewForestDto:
     description: str
 
 
+@dataclass
+class UpdateForestDto:
+    id: str
+    name: str
+    description: str
+    is_archived: bool
+
+
 class Forest(BaseModel):
     model_config = model_config
 

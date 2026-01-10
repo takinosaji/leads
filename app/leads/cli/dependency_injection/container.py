@@ -1,7 +1,7 @@
 from partial_injector.partial_container import Container, FromContainer
 from structlog import BoundLogger
 
-from leads.application_core.forests.services import create_forest, ForestCreator, edit_forest, ForestEditor, \
+from leads.application_core.forests.services import create_forest, ForestCreator, updated_forest, ForestUpdater, \
     archive_forest, unarchive_forest, ForestArchiver, ForestUnarchiver, ForestsGetter, get_forests, delete_forest, \
     ForestDeleter, ForestByNameGetter, get_forest_by_name, ForestByIdGetter, get_forest_by_id
 
@@ -26,7 +26,7 @@ def get_container():
 
     # Application Core
     container.register_transient(create_forest, key=ForestCreator)
-    container.register_transient(edit_forest, key=ForestEditor)
+    container.register_transient(updated_forest, key=ForestUpdater)
     container.register_transient(archive_forest, key=ForestArchiver)
     container.register_transient(unarchive_forest, key=ForestUnarchiver)
     container.register_transient(get_forests, key=ForestsGetter)

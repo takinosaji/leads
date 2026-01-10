@@ -3,16 +3,16 @@ from typing import Callable, Optional
 from nanoid import generate
 from pydantic.dataclasses import dataclass
 from returns.pointfree import bind
-from returns.result import Result, safe
+from returns.result import Result, safe, Failure
 from returns.pipeline import flow
 
 from leads.application_core.forests.models import ForestDescription, ForestName, ForestId
 from leads.application_core.secondary_ports.forests import Forest, ForestPersister, ForestsRetriever, ForestRemover, \
-    PersistedForestDto, ForestByIdRetriever, ForestByNameRetriever, NewForestDto
+    PersistedForestDto, ForestByIdRetriever, ForestByNameRetriever, NewForestDto, UpdateForestDto
 
 
-type ForestCreator = Callable[[ForestName, ForestDescription], Result[Forest]]
-type ForestEditor = Callable[[Forest, ForestName, ForestDescription], Result]
+type ForestCreator = Callable[[NewForestDto], Result[Forest]]
+type ForestUpdater = Callable[[UpdateForestDto], Result]
 type ForestArchiver = Callable[[Forest], Result]
 type ForestDeleter = Callable[[Forest], Result]
 type ForestUnarchiver = Callable[[Forest], Result]
@@ -65,7 +65,6 @@ def __get_forest_by_id(dep_retrieve_forest_by_id: ForestByIdRetriever,
 get_forest_by_id: ForestByIdGetter = __get_forest_by_id
 
 
-@safe
 def __create_forest(dep_persist_forest: ForestPersister,
                     dep_get_forest_by_name: ForestByNameGetter,
                     dep_get_forest_by_id: ForestByIdGetter,
@@ -120,18 +119,15 @@ def __create_forest(dep_persist_forest: ForestPersister,
         bind(persist_forest),
         bind(get_persisted_forest),
         bind(persist_dto_to_model)
-    ).unwrap()
+    )
 create_forest: ForestCreator = __create_forest
 
 
 @safe
-def __edit_forest(forest: Forest,
-                  name: ForestName,
-                  description: ForestDescription) -> None:
-    forest.name = name
-    forest.description = description
-    forest.updated_at = datetime.now(timezone.utc)
-edit_forest: ForestEditor = __edit_forest
+def __update_forest(dep_get_forest_by_id: ForestByIdGetter,
+                    dto: UpdateForestDto) -> Forest:
+    pass
+updated_forest: ForestUpdater = __update_forest
 
 
 @safe

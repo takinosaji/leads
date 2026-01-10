@@ -11,11 +11,11 @@ class HotkeysViewModel:
         self._hotkeys_subject = BehaviorSubject([])
 
     @property
-    def hotkeys(self) -> list[HotkeyItem]:
+    def hotkeys(self) -> list[list[HotkeyItem]]:
         return self._hotkeys_subject.value
 
-    def set_hotkeys(self, hotkeys: list[HotkeyItem]):
-        self._hotkeys_subject.on_next(hotkeys)
+    def set_hotkeys(self, *columns: list[HotkeyItem]):
+        self._hotkeys_subject.on_next(list(columns))
 
     def clear_hotkeys(self):
         self._hotkeys_subject.on_next([])
