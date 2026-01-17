@@ -1,12 +1,12 @@
 from partial_injector.partial_container import Container, FromContainer
 
-from leads.application_core.secondary_ports.forests import ForestPersister, ForestsRetriever, ForestRemover, \
-    ForestByNameRetriever, ForestByIdRetriever
+from leads.application_core.secondary_ports.forests import ForestInserter, ForestsRetriever, ForestRemover, \
+    ForestByNameRetriever, ForestByIdRetriever, ForestUpdater
 from leads.cli.configuration.models import CliConfigurationCache
 from leads.secondary_adapters.mongodb_adapter.client_cache import MongoDbClientCache
 from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
-from leads.secondary_adapters.mongodb_adapter.forests import persist_forest, retrieve_forests, remove_forest, \
-    retrieve_forest_by_name, retrieve_forest_by_id
+from leads.secondary_adapters.mongodb_adapter.forests import insert_forest, retrieve_forests, remove_forest, \
+    retrieve_forest_by_name, retrieve_forest_by_id, update_forest
 from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 
@@ -22,7 +22,8 @@ def register_dependencies(container: Container) -> None:
     container.register_singleton_factory(lambda conf: MongoDbClientCache(conf),
                                          key=MongoDbClientCache,
                                          factory_args=[FromContainer(MongoDbStorageConfiguration)])
-    container.register_transient(persist_forest, key=ForestPersister, **mongo_condition)
+    container.register_transient(insert_forest, key=ForestInserter, **mongo_condition)
+    container.register_transient(update_forest, key=ForestUpdater, **mongo_condition)
     container.register_transient(retrieve_forests, key=ForestsRetriever, **mongo_condition)
     container.register_transient(retrieve_forest_by_name, key=ForestByNameRetriever, **mongo_condition)
     container.register_transient(retrieve_forest_by_id, key=ForestByIdRetriever, **mongo_condition)

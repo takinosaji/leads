@@ -1,7 +1,7 @@
 from partial_injector.partial_container import Container
 from textual.app import App, ComposeResult
 from textual.screen import Screen
-from textual.containers import Horizontal
+from textual.containers import Horizontal, Vertical
 from textual.events import Key
 
 from leads.cli.view_models.app_view_model import AppViewModel
@@ -36,17 +36,13 @@ class CliAppScreen(Screen):
         self.command_panel = CommandPanel(self.app_view_model.hotkeys_view_model)
 
     def compose(self) -> ComposeResult:
-        yield self.header_panel
-
-        with Horizontal(id="body"):
-            yield self.menu_panel
-            yield self.content_panel
-
-        yield self.command_panel
-        yield self.notification_panel
-
-    def _is_command_panel_visible(self) -> bool:
-        return not self.command_panel.has_class("hidden")
+        with Vertical(id="main-vertical"):
+            yield self.header_panel
+            with Horizontal(id="body"):
+                yield self.menu_panel
+                yield self.content_panel
+            yield self.command_panel
+            yield self.notification_panel
 
     def on_mount(self) -> None:
         self.app_view_model.focus_state.build(self.menu_panel,
@@ -65,24 +61,24 @@ class CliAppScreen(Screen):
                 event.stop()
                 return
             case "tab":
-                if self._is_command_panel_visible(): # TODO: This is bullshit, refactor later
-                    return
                 self.app_view_model.focus_state.focus_next()
                 event.stop()
                 return
             case _:
                 pass
 
-    def on_command_panel_closed(self, message: CommandPanelClosed) -> None:
-        if message.reason == "tab": # TODO: Is this bullshit? Refactor later
-            self.app_view_model.focus_state.focus_next()
-        else:
-            self.app_view_model.focus_state.refocus()
-
     def _handle_command_globally(self, text: str) -> None:
-        if text in ("q", "Q"):
-            self.app.exit()
+        match text:
+            case "q" | "Q":
+                self.app.exit()
         return None
+
+    def on_command_panel_closed(self, message: CommandPanelClosed) -> None:
+        match message.reason:
+            case "tab":
+                self.app_view_model.focus_state.focus_next()
+            case _:
+                self.app_view_model.focus_state.refocus()
 
     def on_command_submitted(self, message: CommandSubmitted) -> None:
         text = message.text

@@ -28,16 +28,17 @@ class UpdateForestDto:
 class Forest(BaseModel):
     model_config = model_config
 
-    id: str = Field(...)
-    name: str = Field(...)
+    id: str = Field(..., min_length=1)
+    name: str = Field(..., min_length=1)
     description: Optional[str] = Field(default=None)
     created_at: datetime = Field(...)
     updated_at: Optional[datetime] = Field(default=None)
     is_archived: bool = Field(default=False)
 
 
-type ForestPersister = Callable[[Forest], Result[ForestId]]
+type ForestInserter = Callable[[Forest], Result[ForestId]]
+type ForestUpdater = Callable[[Forest], Result]
 type ForestsRetriever = Callable[[bool], Result[list[PersistedForestDto]]]
 type ForestByNameRetriever = Callable[[str], Result[Optional[PersistedForestDto]]]
 type ForestByIdRetriever = Callable[[ForestId], Result[Optional[PersistedForestDto]]]
-type ForestRemover = Callable[[Forest], Result]
+type ForestRemover = Callable[[ForestId], Result]

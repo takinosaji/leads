@@ -3,18 +3,17 @@ from typing import Callable, Optional
 from nanoid import generate
 from pydantic.dataclasses import dataclass
 from returns.pointfree import bind
-from returns.result import Result, safe, Failure
+from returns.result import Result, safe, Success
 from returns.pipeline import flow
 
-from leads.application_core.forests.models import ForestDescription, ForestName, ForestId
-from leads.application_core.secondary_ports.forests import Forest, ForestPersister, ForestsRetriever, ForestRemover, \
-    PersistedForestDto, ForestByIdRetriever, ForestByNameRetriever, NewForestDto, UpdateForestDto
-
+from leads.application_core.forests.models import ForestName, ForestId
+from leads.application_core.secondary_ports.forests import Forest, ForestInserter, ForestsRetriever, ForestRemover, \
+    PersistedForestDto, ForestByIdRetriever, ForestByNameRetriever, NewForestDto, UpdateForestDto, ForestUpdater
 
 type ForestCreator = Callable[[NewForestDto], Result[Forest]]
-type ForestUpdater = Callable[[UpdateForestDto], Result]
+type ForestEditor = Callable[[Forest], Result]
 type ForestArchiver = Callable[[Forest], Result]
-type ForestDeleter = Callable[[Forest], Result]
+type ForestDeleter = Callable[[ForestId], Result]
 type ForestUnarchiver = Callable[[Forest], Result]
 type ForestsGetter = Callable[[bool], Result[list[Forest]]]
 type ForestByNameGetter = Callable[[ForestName], Result[Optional[Forest]]]
@@ -65,7 +64,7 @@ def __get_forest_by_id(dep_retrieve_forest_by_id: ForestByIdRetriever,
 get_forest_by_id: ForestByIdGetter = __get_forest_by_id
 
 
-def __create_forest(dep_persist_forest: ForestPersister,
+def __create_forest(dep_persist_forest: ForestInserter,
                     dep_get_forest_by_name: ForestByNameGetter,
                     dep_get_forest_by_id: ForestByIdGetter,
                     dto: NewForestDto) -> Forest:
@@ -104,7 +103,7 @@ def __create_forest(dep_persist_forest: ForestPersister,
         return state
 
     @safe
-    def persist_forest(state: ForestCreationState) -> ForestCreationState:
+    def insert_new_forest(state: ForestCreationState) -> ForestCreationState:
         state.persisted_id = dep_persist_forest(state.forest).unwrap()
         return state
 
@@ -116,18 +115,52 @@ def __create_forest(dep_persist_forest: ForestPersister,
         from_new_dto,
         bind(get_forest_if_exists),
         bind(handle_forest_exists),
-        bind(persist_forest),
+        bind(insert_new_forest),
         bind(get_persisted_forest),
         bind(persist_dto_to_model)
     )
 create_forest: ForestCreator = __create_forest
 
 
-@safe
-def __update_forest(dep_get_forest_by_id: ForestByIdGetter,
-                    dto: UpdateForestDto) -> Forest:
-    pass
-updated_forest: ForestUpdater = __update_forest
+def __edit_forest(dep_get_forest_by_id: ForestByIdGetter,
+                  dep_update_forest: ForestUpdater,
+                  dto: UpdateForestDto) -> Forest:
+    @dataclass
+    class ForestUpdateState:
+        update_dto: Optional[UpdateForestDto] = None
+        existing_forest: Optional[Forest] = None
+        updated_forest: Optional[Forest] = None
+
+    @safe
+    def get_forest_if_exists(update_dto: UpdateForestDto) -> ForestUpdateState:
+        state = ForestUpdateState(update_dto=update_dto)
+        state.existing_forest = dep_get_forest_by_id(state.update_dto.id).unwrap()
+        return state
+
+    @safe
+    def handle_forest_doesnt_exist(state: ForestUpdateState) -> ForestUpdateState:
+        if state.existing_forest is None:
+            raise Exception(f"Forest with id '{state.update_dto.id}' doesnt exist.")
+        return state
+
+    @safe
+    def update_forest(state: ForestUpdateState) -> ForestUpdateState:
+        state.updated_forest = Forest(id=state.existing_forest.id,
+                                      name=state.update_dto.name,
+                                      description=state.update_dto.description,
+                                      is_archived=state.update_dto.is_archived,
+                                      updated_at=datetime.now(timezone.utc),
+                                      created_at=state.existing_forest.created_at)
+        dep_update_forest(state.updated_forest).unwrap()
+        return state
+
+    return flow(dto,
+        get_forest_if_exists,
+        bind(handle_forest_doesnt_exist),
+        bind(update_forest),
+        bind(lambda state: Success(state.updated_forest))
+    )
+edit_forest: ForestEditor = __edit_forest
 
 
 @safe
@@ -144,8 +177,8 @@ def __unarchive_forest(forest: Forest) -> None:
 unarchive_forest: ForestUnarchiver = __unarchive_forest
 
 
-@safe
 def __delete_forest(dep_remove_forest: ForestRemover,
-                    forest: Forest) -> None:
-    dep_remove_forest(forest)
+                    forest_id: ForestId) -> None:
+    return flow(forest_id,
+                dep_remove_forest)
 delete_forest: ForestDeleter = __delete_forest

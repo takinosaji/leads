@@ -14,6 +14,7 @@ from leads.cli.view_models.hotkeys_view_model import HotkeyItem, HotkeysViewMode
 from leads.cli.view_models.forests_view_model import ForestsViewModel
 from leads.cli.views.panels.content_panel.forests_tab.forest_creation_modal import ForestCreationModal
 from leads.cli.views.panels.content_panel.forests_tab.forest_update_modal import ForestUpdateModal
+from leads.cli.views.panels.content_panel.forests_tab.forest_deletion_modal import ForestDeletionModal
 
 
 class ForestsTab(BaseView):
@@ -84,14 +85,15 @@ class ForestsTab(BaseView):
         border: none;
     }
 
-    ForestsTab > .table > .row.-row-selected > .cell-id,
-    ForestsTab > .table > .row.-row-selected > .cell-name,
-    ForestsTab > .table > .row.-row-selected > .cell-description,
-    ForestsTab > .table > .row.-row-selected > .cell-created-at,
-    ForestsTab > .table > .row.-row-selected > .cell-updated-at,
-    ForestsTab > .table > .row.-row-selected > .cell-archived {
+    ForestsTab > .table > .row.-selected > .cell-id,
+    ForestsTab > .table > .row.-selected > .cell-name,
+    ForestsTab > .table > .row.-selected > .cell-description,
+    ForestsTab > .table > .row.-selected > .cell-created-at,
+    ForestsTab > .table > .row.-selected > .cell-updated-at,
+    ForestsTab > .table > .row.-selected > .cell-archived {
         background: #303030;
         color: #ffd787;
+        text-style: bold;
     }
 
     ForestsTab > .table > .row > .cell.-selected {
@@ -116,18 +118,18 @@ class ForestsTab(BaseView):
         color: #ffffff;
     }
 
-    ForestsTab:focus-within .table > .row.-row-selected > .cell-id,
-    ForestsTab:focus-within .table > .row.-row-selected > .cell-name,
-    ForestsTab:focus-within .table > .row.-row-selected > .cell-description,
-    ForestsTab:focus-within .table > .row.-row-selected > .cell-created-at,
-    ForestsTab:focus-within .table > .row.-row-selected > .cell-updated-at,
-    ForestsTab:focus-within .table > .row.-row-selected > .cell-archived,
-    ForestsTab:focus .table > .row.-row-selected > .cell-id,
-    ForestsTab:focus .table > .row.-row-selected > .cell-name,
-    ForestsTab:focus .table > .row.-row-selected > .cell-description,
-    ForestsTab:focus .table > .row.-row-selected > .cell-created-at,
-    ForestsTab:focus .table > .row.-row-selected > .cell-updated-at,
-    ForestsTab:focus .table > .row.-row-selected > .cell-archived {
+    ForestsTab:focus-within .table > .row.-selected > .cell-id,
+    ForestsTab:focus-within .table > .row.-selected > .cell-name,
+    ForestsTab:focus-within .table > .row.-selected > .cell-description,
+    ForestsTab:focus-within .table > .row.-selected > .cell-created-at,
+    ForestsTab:focus-within .table > .row.-selected > .cell-updated-at,
+    ForestsTab:focus-within .table > .row.-selected > .cell-archived,
+    ForestsTab:focus .table > .row.-selected > .cell-id,
+    ForestsTab:focus .table > .row.-selected > .cell-name,
+    ForestsTab:focus .table > .row.-selected > .cell-description,
+    ForestsTab:focus .table > .row.-selected > .cell-created-at,
+    ForestsTab:focus .table > .row.-selected > .cell-updated-at,
+    ForestsTab:focus .table > .row.-selected > .cell-archived {
         background: #202020;
         color: #ffd787;
     }
@@ -219,10 +221,15 @@ class ForestsTab(BaseView):
     def on_focus(self, event) -> None:
         self._hotkeys_view_model.set_hotkeys([
             HotkeyItem("<Tab>", "Change Focus"),
-            HotkeyItem("<↑/↓/←/→>", "Navigate Cells"),
+            HotkeyItem("<↑/↓>", "Navigate Forests"),
             HotkeyItem("<t>", "Toggle Archived"),
             HotkeyItem('<n>', "Create Forest"),
             HotkeyItem('<e>', "Edit Forest"),
+            HotkeyItem('Del', "Delete Forest")
+        ],
+        [
+            HotkeyItem("<a>", "Set as Active"),
+            HotkeyItem("<A>", "Archive Forest")
         ])
         return None
 
@@ -274,6 +281,8 @@ class ForestsTab(BaseView):
                 self.call_later(self._open_forest_creation_modal)
             case _ if key in ("e", "E"):
                 self.call_later(self._open_forest_update_modal)
+            case _ if key in ("delete", "Delete", "del", "Del"):
+                self.call_later(self._open_forest_deletion_modal)
         return None
 
     def _open_forest_creation_modal(self):
@@ -284,6 +293,11 @@ class ForestsTab(BaseView):
         if self._view_model.selected_forest:
             self.app.push_screen(ForestUpdateModal(self._view_model,
                                                    self._notification_view_model))
+
+    def _open_forest_deletion_modal(self):
+        if self._view_model.selected_forest:
+            self.app.push_screen(ForestDeletionModal(self._view_model,
+                                                     self._notification_view_model))
 
     def compose(self) -> ComposeResult:
         if not self._is_selected:

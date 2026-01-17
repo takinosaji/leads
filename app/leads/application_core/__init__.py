@@ -4,8 +4,10 @@ __author__ = "kostiantyn.chomakov@gmail.com"
 
 from . import (forests,
                trails,
-               leads)
+               leads,
+               use_cases)
 
 __all__ = ['forests',
            'trails',
-           'leads']
+           'leads',
+           'use_cases']

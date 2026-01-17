@@ -3,8 +3,9 @@ from rx.subject import BehaviorSubject
 from returns.result import safe
 from partial_injector.partial_container import Container
 
-from leads.application_core.forests.services import ForestsGetter, ForestCreator, ForestUpdater
+from leads.application_core.forests.services import ForestsGetter, ForestCreator, ForestEditor
 from leads.application_core.secondary_ports.forests import Forest, NewForestDto
+from leads.application_core.use_cases import AllForestDataDeleter
 from leads.cli.view_models.notification_view_model import NotificationViewModel
 
 
@@ -71,6 +72,10 @@ class ForestsViewModel:
             self._focus_subscription.dispose()
             self._focus_subscription = None
 
+    def invalidate_data(self) -> None:
+        self.data = None
+        self._subject.on_next(None)
+
     def toggle_include_archived(self) -> None:
         self._include_archived = not self._include_archived
         self._subject.on_next(None)
@@ -92,4 +97,9 @@ class ForestsViewModel:
         return self.__container.resolve(ForestCreator)(dto)
 
     def update_forest(self, dto: NewForestDto) -> Forest:
-        return self.__container.resolve(ForestUpdater)(dto)
+        return self.__container.resolve(ForestEditor)(dto)
+
+    def delete_forest(self, forest_id: str) -> None:
+        return self.__container.resolve(AllForestDataDeleter)(forest_id)
+
+

@@ -69,7 +69,7 @@ class ForestCreationModal(ModalScreen):
 
             with Horizontal(classes="row"):
                 yield Label("Name:", classes="label")
-                yield Input(placeholder="Enter name", id="name", classes="input")
+                yield Input(placeholder="Enter name", id="name", classes="input", select_on_focus=False)
 
             with Horizontal(classes="row"):
                 yield Label("Description:", classes="label")
@@ -90,6 +90,7 @@ class ForestCreationModal(ModalScreen):
             @safe
             def success(forest: Forest):
                 self._notification_view_model.add_notification(f"Forest {forest.name} created successfully.", is_error=False)
+                self._view_model.invalidate_data()
                 self.dismiss()
 
             @safe

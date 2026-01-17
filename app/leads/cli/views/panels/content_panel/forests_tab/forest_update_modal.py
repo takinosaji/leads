@@ -13,13 +13,13 @@ from leads.cli.view_models.notification_view_model import NotificationViewModel
 
 class ForestUpdateModal(ModalScreen):
     DEFAULT_CSS = """
-    ForestCreationModal {
+    ForestUpdateModal {
         align: center middle;
     }
 
     #modal {
         width: 80;
-        height: 20;
+        height: 30;
         padding: 1 2;
         background: $panel;
     }
@@ -68,21 +68,26 @@ class ForestUpdateModal(ModalScreen):
         with Vertical(id="modal"):
             yield Label("Update Forest", id="title")
 
+            # New row for readonly ID
+            with Horizontal(classes="row"):
+                yield Label("ID:", classes="label")
+                yield Input(value=str(self._forest_id), id="forest-id", classes="input", disabled=True)
+
             with Horizontal(classes="row"):
                 yield Label("Name:", classes="label")
-                yield Input(placeholder="Enter name", id="name", classes="input")
+                yield Input(placeholder="Enter name", id="name", classes="input", value=self._view_model.selected_forest.name, select_on_focus=False)
 
             with Horizontal(classes="row"):
                 yield Label("Description:", classes="label")
                 yield TextArea(
-                    text="",
+                    text=self._view_model.selected_forest.description,
                     id="description",
                     classes="input",
                 )
 
             with Horizontal(classes="row"):
                 yield Label("Archived:", classes="label")
-                yield Checkbox(id="archived")
+                yield Checkbox(id="archived", value=self._view_model.selected_forest.is_archived)
 
             with Horizontal(id="buttons"):
                 yield Button("Update", id="ok", variant="primary")
@@ -96,6 +101,7 @@ class ForestUpdateModal(ModalScreen):
             @safe
             def success(forest: Forest):
                 self._notification_view_model.add_notification(f"Forest {forest.name} updated successfully.", is_error=False)
+                self._view_model.invalidate_data()
                 self.dismiss()
 
             @safe
