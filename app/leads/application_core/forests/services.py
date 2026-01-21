@@ -7,8 +7,8 @@ from returns.result import Result, safe, Success
 from returns.pipeline import flow
 
 from leads.application_core.forests.models import ForestName, ForestId
-from leads.application_core.secondary_ports.forests import Forest, ForestInserter, ForestsRetriever, ForestRemover, \
-    PersistedForestDto, ForestByIdRetriever, ForestByNameRetriever, NewForestDto, UpdateForestDto, ForestUpdater
+from leads.application_core.secondary_ports.forests import Forest, ForestStorageInserter, ForestsStorageRetriever, ForestStorageRemover, \
+    PersistedForestDto, ForestByIdStorageRetriever, ForestByNameStorageRetriever, NewForestDto, UpdateForestDto, ForestStorageUpdater
 
 type ForestCreator = Callable[[NewForestDto], Result[Forest]]
 type ForestEditor = Callable[[Forest], Result]
@@ -21,7 +21,7 @@ type ForestByIdGetter = Callable[[ForestId], Result[Optional[Forest]]]
 
 
 @safe
-def __get_forests(dep_retrieve_forests: ForestsRetriever,
+def __get_forests(dep_retrieve_forests: ForestsStorageRetriever,
                   include_archived: bool) -> list[Forest]:
     @safe
     def create_forests(dtos: list[PersistedForestDto]):
@@ -35,7 +35,7 @@ get_forests: ForestsGetter = __get_forests
 
 
 @safe
-def __get_forest_by_name(dep_retrieve_forest_by_name: ForestByNameRetriever,
+def __get_forest_by_name(dep_retrieve_forest_by_name: ForestByNameStorageRetriever,
                          name: ForestName) -> Optional[Forest]:
     @safe
     def from_persisted_dto(dto: Optional[PersistedForestDto]) -> Optional[Forest]:
@@ -50,8 +50,8 @@ get_forest_by_name: ForestByNameGetter = __get_forest_by_name
 
 
 @safe
-def __get_forest_by_id(dep_retrieve_forest_by_id: ForestByIdRetriever,
-                          forest_id: ForestId) -> Optional[Forest]:
+def __get_forest_by_id(dep_retrieve_forest_by_id: ForestByIdStorageRetriever,
+                       forest_id: ForestId) -> Optional[Forest]:
      @safe
      def from_persisted_dto(dto: Optional[PersistedForestDto]) -> Optional[Forest]:
           return Forest.model_validate(dto) if dto is not None else None
@@ -64,7 +64,7 @@ def __get_forest_by_id(dep_retrieve_forest_by_id: ForestByIdRetriever,
 get_forest_by_id: ForestByIdGetter = __get_forest_by_id
 
 
-def __create_forest(dep_persist_forest: ForestInserter,
+def __create_forest(dep_persist_forest: ForestStorageInserter,
                     dep_get_forest_by_name: ForestByNameGetter,
                     dep_get_forest_by_id: ForestByIdGetter,
                     dto: NewForestDto) -> Forest:
@@ -123,7 +123,7 @@ create_forest: ForestCreator = __create_forest
 
 
 def __edit_forest(dep_get_forest_by_id: ForestByIdGetter,
-                  dep_update_forest: ForestUpdater,
+                  dep_update_forest: ForestStorageUpdater,
                   dto: UpdateForestDto) -> Forest:
     @dataclass
     class ForestUpdateState:
@@ -177,7 +177,7 @@ def __unarchive_forest(forest: Forest) -> None:
 unarchive_forest: ForestUnarchiver = __unarchive_forest
 
 
-def __delete_forest(dep_remove_forest: ForestRemover,
+def __delete_forest(dep_remove_forest: ForestStorageRemover,
                     forest_id: ForestId) -> None:
     return flow(forest_id,
                 dep_remove_forest)

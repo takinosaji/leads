@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "leads"
+version = "0.0.0"
+description = "Leads monorepo workspace (CLI, application core, adapters, and tests)"
+authors = ["Kostiantyn Chomakov <kostiantyn.chomakov@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = ">=3.14,<3.15"
+leads-application-core = { path = "app/leads/application_core", develop = true }
+leads-application-core-secondary-ports = { path = "app/leads/application_core/secondary_ports", develop = true }
+leads-secondary-adapters = { path = "app/leads/secondary_adapters", develop = true }
+leads-cli = { path = "app/leads/cli", develop = true }
+leads-cli-tests = { path = "app/test_leads/test_cli", develop = true }
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

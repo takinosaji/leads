@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="update-all-dependencies" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="x-os-build-executable" type="PythonConfigurationType" factoryName="Python">
     <module name="dot-test-harness" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
@@ -9,13 +9,14 @@
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="SDK_NAME" value="Python 3.14 (leads)" />
-    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/local-dev/scripts" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/installer" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="update-all-dependencies.py" />
-    <option name="PARAMETERS" value="$ProjectFileDir$/app" />
+    <option name="RUN_TOOL" value="" />
+    <option name="SCRIPT_NAME" value="x-os-build-executable.py" />
+    <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

@@ -36,9 +36,9 @@ class Forest(BaseModel):
     is_archived: bool = Field(default=False)
 
 
-type ForestInserter = Callable[[Forest], Result[ForestId]]
-type ForestUpdater = Callable[[Forest], Result]
-type ForestsRetriever = Callable[[bool], Result[list[PersistedForestDto]]]
-type ForestByNameRetriever = Callable[[str], Result[Optional[PersistedForestDto]]]
-type ForestByIdRetriever = Callable[[ForestId], Result[Optional[PersistedForestDto]]]
-type ForestRemover = Callable[[ForestId], Result]
+type ForestStorageInserter = Callable[[Forest], Result[ForestId]]
+type ForestStorageUpdater = Callable[[Forest], Result]
+type ForestsStorageRetriever = Callable[[bool], Result[list[PersistedForestDto]]]
+type ForestByNameStorageRetriever = Callable[[str], Result[Optional[PersistedForestDto]]]
+type ForestByIdStorageRetriever = Callable[[ForestId], Result[Optional[PersistedForestDto]]]
+type ForestStorageRemover = Callable[[ForestId], Result]

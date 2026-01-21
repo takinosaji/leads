@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="install-all-dependencies" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="update-packages-dependencies" type="PythonConfigurationType" factoryName="Python">
     <module name="dot-test-harness" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
@@ -14,8 +14,9 @@
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="install-all-dependencies.py" />
-    <option name="PARAMETERS" value="$ProjectFileDir$/app" />
+    <option name="RUN_TOOL" value="" />
+    <option name="SCRIPT_NAME" value="update-all-dependencies.py" />
+    <option name="PARAMETERS" value="$ProjectFileDir$/app --recursive" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

@@ -30,6 +30,16 @@ def ensure_pyinstaller_available() -> None:
         raise
 
 
+# Helper to check whether the installed PyInstaller supports the --plist option.
+def pyinstaller_supports_plist() -> bool:
+    try:
+        proc = subprocess.run(["pyinstaller", "--help"], capture_output=True, text=True, cwd=str(REPO_ROOT))
+        help_text = (proc.stdout or "") + (proc.stderr or "")
+        return "--plist" in help_text
+    except Exception:
+        return False
+
+
 # --- Platform metadata helpers -------------------------------------------------
 
 def write_windows_version_file(
@@ -185,10 +195,17 @@ def build_pyinstaller_command(
     platform = sys.platform
     if platform == "darwin" and osx_bundle_id:
         command.extend(["--osx-bundle-identifier", osx_bundle_id])
-        # If version provided, generate a plist snippet to inject version fields
+        # If version provided, attempt to generate a plist snippet to inject version fields
         if version:
-            plist_path = write_macos_plist(build_dir, name, version, osx_bundle_id)
-            command.extend(["--plist", str(plist_path)])
+            # Only pass --plist if the installed pyinstaller supports it. Otherwise just write
+            # the plist file for manual use and skip the unrecognized flag.
+            if pyinstaller_supports_plist():
+                plist_path = write_macos_plist(build_dir, name, version, osx_bundle_id)
+                command.extend(["--plist", str(plist_path)])
+            else:
+                # Generate the plist file so the user can inspect/use it, but do not pass --plist
+                plist_path = write_macos_plist(build_dir, name, version, osx_bundle_id)
+                print(f"Note: installed PyInstaller does not support --plist; generated plist at {plist_path} but will not pass --plist to pyinstaller.")
 
     # Windows version resource
     if platform.startswith("win") and version:

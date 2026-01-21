@@ -81,11 +81,14 @@ class ConfigurationViewModel:
                 min_log_level=conf.runtime_configuration.min_log_level,
                 active_forest=conf.context_configuration.active_forest or "",
                 mongodb_storage_connection_string=(conf.mongodb_storage_configuration.connection_string
-                                                   if conf.mongodb_storage_configuration.connection_string else ""),
+                                                   if conf.mongodb_storage_configuration is not None and
+                                                      conf.mongodb_storage_configuration.connection_string else ""),
                 mongodb_storage_database_name=(conf.mongodb_storage_configuration.database_name
-                                               if conf.mongodb_storage_configuration.database_name else ""),
+                                               if conf.mongodb_storage_configuration is not None and
+                                                  conf.mongodb_storage_configuration.database_name else ""),
                 sqlite_storage_connection_string=(conf.sqlite_storage_configuration.connection_string
-                                                  if conf.sqlite_storage_configuration.connection_string else ""))
+                                                  if conf.sqlite_storage_configuration is not None and
+                                                     conf.sqlite_storage_configuration.connection_string else ""))
 
         if self.data is None:
             self.data = (
