@@ -45,7 +45,13 @@ class MongoDbClientCache:
             if not current_connection_string:
                 return None
 
-            self._client = MongoClient(current_connection_string)
+            # Timeouts are in milliseconds; tweak these defaults as needed
+            self._client = MongoClient(
+                current_connection_string,
+                serverSelectionTimeoutMS=2000,
+                socketTimeoutMS=2000,
+                connectTimeoutMS=2000,
+            )
 
         return self._client
 

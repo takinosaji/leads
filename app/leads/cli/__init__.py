@@ -6,10 +6,12 @@ from . import (dependency_injection,
                views,
                view_models,
                cli_logging,
-               configuration)
+               configuration,
+               formatting)
 
 __all__ = ["dependency_injection",
            "view_models",
            "views",
            "cli_logging",
-           "configuration"]
+           "configuration",
+           "formatting"]

@@ -5,7 +5,7 @@ from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal
 from textual.widgets import Static
 from leads.application_core.secondary_ports.exceptions import get_traceback
-from textual.markup import escape
+from leads.cli.formatting import escape_textual
 
 from leads.cli.view_models.app_view_model import AppFocusState
 from leads.cli.view_models.notification_view_model import NotificationViewModel
@@ -328,7 +328,12 @@ class ForestsTab(BaseView):
 
         @safe
         def compose_error_layout(error: Exception):
-            yield Static(f"Error loading forests: {escape(str(error))}\n{escape(get_traceback(error))}", classes="error-message")
+            error_text = escape_textual(str(error))
+            traceback_text = escape_textual(get_traceback(error))
+            yield Static(
+                f"Error loading forests: {error_text}\n{traceback_text}",
+                classes="error-message",
+            )
 
         yield from (
             self._view_model.load_forests()

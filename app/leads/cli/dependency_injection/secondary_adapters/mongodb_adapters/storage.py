@@ -15,7 +15,7 @@ def register_dependencies(container: Container) -> None:
         condition=lambda m_conf, s_conf: (m_conf and
                                           m_conf.connection_string and
                                           m_conf.database_name and
-                                          not (s_conf or s_conf.connection_string)),
+                                          not s_conf.connection_string),
         condition_args=[FromContainer(MongoDbStorageConfiguration), FromContainer(SQLiteStorageConfiguration)],
         throw_if_condition_not_satisfied_for_all=True
     )
