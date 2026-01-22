@@ -86,6 +86,9 @@ class ConfigurationViewModel:
                 mongodb_storage_database_name=(conf.mongodb_storage_configuration.database_name
                                                if conf.mongodb_storage_configuration is not None and
                                                   conf.mongodb_storage_configuration.database_name else ""),
+                mongodb_timeout_ms=(str(conf.mongodb_storage_configuration.timeout_ms)
+                                                    if conf.mongodb_storage_configuration is not None and
+                                                       conf.mongodb_storage_configuration.timeout_ms is not None else ""),
                 sqlite_storage_connection_string=(conf.sqlite_storage_configuration.connection_string
                                                   if conf.sqlite_storage_configuration is not None and
                                                      conf.sqlite_storage_configuration.connection_string else ""))
@@ -117,7 +120,9 @@ class ConfigurationViewModel:
                     connection_string=(self.data.mongodb_storage_connection_string
                                        if self.data.mongodb_storage_connection_string else None),
                     database_name=(self.data.mongodb_storage_database_name
-                                   if self.data.mongodb_storage_database_name else None)
+                                   if self.data.mongodb_storage_database_name else None),
+                    timeout_ms=(self.data.mongodb_timeout_ms
+                                                 if self.data.mongodb_timeout_ms else None),
                 )
             )
             self.__container.resolve(CliConfigurationSaver)(cli_configuration)

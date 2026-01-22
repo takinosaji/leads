@@ -1,7 +1,5 @@
 from __future__ import annotations
-
 from typing import Optional, Mapping, Any
-
 from pymongo import MongoClient
 from pymongo.synchronous.database import Database
 
@@ -16,22 +14,28 @@ class MongoDbClientCache:
         self._client: Optional[MongoClient] = None
         self._last_connection_string: Optional[str] = None
         self._last_database_name: Optional[str] = None
+        self._last_timeout_ms: Optional[int] = None
 
     def _ensure_client_up_to_date(self) -> Optional[MongoClient]:
         mongo_config = self._configuration
 
         current_connection_string: Optional[str]
         current_database_name: Optional[str]
+        current_timeout_ms: Optional[int]
+
         if mongo_config is None:
             current_connection_string = None
             current_database_name = None
+            current_timeout_ms = None
         else:
             current_connection_string = mongo_config.connection_string
             current_database_name = mongo_config.database_name
+            current_timeout_ms = mongo_config.timeout_ms
 
         config_changed = (
-            current_connection_string != self._last_connection_string and
-            current_database_name != self._last_database_name
+            current_connection_string != self._last_connection_string
+            or current_database_name != self._last_database_name
+            or current_timeout_ms != self._last_timeout_ms
         )
 
         if config_changed:
@@ -41,16 +45,16 @@ class MongoDbClientCache:
 
             self._last_connection_string = current_connection_string
             self._last_database_name = current_database_name
+            self._last_imeout_ms = current_timeout_ms
 
             if not current_connection_string:
                 return None
 
-            # Timeouts are in milliseconds; tweak these defaults as needed
             self._client = MongoClient(
                 current_connection_string,
-                serverSelectionTimeoutMS=2000,
-                socketTimeoutMS=2000,
-                connectTimeoutMS=2000,
+                serverSelectionTimeoutMS=current_timeout_ms,
+                socketTimeoutMS=current_timeout_ms,
+                connectTimeoutMS=current_timeout_ms,
             )
 
         return self._client
@@ -70,3 +74,4 @@ class MongoDbClientCache:
 
         self._last_connection_string = None
         self._last_database_name = None
+        self._last_timeout_ms = None

@@ -10,3 +10,4 @@ class MongoDbStorageConfiguration(BaseModel):
 
     connection_string: Optional[str] = Field(default=None)
     database_name: Optional[str] = Field(default=None)
+    timeout_ms: Optional[int] = Field(default=None)

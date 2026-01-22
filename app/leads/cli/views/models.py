@@ -34,3 +34,4 @@ class FlatConfiguration(BaseModel):
     sqlite_storage_connection_string: Optional[str] = Field(default="", json_schema_extra={ModelsMetadata.MASKED: True})
     mongodb_storage_connection_string: Optional[str] = Field(default="", json_schema_extra={ModelsMetadata.MASKED: True})
     mongodb_storage_database_name: Optional[str] = Field(default="")
+    mongodb_timeout_ms: Optional[str] = Field(default="")
