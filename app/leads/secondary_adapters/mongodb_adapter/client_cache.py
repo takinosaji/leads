@@ -45,7 +45,7 @@ class MongoDbClientCache:
 
             self._last_connection_string = current_connection_string
             self._last_database_name = current_database_name
-            self._last_imeout_ms = current_timeout_ms
+            self._last_timeout_ms = current_timeout_ms
 
             if not current_connection_string:
                 return None
