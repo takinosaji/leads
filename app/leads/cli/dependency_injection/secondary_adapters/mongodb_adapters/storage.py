@@ -1,12 +1,12 @@
 from partial_injector.partial_container import Container, FromContainer
 
 from leads.application_core.secondary_ports.forests import ForestStorageInserter, ForestsStorageRetriever, ForestStorageRemover, \
-    ForestByNameStorageRetriever, ForestByIdStorageRetriever, ForestStorageUpdater
+    ForestByNameStorageRetriever, ForestByIdStorageRetriever, ForestStorageUpdater, ForestStorageArchiver, ForestStorageUnarchiver
 from leads.cli.configuration.models import CliConfigurationCache
 from leads.secondary_adapters.mongodb_adapter.client_cache import MongoDbClientCache
 from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
 from leads.secondary_adapters.mongodb_adapter.forests import insert_forest_into_storage, retrieve_forests_from_storage, remove_forest_from_storage, \
-    retrieve_forest_by_name_from_storage, retrieve_forest_by_id, update_forest_in_storage
+    retrieve_forest_by_name_from_storage, retrieve_forest_by_id_from_storage, update_forest_in_storage, archive_forest_in_storage, unarchive_forest_in_storage
 from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 
@@ -23,15 +23,17 @@ def register_dependencies(container: Container) -> None:
 
     container.register_transient(FromContainer(CliConfigurationCache, lambda cache: cache.configuration.mongodb_storage_configuration),
                                  key=MongoDbStorageConfiguration)
-    container.register_singleton_factory(lambda conf: MongoDbClientCache(conf),
+    container.register_singleton_factory(lambda conf_getter: MongoDbClientCache(conf_getter),
                                          key=MongoDbClientCache,
-                                         factory_args=[FromContainer(MongoDbStorageConfiguration)])
+                                         factory_args=[FromContainer(CliConfigurationCache, lambda cache: cache.mongodb_storage_configuration_getter)]),
     container.register_transient(insert_forest_into_storage, key=ForestStorageInserter, **mongo_condition)
     container.register_transient(update_forest_in_storage, key=ForestStorageUpdater, **mongo_condition)
     container.register_transient(retrieve_forests_from_storage, key=ForestsStorageRetriever, **mongo_condition)
     container.register_transient(retrieve_forest_by_name_from_storage, key=ForestByNameStorageRetriever, **mongo_condition)
-    container.register_transient(retrieve_forest_by_id, key=ForestByIdStorageRetriever, **mongo_condition)
+    container.register_transient(retrieve_forest_by_id_from_storage, key=ForestByIdStorageRetriever, **mongo_condition)
     container.register_transient(remove_forest_from_storage, key=ForestStorageRemover, **mongo_condition)
+    container.register_transient(archive_forest_in_storage, key=ForestStorageArchiver, **mongo_condition)
+    container.register_transient(unarchive_forest_in_storage, key=ForestStorageUnarchiver, **mongo_condition)
 
     return None
 

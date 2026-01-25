@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
 from returns.result import Result
 
-from leads.application_core.forests.services import ForestId
+from leads.application_core.forests.models import ForestId, ForestUpdatedAt
 from leads.application_core.secondary_ports.pydantic_models import model_config
 
 
@@ -42,3 +42,5 @@ type ForestsStorageRetriever = Callable[[bool], Result[list[PersistedForestDto]]
 type ForestByNameStorageRetriever = Callable[[str], Result[Optional[PersistedForestDto]]]
 type ForestByIdStorageRetriever = Callable[[ForestId], Result[Optional[PersistedForestDto]]]
 type ForestStorageRemover = Callable[[ForestId], Result]
+type ForestStorageArchiver = Callable[[ForestId, ForestUpdatedAt], Result]
+type ForestStorageUnarchiver = Callable[[ForestId, ForestUpdatedAt], Result]

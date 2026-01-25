@@ -1,23 +1,24 @@
 from __future__ import annotations
-from typing import Optional, Mapping, Any
+from typing import Optional, Mapping, Any, Callable
 from pymongo import MongoClient
 from pymongo.synchronous.database import Database
 
-from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
+from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration, \
+    MongoDbStorageConfigurationGetter
 
 
 class MongoDbClientCache:
     def __init__(self,
-                 configuration: MongoDbStorageConfiguration,
+                 configuration_getter: MongoDbStorageConfigurationGetter,
     ) -> None:
-        self._configuration = configuration
+        self._configuration_getter = configuration_getter
         self._client: Optional[MongoClient] = None
         self._last_connection_string: Optional[str] = None
         self._last_database_name: Optional[str] = None
         self._last_timeout_ms: Optional[int] = None
 
     def _ensure_client_up_to_date(self) -> Optional[MongoClient]:
-        mongo_config = self._configuration
+        mongo_config = self._configuration_getter()
 
         current_connection_string: Optional[str]
         current_database_name: Optional[str]
@@ -45,7 +46,7 @@ class MongoDbClientCache:
 
             self._last_connection_string = current_connection_string
             self._last_database_name = current_database_name
-            self._last_imeout_ms = current_timeout_ms
+            self._last_timeout_ms = current_timeout_ms
 
             if not current_connection_string:
                 return None

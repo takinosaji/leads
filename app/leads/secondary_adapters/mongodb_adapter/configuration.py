@@ -1,8 +1,11 @@
-from typing import Optional
+from typing import Optional, Callable
 
 from pydantic import BaseModel, Field
 
 from leads.application_core.secondary_ports.pydantic_models import model_config
+
+
+type MongoDbStorageConfigurationGetter = Callable[[], MongoDbStorageConfiguration]
 
 
 class MongoDbStorageConfiguration(BaseModel):

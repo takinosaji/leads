@@ -3,7 +3,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 from leads.application_core.secondary_ports.pydantic_models import model_config
 from leads.cli.configuration.configuration_logging import LogLevel
-from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration
+from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration, \
+    MongoDbStorageConfigurationGetter
 from leads.secondary_adapters.sqlite_adapter.configuration import SQLiteStorageConfiguration
 
 
@@ -45,3 +46,9 @@ class CliConfiguration(BaseModel):
 class CliConfigurationCache:
     def __init__(self):
         self.configuration: Optional[CliConfiguration] = None
+
+    @property
+    def mongodb_storage_configuration_getter(self) -> MongoDbStorageConfigurationGetter:
+        def getter():
+            return self.configuration.mongodb_storage_configuration
+        return getter

@@ -222,14 +222,15 @@ class ForestsTab(BaseView):
         self._hotkeys_view_model.set_hotkeys([
             HotkeyItem("<Tab>", "Change Focus"),
             HotkeyItem("<↑/↓>", "Navigate Forests"),
-            HotkeyItem("<t>", "Toggle Archived"),
-            HotkeyItem('<n>', "Create Forest"),
-            HotkeyItem('<e>', "Edit Forest"),
+            HotkeyItem("<t/T>", "Toggle Archived"),
+            HotkeyItem('<n/N>', "Create Forest"),
+            HotkeyItem('<e/E>', "Edit Forest"),
             HotkeyItem('Del', "Delete Forest")
         ],
         [
             HotkeyItem("<a>", "Set as Active"),
-            HotkeyItem("<A>", "Archive Forest")
+            HotkeyItem("<A>", "Archive Forest"),
+            HotkeyItem("<U>", "Unarchive Forest")
         ])
         return None
 
@@ -283,6 +284,10 @@ class ForestsTab(BaseView):
                 self.call_later(self._open_forest_update_modal)
             case _ if key in ("delete", "Delete", "del", "Del"):
                 self.call_later(self._open_forest_deletion_modal)
+            case "A":
+                self._view_model.archive_selected_forest()
+            case "U":
+                self._view_model.unarchive_selected_forest()
         return None
 
     def _open_forest_creation_modal(self):

@@ -6,15 +6,17 @@ from returns.pointfree import bind
 from returns.result import Result, safe, Success
 from returns.pipeline import flow
 
-from leads.application_core.forests.models import ForestName, ForestId
+from leads.application_core.forests.models import ForestName, ForestId, ForestUpdatedAt
 from leads.application_core.secondary_ports.forests import Forest, ForestStorageInserter, ForestsStorageRetriever, ForestStorageRemover, \
-    PersistedForestDto, ForestByIdStorageRetriever, ForestByNameStorageRetriever, NewForestDto, UpdateForestDto, ForestStorageUpdater
+    PersistedForestDto, ForestByIdStorageRetriever, ForestByNameStorageRetriever, NewForestDto, UpdateForestDto, ForestStorageUpdater, \
+    ForestStorageArchiver, ForestStorageUnarchiver
+
 
 type ForestCreator = Callable[[NewForestDto], Result[Forest]]
 type ForestEditor = Callable[[Forest], Result]
-type ForestArchiver = Callable[[Forest], Result]
+type ForestArchiver = Callable[[ForestId], Result[Forest]]
 type ForestDeleter = Callable[[ForestId], Result]
-type ForestUnarchiver = Callable[[Forest], Result]
+type ForestUnarchiver = Callable[[ForestId], Result[Forest]]
 type ForestsGetter = Callable[[bool], Result[list[Forest]]]
 type ForestByNameGetter = Callable[[ForestName], Result[Optional[Forest]]]
 type ForestByIdGetter = Callable[[ForestId], Result[Optional[Forest]]]
@@ -163,17 +165,85 @@ def __edit_forest(dep_get_forest_by_id: ForestByIdGetter,
 edit_forest: ForestEditor = __edit_forest
 
 
-@safe
-def __archive_forest(forest: Forest) -> None:
-    forest.updated_at = datetime.now(timezone.utc)
-    forest.is_archived = True
+def __archive_forest(dep_get_forest_by_id: ForestByIdGetter,
+                     dep_archive_forest_in_storage: ForestStorageArchiver,
+                     forest_id: ForestId) -> Forest:
+    @dataclass
+    class ForestArchiveState:
+        forest_id: Optional[ForestId] = None
+        existing_forest: Optional[Forest] = None
+
+    @safe
+    def get_forest_if_exists(fid: ForestId) -> ForestArchiveState:
+        state = ForestArchiveState(forest_id=fid)
+        state.existing_forest = dep_get_forest_by_id(fid).unwrap()
+        return state
+
+    @safe
+    def handle_forest_doesnt_exist(state: ForestArchiveState) -> ForestArchiveState:
+        if state.existing_forest is None:
+            raise Exception(f"Forest with id '{state.forest_id}' doesnt exist.")
+        return state
+
+    @safe
+    def handle_already_archived(state: ForestArchiveState) -> ForestArchiveState:
+        if state.existing_forest.is_archived:
+            raise Exception(f"Forest with id '{state.forest_id}' is already archived.")
+        dep_archive_forest_in_storage(state.forest_id,
+                                      datetime.now(timezone.utc)
+                                      ).unwrap()
+        return state
+
+    @safe
+    def return_forest(state: ForestArchiveState) -> Forest:
+        return state.existing_forest
+
+    return flow(forest_id,
+                get_forest_if_exists,
+                bind(handle_forest_doesnt_exist),
+                bind(handle_already_archived),
+                bind(return_forest))
 archive_forest: ForestArchiver = __archive_forest
 
 
-@safe
-def __unarchive_forest(forest: Forest) -> None:
-    forest.updated_at = datetime.now(timezone.utc)
-    forest.is_archived = False
+
+def __unarchive_forest(dep_get_forest_by_id: ForestByIdGetter,
+                       dep_unarchive_forest_in_storage: ForestStorageUnarchiver,
+                       forest_id: ForestId) -> Forest:
+    @dataclass
+    class ForestUnarchiveState:
+        forest_id: Optional[ForestId] = None
+        existing_forest: Optional[Forest] = None
+
+    @safe
+    def get_forest_if_exists(fid: ForestId) -> ForestUnarchiveState:
+        state = ForestUnarchiveState(forest_id=fid)
+        state.existing_forest = dep_get_forest_by_id(fid).unwrap()
+        return state
+
+    @safe
+    def handle_forest_doesnt_exist(state: ForestUnarchiveState) -> ForestUnarchiveState:
+        if state.existing_forest is None:
+            raise Exception(f"Forest with id '{state.forest_id}' doesnt exist.")
+        return state
+
+    @safe
+    def handle_not_archived(state: ForestUnarchiveState) -> ForestUnarchiveState:
+        if not state.existing_forest.is_archived:
+            raise Exception(f"Forest with id '{state.forest_id}' is not archived.")
+        dep_unarchive_forest_in_storage(state.forest_id,
+                                        datetime.now(timezone.utc)).unwrap()
+        return state
+
+    @safe
+    def return_forest(state: ForestUnarchiveState) -> Forest:
+        return state.existing_forest
+
+    return flow(forest_id,
+                get_forest_if_exists,
+                bind(handle_forest_doesnt_exist),
+                bind(handle_not_archived),
+                bind(return_forest))
 unarchive_forest: ForestUnarchiver = __unarchive_forest
 
 

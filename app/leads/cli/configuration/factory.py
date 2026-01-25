@@ -34,7 +34,7 @@ def __load_n_cache_cli_configuration(dep_configuration_cache: CliConfigurationCa
                 mongodb_storage_configuration=MongoDbStorageConfiguration(
                     connection_string=None,
                     database_name=None,
-                    timeout_ms=2000,
+                    timeout_ms=None,
                 ),
             )
         )
