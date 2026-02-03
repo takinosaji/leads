@@ -21,7 +21,10 @@ class CliAppScreen(Screen):
 
         self.app_view_model = AppViewModel(container, self)
 
-        self.header_panel = HeaderPanel(self.app_view_model.hotkeys_view_model)
+        self.header_panel = HeaderPanel(
+            self.app_view_model.hotkeys_view_model,
+            self.app_view_model.state_panel_view_model,
+        )
         self.menu_panel = MenuPanel(self.app_view_model.menu_view_model,
                                     self.app_view_model.hotkeys_view_model,
                                     self.app_view_model.focus_state)

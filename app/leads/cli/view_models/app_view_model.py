@@ -9,6 +9,7 @@ from leads.cli.view_models.menu_view_model import MenuViewModel, MenuItem
 from leads.cli.views.models import CliTab
 from leads.cli.view_models.configuration_view_model import ConfigurationViewModel
 from leads.cli.view_models.forests_view_model import ForestsViewModel
+from leads.cli.view_models.state_panel_view_model import StatePanelViewModel
 
 
 class AppFocusState:
@@ -63,5 +64,6 @@ class AppViewModel:
         self.notification_view_model = NotificationViewModel()
         self.configuration_view_model = ConfigurationViewModel(container, self.notification_view_model)
         self.forests_view_model = ForestsViewModel(container, self.notification_view_model)
+        self.state_panel_view_model = StatePanelViewModel()
 
         self.focus_state: AppFocusState = AppFocusState(screen)

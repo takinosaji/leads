@@ -6,7 +6,7 @@ version = "0.7.0"
 description = "Reusable constraint types to use with typing.Annotated"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53"},
     {file = "annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89"},
@@ -18,7 +18,7 @@ version = "8.3.1"
 description = "Composable command line interface toolkit"
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "click-8.3.1-py3-none-any.whl", hash = "sha256:981153a64e25f12d547d3426c367a4857371575ee7ad18df2a6183ab0545b2a6"},
     {file = "click-8.3.1.tar.gz", hash = "sha256:12ff4785d337a1bb490bb7e9c2b1ee5da3112e94a8622f26a6c77f5d2fc6842a"},
@@ -33,8 +33,8 @@ version = "0.4.6"
 description = "Cross-platform colored terminal text."
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
-groups = ["main"]
-markers = "platform_system == \"Windows\" or sys_platform == \"win32\""
+groups = ["main", "dev"]
+markers = "platform_system == \"Windows\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -46,7 +46,7 @@ version = "2.8.0"
 description = "DNS toolkit"
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "dnspython-2.8.0-py3-none-any.whl", hash = "sha256:01d9bbc4a2d76bf0db7c1f729812ded6d912bd318d3b1cf81d30c0f845dbf3af"},
     {file = "dnspython-2.8.0.tar.gz", hash = "sha256:181d3c6996452cb1189c4046c61599b84a5a86e099562ffde77d26984ff26d0f"},
@@ -62,39 +62,12 @@ trio = ["trio (>=0.30)"]
 wmi = ["wmi (>=1.5.1) ; platform_system == \"Windows\""]
 
 [[package]]
-name = "faker"
-version = "37.12.0"
-description = "Faker is a Python package that generates fake data for you."
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "faker-37.12.0-py3-none-any.whl", hash = "sha256:afe7ccc038da92f2fbae30d8e16d19d91e92e242f8401ce9caf44de892bab4c4"},
-    {file = "faker-37.12.0.tar.gz", hash = "sha256:7505e59a7e02fa9010f06c3e1e92f8250d4cfbb30632296140c2d6dbef09b0fa"},
-]
-
-[package.dependencies]
-tzdata = "*"
-
-[[package]]
-name = "iniconfig"
-version = "2.3.0"
-description = "brain-dead simple config-ini parsing"
-optional = false
-python-versions = ">=3.10"
-groups = ["main"]
-files = [
-    {file = "iniconfig-2.3.0-py3-none-any.whl", hash = "sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"},
-    {file = "iniconfig-2.3.0.tar.gz", hash = "sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730"},
-]
-
-[[package]]
 name = "leads-application-core"
 version = "0.0.0"
 description = "Leads Application Core"
 optional = false
 python-versions = ">=3.14,<3.15"
-groups = ["main"]
+groups = ["main", "dev"]
 files = []
 develop = true
 
@@ -116,7 +89,7 @@ version = "0.0.0"
 description = "Leads Application Core Secondary Ports"
 optional = false
 python-versions = ">=3.14,<3.15"
-groups = ["main"]
+groups = ["main", "dev"]
 files = []
 develop = true
 
@@ -134,7 +107,7 @@ version = "0.0.0"
 description = "CLI Primary Adapter for Leads"
 optional = false
 python-versions = ">=3.14,<3.15"
-groups = ["main"]
+groups = ["main", "dev"]
 files = []
 develop = true
 
@@ -143,7 +116,7 @@ click = "^8.3.0"
 leads-application-core = {path = "../application_core", develop = true}
 leads-secondary-adapters = {path = "../secondary_adapters", develop = true}
 nanoid = "^2.0.0"
-partial-injector = "^3.2.2"
+partial-injector = "^3.2.3"
 pydantic = "^2.11.9"
 pymongo = {version = "^4.15.5", extras = ["srv"]}
 pyyaml = "^6.0"
@@ -163,15 +136,12 @@ version = "0.0.0"
 description = "CLI Primary Adapter Tests for Leads"
 optional = false
 python-versions = ">=3.14,<3.15"
-groups = ["main"]
+groups = ["dev"]
 files = []
 develop = true
 
 [package.dependencies]
-Faker = "^37.8.0"
 leads-cli = {path = "../../leads/cli", develop = true}
-pytest = "^9.0.2"
-pytest-asyncio = "^1.3.0"
 spinq = "^1.4.0"
 structlog = "^25.5.0"
 
@@ -185,7 +155,7 @@ version = "0.0.0"
 description = "Leads Secondary Adapters"
 optional = false
 python-versions = ">=3.14,<3.15"
-groups = ["main"]
+groups = ["main", "dev"]
 files = []
 develop = true
 
@@ -206,7 +176,7 @@ version = "2.0.3"
 description = "Links recognition library with FULL unicode support."
 optional = false
 python-versions = ">=3.7"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "linkify-it-py-2.0.3.tar.gz", hash = "sha256:68cda27e162e9215c17d786649d1da0021a451bdc436ef9e0fa0ba5234b9b048"},
     {file = "linkify_it_py-2.0.3-py3-none-any.whl", hash = "sha256:6bcbc417b0ac14323382aef5c5192c0075bf8a9d6b41820a2b66371eac6b6d79"},
@@ -227,7 +197,7 @@ version = "4.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "markdown_it_py-4.0.0-py3-none-any.whl", hash = "sha256:87327c59b172c5011896038353a81343b6754500a08cd7a4973bb48c6d578147"},
     {file = "markdown_it_py-4.0.0.tar.gz", hash = "sha256:cb0a2b4aa34f932c007117b194e945bd74e0ec24133ceb5bac59009cda1cb9f3"},
@@ -252,7 +222,7 @@ version = "0.5.0"
 description = "Collection of plugins for markdown-it-py"
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "mdit_py_plugins-0.5.0-py3-none-any.whl", hash = "sha256:07a08422fc1936a5d26d146759e9155ea466e842f5ab2f7d2266dd084c8dab1f"},
     {file = "mdit_py_plugins-0.5.0.tar.gz", hash = "sha256:f4918cb50119f50446560513a8e311d574ff6aaed72606ddae6d35716fe809c6"},
@@ -272,7 +242,7 @@ version = "0.1.2"
 description = "Markdown URL utilities"
 optional = false
 python-versions = ">=3.7"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
@@ -284,34 +254,22 @@ version = "2.0.0"
 description = "A tiny, secure, URL-friendly, unique string ID generator for Python"
 optional = false
 python-versions = "*"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "nanoid-2.0.0-py3-none-any.whl", hash = "sha256:90aefa650e328cffb0893bbd4c236cfd44c48bc1f2d0b525ecc53c3187b653bb"},
     {file = "nanoid-2.0.0.tar.gz", hash = "sha256:5a80cad5e9c6e9ae3a41fa2fb34ae189f7cb420b2a5d8f82bd9d23466e4efa68"},
 ]
 
 [[package]]
-name = "packaging"
-version = "26.0"
-description = "Core utilities for Python packages"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "packaging-26.0-py3-none-any.whl", hash = "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529"},
-    {file = "packaging-26.0.tar.gz", hash = "sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4"},
-]
-
-[[package]]
 name = "partial-injector"
-version = "3.2.2"
+version = "3.2.3"
 description = "Dependency Injection for FP"
 optional = false
 python-versions = "<4.0,>=3.14"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
-    {file = "partial_injector-3.2.2-py3-none-any.whl", hash = "sha256:310a3f20cfabd57f51b0f928232b2121ae3ab3a24005cfc527bdf172cf0dcf56"},
-    {file = "partial_injector-3.2.2.tar.gz", hash = "sha256:d97ca255fd8c5fbf9493b5d0cd8811427130b5b8032f4cd9bb9a7f55ada1ba51"},
+    {file = "partial_injector-3.2.3-py3-none-any.whl", hash = "sha256:3e656c3b534f5121d70da6f04f6bceae872d7f2e559c0e0f09346150993f22e4"},
+    {file = "partial_injector-3.2.3.tar.gz", hash = "sha256:3cefa81b8607fcc5bc76e02f0b780dce942010fc516937d105f9c4ea1fab337b"},
 ]
 
 [[package]]
@@ -320,7 +278,7 @@ version = "4.5.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "platformdirs-4.5.1-py3-none-any.whl", hash = "sha256:d03afa3963c806a9bed9d5125c8f4cb2fdaf74a55ab60e5d59b3fde758104d31"},
     {file = "platformdirs-4.5.1.tar.gz", hash = "sha256:61d5cdcc6065745cdd94f0f878977f8de9437be93de97c1c12f853c9c0cdcbda"},
@@ -332,28 +290,12 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=8.4.2)", "pytest-
 type = ["mypy (>=1.18.2)"]
 
 [[package]]
-name = "pluggy"
-version = "1.6.0"
-description = "plugin and hook calling mechanisms for python"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"},
-    {file = "pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3"},
-]
-
-[package.extras]
-dev = ["pre-commit", "tox"]
-testing = ["coverage", "pytest", "pytest-benchmark"]
-
-[[package]]
 name = "pydantic"
 version = "2.12.5"
 description = "Data validation using Python type hints"
 optional = false
 python-versions = ">=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pydantic-2.12.5-py3-none-any.whl", hash = "sha256:e561593fccf61e8a20fc46dfc2dfe075b8be7d0188df33f221ad1f0139180f9d"},
     {file = "pydantic-2.12.5.tar.gz", hash = "sha256:4d351024c75c0f085a9febbb665ce8c0c6ec5d30e903bdb6394b7ede26aebb49"},
@@ -375,7 +317,7 @@ version = "2.41.5"
 description = "Core functionality for Pydantic validation and serialization"
 optional = false
 python-versions = ">=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pydantic_core-2.41.5-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:77b63866ca88d804225eaa4af3e664c5faf3568cea95360d21f4725ab6e07146"},
     {file = "pydantic_core-2.41.5-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:dfa8a0c812ac681395907e71e1274819dec685fec28273a28905df579ef137e2"},
@@ -509,7 +451,7 @@ version = "2.19.2"
 description = "Pygments is a syntax highlighting package written in Python."
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b"},
     {file = "pygments-2.19.2.tar.gz", hash = "sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887"},
@@ -524,7 +466,7 @@ version = "4.16.0"
 description = "PyMongo - the Official MongoDB Python driver"
 optional = false
 python-versions = ">=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pymongo-4.16.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ed162b2227f98d5b270ecbe1d53be56c8c81db08a1a8f5f02d89c7bb4d19591d"},
     {file = "pymongo-4.16.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:4a9390dce61d705a88218f0d7b54d7e1fa1b421da8129fc7c009e029a9a6b81e"},
@@ -613,53 +555,12 @@ test = ["importlib-metadata (>=7.0) ; python_version < \"3.13\"", "pytest (>=8.2
 zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 
 [[package]]
-name = "pytest"
-version = "9.0.2"
-description = "pytest: simple powerful testing with Python"
-optional = false
-python-versions = ">=3.10"
-groups = ["main"]
-files = [
-    {file = "pytest-9.0.2-py3-none-any.whl", hash = "sha256:711ffd45bf766d5264d487b917733b453d917afd2b0ad65223959f59089f875b"},
-    {file = "pytest-9.0.2.tar.gz", hash = "sha256:75186651a92bd89611d1d9fc20f0b4345fd827c41ccd5c299a868a05d70edf11"},
-]
-
-[package.dependencies]
-colorama = {version = ">=0.4", markers = "sys_platform == \"win32\""}
-iniconfig = ">=1.0.1"
-packaging = ">=22"
-pluggy = ">=1.5,<2"
-pygments = ">=2.7.2"
-
-[package.extras]
-dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests", "setuptools", "xmlschema"]
-
-[[package]]
-name = "pytest-asyncio"
-version = "1.3.0"
-description = "Pytest support for asyncio"
-optional = false
-python-versions = ">=3.10"
-groups = ["main"]
-files = [
-    {file = "pytest_asyncio-1.3.0-py3-none-any.whl", hash = "sha256:611e26147c7f77640e6d0a92a38ed17c3e9848063698d5c93d5aa7aa11cebff5"},
-    {file = "pytest_asyncio-1.3.0.tar.gz", hash = "sha256:d7f52f36d231b80ee124cd216ffb19369aa168fc10095013c6b014a34d3ee9e5"},
-]
-
-[package.dependencies]
-pytest = ">=8.2,<10"
-
-[package.extras]
-docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1)"]
-testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.3"
 description = "YAML parser and emitter for Python"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "PyYAML-6.0.3-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:c2514fceb77bc5e7a2f7adfaa1feb2fb311607c9cb518dbc378688ec73d8292f"},
     {file = "PyYAML-6.0.3-cp38-cp38-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:9c57bb8c96f6d1808c030b1687b9b5fb476abaa47f0db9c0101f5e9f394e97f4"},
@@ -742,7 +643,7 @@ version = "0.26.0"
 description = "Make your functions return something meaningful, typed, and safe!"
 optional = false
 python-versions = "<4.0,>=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "returns-0.26.0-py3-none-any.whl", hash = "sha256:7cae94c730d6c56ffd9d0f583f7a2c0b32cfe17d141837150c8e6cff3eb30d71"},
     {file = "returns-0.26.0.tar.gz", hash = "sha256:180320e0f6e9ea9845330ccfc020f542330f05b7250941d9b9b7c00203fcc3da"},
@@ -757,14 +658,14 @@ compatible-mypy = ["mypy (>=1.12,<1.18)"]
 
 [[package]]
 name = "rich"
-version = "14.2.0"
+version = "14.3.2"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 optional = false
 python-versions = ">=3.8.0"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
-    {file = "rich-14.2.0-py3-none-any.whl", hash = "sha256:76bc51fe2e57d2b1be1f96c524b890b816e334ab4c1e45888799bfaab0021edd"},
-    {file = "rich-14.2.0.tar.gz", hash = "sha256:73ff50c7c0c1c77c8243079283f4edb376f0f6442433aecb8ce7e6d0b92d1fe4"},
+    {file = "rich-14.3.2-py3-none-any.whl", hash = "sha256:08e67c3e90884651da3239ea668222d19bea7b589149d8014a21c633420dbb69"},
+    {file = "rich-14.3.2.tar.gz", hash = "sha256:e712f11c1a562a11843306f5ed999475f09ac31ffb64281f73ab29ffdda8b3b8"},
 ]
 
 [package.dependencies]
@@ -780,7 +681,7 @@ version = "3.2.0"
 description = "Reactive Extensions (Rx) for Python"
 optional = false
 python-versions = ">=3.6.0"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "Rx-3.2.0-py3-none-any.whl", hash = "sha256:922c5f4edb3aa1beaa47bf61d65d5380011ff6adcd527f26377d05cb73ed8ec8"},
     {file = "Rx-3.2.0.tar.gz", hash = "sha256:b657ca2b45aa485da2f7dcfd09fac2e554f7ac51ff3c2f8f2ff962ecd963d91c"},
@@ -792,7 +693,7 @@ version = "1.4.0"
 description = "Simple LINQ in Python"
 optional = false
 python-versions = "<4.0,>=3.13"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "spinq-1.4.0-py3-none-any.whl", hash = "sha256:bb9f25d0ec089e3535f19576669905b7a840ee64396b61ba2e29a423d56a50fc"},
     {file = "spinq-1.4.0.tar.gz", hash = "sha256:c1acb9a74911c0392d2c1c7c69cbfedcddd8afe8f080176ad771cd274a0e6604"},
@@ -804,7 +705,7 @@ version = "25.5.0"
 description = "Structured Logging for Python"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "structlog-25.5.0-py3-none-any.whl", hash = "sha256:a8453e9b9e636ec59bd9e79bbd4a72f025981b3ba0f5837aebf48f02f37a7f9f"},
     {file = "structlog-25.5.0.tar.gz", hash = "sha256:098522a3bebed9153d4570c6d0288abf80a031dfdb2048d59a49e9dc2190fc98"},
@@ -816,7 +717,7 @@ version = "6.12.0"
 description = "Modern Text User Interface framework"
 optional = false
 python-versions = "<4.0,>=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "textual-6.12.0-py3-none-any.whl", hash = "sha256:cf9ea9a54d213c7736efe9fef440c7f49218d4e6ab75279afd060eded9c567ec"},
     {file = "textual-6.12.0.tar.gz", hash = "sha256:a32e8edbf6abdb0c42d486e96bdf419eb3aa378edb1b1271b84637f3dbd64c73"},
@@ -839,7 +740,7 @@ version = "4.15.0"
 description = "Backported and Experimental Type Hints for Python 3.9+"
 optional = false
 python-versions = ">=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
     {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
@@ -851,7 +752,7 @@ version = "0.4.2"
 description = "Runtime typing introspection tools"
 optional = false
 python-versions = ">=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "typing_inspection-0.4.2-py3-none-any.whl", hash = "sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7"},
     {file = "typing_inspection-0.4.2.tar.gz", hash = "sha256:ba561c48a67c5958007083d386c3295464928b01faa735ab8547c5692e87f464"},
@@ -861,24 +762,12 @@ files = [
 typing-extensions = ">=4.12.0"
 
 [[package]]
-name = "tzdata"
-version = "2025.3"
-description = "Provider of IANA time zone data"
-optional = false
-python-versions = ">=2"
-groups = ["main"]
-files = [
-    {file = "tzdata-2025.3-py2.py3-none-any.whl", hash = "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1"},
-    {file = "tzdata-2025.3.tar.gz", hash = "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7"},
-]
-
-[[package]]
 name = "uc-micro-py"
 version = "1.0.3"
 description = "Micro subset of unicode data files for linkify-it-py projects."
 optional = false
 python-versions = ">=3.7"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "uc-micro-py-1.0.3.tar.gz", hash = "sha256:d321b92cff673ec58027c04015fcaa8bb1e005478643ff4a500882eaab88c48a"},
     {file = "uc_micro_py-1.0.3-py3-none-any.whl", hash = "sha256:db1dffff340817673d7b466ec86114a9dc0e9d4d9b5ba229d9d60e5c12600cd5"},
@@ -890,4 +779,4 @@ test = ["coverage", "pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<3.15"
-content-hash = "a7af2783b50f09d2f797f960c6df4aacd64c78ea7fb8e3fffd01c69c4f4d81d6"
+content-hash = "7414afec47e41bf843c8529ec721600d0566b29c30dcbdc8cfce1181a7e7c818"

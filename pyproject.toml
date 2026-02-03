@@ -13,6 +13,8 @@ leads-application-core = { path = "app/leads/application_core", develop = true }
 leads-application-core-secondary-ports = { path = "app/leads/application_core/secondary_ports", develop = true }
 leads-secondary-adapters = { path = "app/leads/secondary_adapters", develop = true }
 leads-cli = { path = "app/leads/cli", develop = true }
+
+[tool.poetry.group.dev.dependencies]
 leads-cli-tests = { path = "app/test_leads/test_cli", develop = true }
 
 [build-system]

@@ -18,10 +18,11 @@ class HeaderPanel(TContainer):
 
     def __init__(self,
                  hotkeys_view_model,
+                 state_panel_view_model,
                  **kwargs):
         super().__init__(id="header", **kwargs)
 
-        self._state_panel = StatePanel()
+        self._state_panel = StatePanel(state_panel_view_model)
         self._title_panel = TitlePanel()
         self.hotkeys_panel = HotkeysPanel(hotkeys_view_model)
 

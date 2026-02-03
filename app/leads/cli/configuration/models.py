@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from leads.application_core.configuration import ContextConfiguration, ContextConfigurationGetter
 from leads.application_core.secondary_ports.pydantic_models import model_config
 from leads.cli.configuration.configuration_logging import LogLevel
 from leads.secondary_adapters.mongodb_adapter.configuration import MongoDbStorageConfiguration, \
@@ -20,12 +21,6 @@ class RuntimeConfiguration(BaseModel):
         if isinstance(value, str) and value in LogLevel.__members__:
             return value
         raise ValueError(f"Invalid min_log_level '{value}'. Allowed: {', '.join(LogLevel.__members__.keys())}")
-
-
-class ContextConfiguration(BaseModel):
-    model_config = model_config
-
-    active_forest: Optional[str] = Field(default=None)
 
 
 class CliConfiguration(BaseModel):
@@ -51,4 +46,10 @@ class CliConfigurationCache:
     def mongodb_storage_configuration_getter(self) -> MongoDbStorageConfigurationGetter:
         def getter():
             return self.configuration.mongodb_storage_configuration
+        return getter
+
+    @property
+    def context_configuration(self) -> ContextConfigurationGetter:
+        def getter():
+            return self.configuration.context_configuration
         return getter

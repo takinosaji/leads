@@ -7,7 +7,8 @@ from . import (
     menu_view_model,
     notification_view_model,
     configuration_view_model,
-    forests_view_model
+    forests_view_model,
+    state_panel_view_model,
 )
 
 __all__ = [
@@ -16,5 +17,6 @@ __all__ = [
     "menu_view_model",
     "notification_view_model",
     "configuration_view_model",
-    "forests_view_model"
+    "forests_view_model",
+    "state_panel_view_model",
 ]
