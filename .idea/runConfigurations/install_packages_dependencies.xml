@@ -16,7 +16,7 @@
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
     <option name="RUN_TOOL" value="" />
     <option name="SCRIPT_NAME" value="install-all-dependencies.py" />
-    <option name="PARAMETERS" value="$ProjectFileDir$/app --recursive" />
+    <option name="PARAMETERS" value="$ProjectFileDir$/app --recursive --all-groups" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
