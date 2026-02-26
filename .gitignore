@@ -246,5 +246,5 @@ fabric.properties
 
 *.api-key
 *.env
-!/local-dev/localdev.env
+!/sdlc/local-dev/localdev.env
 .codemie

@@ -15,8 +15,8 @@
       <excludeFolder url="file://$MODULE_DIR$/.codemie" />
       <excludeFolder url="file://$MODULE_DIR$/app/leads/.codemie" />
       <excludeFolder url="file://$MODULE_DIR$/app/leads/cli/.codemie" />
-      <excludeFolder url="file://$MODULE_DIR$/installer/build" />
-      <excludeFolder url="file://$MODULE_DIR$/installer/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sdlc/installer/build" />
+      <excludeFolder url="file://$MODULE_DIR$/sdlc/installer/dist" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.14 (leads)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
