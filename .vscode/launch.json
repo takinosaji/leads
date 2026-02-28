@@ -1,20 +1,38 @@
 {
     "configurations": [
         {
-            "name": "Run install-all-dependencies script",
+            "name": "Run install-root-dependencies script",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/local-dev/scripts/install-all-dependencies.py",
-            "args": ["${workspaceFolder}/app"],
+            "program": "${workspaceFolder}/sdlc/local-dev/scripts/install-all-dependencies.py",
+            "args": ["${workspaceFolder}", "--no-root", "--all-groups"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "Run update-all-dependencies script",
+            "name": "Run install-packages-dependencies script",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/local-dev/scripts/update-all-dependencies.py",
-            "args": ["${workspaceFolder}/app"],
+            "program": "${workspaceFolder}/sdlc/local-dev/scripts/install-all-dependencies.py",
+            "args": ["${workspaceFolder}/app", "--recursive", "--all-groups"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run update-root-dependencies script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/sdlc/local-dev/scripts/update-all-dependencies.py",
+            "args": ["${workspaceFolder}"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run update-packages-dependencies script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/sdlc/local-dev/scripts/update-all-dependencies.py",
+            "args": ["${workspaceFolder}/app", "--recursive"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -22,7 +40,7 @@
             "name": "Run delete-all-locks script",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/local-dev/scripts/delete-all-locks.py",
+            "program": "${workspaceFolder}/sdlc/local-dev/scripts/delete-all-locks.py",
             "args": ["${workspaceFolder}/app"],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -31,13 +49,13 @@
             "name": "Run fix-all-locks script",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/local-dev/scripts/fix-all-locks.py",
+            "program": "${workspaceFolder}/sdlc/local-dev/scripts/fix-all-locks.py",
             "args": ["${workspaceFolder}/app"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "Run cli_primary_adapter as module",
+            "name": "Run CLI as module",
             "type": "debugpy",
             "request": "launch",
             "module": "leads.cli",
@@ -47,7 +65,7 @@
             "justMyCode": true
         },
         {
-            "name": "run cli_primary_adapter as script",
+            "name": "Run CLI as script",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/app/leads/cli/__main__.py",
